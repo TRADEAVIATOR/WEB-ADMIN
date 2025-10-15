@@ -12,6 +12,11 @@ export const sidebarLinks: SidebarLink[] = [
     icon: "/icons/dashboard.svg",
   },
   {
+    label: "Analytics",
+    href: "/analytics",
+    icon: "/icons/analytics.svg",
+  },
+  {
     label: "User Management",
     icon: "/icons/users.svg",
     children: [
