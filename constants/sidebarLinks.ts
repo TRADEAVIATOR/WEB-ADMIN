@@ -13,7 +13,7 @@ export const sidebarLinks: SidebarLink[] = [
   },
   {
     label: "Analytics",
-    href: "/analytics",
+    href: "/dashboard/analytics",
     icon: "/icons/analytics.svg",
   },
   {
@@ -22,44 +22,44 @@ export const sidebarLinks: SidebarLink[] = [
     children: [
       {
         label: "All Users",
-        href: "/users",
+        href: "/dashboard/users",
         icon: "/icons/users.svg",
       },
       {
         label: "Admin Management",
-        href: "/admins",
+        href: "/dashboard/admins",
         icon: "/icons/users.svg",
       },
     ],
   },
   {
     label: "Transactions",
-    href: "/transactions",
+    href: "/dashboard/transactions",
     icon: "/icons/transactions.svg",
   },
   {
     label: "Virtual Card",
-    href: "/virtual-card",
+    href: "/dashboard/virtual-card",
     icon: "/icons/virtual-card.svg",
   },
   {
     label: "Rate Management",
-    href: "/rate-management",
+    href: "/dashboard/rate-management",
     icon: "/icons/rate.svg",
   },
   {
     label: "Rewards",
-    href: "/rewards",
+    href: "/dashboard/rewards",
     icon: "/icons/rewards.svg",
   },
   {
     label: "Support & Feedback",
-    href: "/support",
+    href: "/dashboard/support",
     icon: "/icons/support.svg",
   },
   {
     label: "Settings",
-    href: "/settings",
+    href: "/dashboard/settings",
     icon: "/icons/settings.svg",
   },
 ];
@@ -67,7 +67,6 @@ export const sidebarLinks: SidebarLink[] = [
 export const sidebarBottomLinks: SidebarLink[] = [
   {
     label: "Logout",
-    href: "/logout",
     icon: "/icons/logout.svg",
   },
 ];
