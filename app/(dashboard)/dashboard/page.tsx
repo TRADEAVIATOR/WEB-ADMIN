@@ -1,3 +1,5 @@
+"use client";
+
 import ActivityTable from "./components/ActivityTable";
 import ChartCard from "./components/ChartCard";
 import LeaderboardCard from "./components/LeaderboardCard";
@@ -62,13 +64,17 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {stats.map((stat) => (
+        {stats.map((stat, index) => (
           <StatCard
             key={stat.label}
             label={stat.label}
             value={stat.value}
             change={stat.change}
             data={[5, 8, 12, 9, 15, 20]}
+            bgColor={index === 0 ? "#6E2B03" : undefined}
+            selectOptions={
+              index === 1 || index === 2 ? ["Option 1", "Option 2"] : undefined
+            }
           />
         ))}
       </div>
