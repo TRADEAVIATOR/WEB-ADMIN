@@ -5,8 +5,8 @@ import Link from "next/link";
 import { sidebarLinks, sidebarBottomLinks } from "@/constants/sidebarLinks";
 import { usePathname } from "next/navigation";
 import { ChevronDown, ChevronRight } from "lucide-react";
-import { useState } from "react";
 import { useModal } from "@/context/ModalContext";
+import { useState } from "react";
 
 export default function Sidebar() {
   const pathname = usePathname();

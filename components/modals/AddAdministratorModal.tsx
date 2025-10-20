@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Modal from "@/components/ui/Modal";
+import { useModal } from "@/context/ModalContext";
 import Input from "@/components/ui/Input";
 import Button from "@/components/ui/Button";
 
@@ -14,6 +15,8 @@ export default function AddAdministratorModal({
   isOpen,
   onClose,
 }: AddAdministratorModalProps) {
+  const { openModal } = useModal();
+
   const [formData, setFormData] = useState({
     fullName: "",
     username: "",
@@ -69,7 +72,10 @@ export default function AddAdministratorModal({
           placeholder="Enter role (e.g., Admin, Manager)"
         />
 
-        <Button type="submit" className="ml-auto block">
+        <Button
+          type="submit"
+          className="ml-auto block"
+          onClick={() => openModal("confirm-new-administrator")}>
           Proceed
         </Button>
       </form>

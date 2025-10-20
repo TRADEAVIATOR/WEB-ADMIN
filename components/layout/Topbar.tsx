@@ -4,12 +4,15 @@ import Image from "next/image";
 import { sidebarLinks, sidebarBottomLinks } from "@/constants/sidebarLinks";
 import { Menu } from "lucide-react";
 import { usePathname } from "next/navigation";
+import { useModal } from "@/context/ModalContext";
 import { useState } from "react";
 import Link from "next/link";
 
 export default function Topbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();
+
+  const { openModal } = useModal();
 
   const findCurrentPage = (path: string) => {
     for (const link of sidebarLinks) {
@@ -106,7 +109,7 @@ export default function Topbar() {
               key={link.href || link.label || index}
               href={link.href || "#"}
               className="text-red-600 text-sm font-medium hover:text-red-700 transition block"
-              onClick={() => setMenuOpen(false)}>
+              onClick={() => openModal("logout")}>
               {link.label}
             </Link>
           ))}

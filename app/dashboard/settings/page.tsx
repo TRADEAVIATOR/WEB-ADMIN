@@ -42,7 +42,7 @@ export default function SettingsPage() {
       <PageHeader
         buttonIcon={<FiPlus size={16} />}
         buttonText="Add new adminstrator"
-        modalTypeToOpen="add-administrator"
+        modalTypeToOpen="add-new-administrator"
       />
       <DataTable columns={columns} data={data} />
     </>

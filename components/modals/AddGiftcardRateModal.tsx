@@ -3,6 +3,7 @@
 import Modal from "@/components/ui/Modal";
 import Input from "@/components/ui/Input";
 import Button from "@/components/ui/Button";
+import { useModal } from "@/context/ModalContext";
 import { useState } from "react";
 
 interface AddGiftcardRateModalProps {
@@ -20,6 +21,8 @@ export default function AddGiftcardRateModal({
     rate: "",
     type: "",
   });
+
+  const { openModal } = useModal();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -69,7 +72,10 @@ export default function AddGiftcardRateModal({
           onChange={handleChange}
         />
 
-        <Button type="submit" className="ml-auto block">
+        <Button
+          type="submit"
+          className="ml-auto block"
+          onClick={() => openModal('confirm-new-giftcard-rate')}>
           Proceed
         </Button>
       </form>

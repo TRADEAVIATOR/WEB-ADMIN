@@ -4,6 +4,7 @@ import { useState } from "react";
 import Modal from "@/components/ui/Modal";
 import Input from "@/components/ui/Input";
 import Button from "@/components/ui/Button";
+import { useModal } from "@/context/ModalContext";
 
 interface AddCryptoRateModalProps {
   isOpen: boolean;
@@ -16,6 +17,8 @@ export default function AddCryptoRateModal({
 }: AddCryptoRateModalProps) {
   const [crypto, setCrypto] = useState("");
   const [rate, setRate] = useState("");
+
+  const { openModal } = useModal();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,7 +49,10 @@ export default function AddCryptoRateModal({
           onChange={(e) => setRate(e.target.value)}
         />
 
-        <Button type="submit" className="ml-auto block">
+        <Button
+          type="submit"
+          className="ml-auto block"
+          onClick={() => openModal("confirm-new-crypto-rate")}>
           Proceed
         </Button>
       </form>
