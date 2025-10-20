@@ -1,7 +1,8 @@
-import PageHeader from "@/components/ui/PageHeader";
 import DataTable from "@/components/ui/Table";
+import PageHeader from "@/components/ui/PageHeader";
+import { FiPlus } from "react-icons/fi";
 
-export default function SettingsPage() {
+export default function GiftcardRatesPage() {
   const columns = [
     { key: "id", label: "ID" },
     { key: "user", label: "User" },
@@ -38,7 +39,11 @@ export default function SettingsPage() {
 
   return (
     <>
-      <PageHeader />
+      <PageHeader
+        buttonIcon={<FiPlus size={16} />}
+        buttonText="Add new card rate"
+        modalTypeToOpen="add-giftcard-rate"
+      />
       <DataTable columns={columns} data={data} />
     </>
   );

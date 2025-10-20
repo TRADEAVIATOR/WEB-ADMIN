@@ -1,7 +1,7 @@
 import PageHeader from "@/components/ui/PageHeader";
 import DataTable from "@/components/ui/Table";
 
-export default function CryptoRatesPage() {
+export default function LeaderboardPage() {
   const columns = [
     { key: "id", label: "ID" },
     { key: "user", label: "User" },

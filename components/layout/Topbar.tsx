@@ -44,7 +44,19 @@ export default function Topbar() {
             alt="Settings"
             width={22}
             height={22}
-            className="object-contain"
+            className="object-contain cursor-pointer hover:opacity-80 transition"
+            priority
+          />
+        </button>
+
+        <button className="flex items-center gap-2">
+          <Image
+            src="/icons/notification.svg"
+            alt="Notifications"
+            width={24}
+            height={24}
+            className="object-contain cursor-pointer hover:opacity-80 transition"
+            priority
           />
         </button>
 
@@ -54,7 +66,8 @@ export default function Topbar() {
             alt="Profile"
             width={32}
             height={32}
-            className="object-contain rounded-full"
+            className="object-contain cursor-pointer hover:opacity-80 transition"
+            priority
           />
         </button>
       </div>

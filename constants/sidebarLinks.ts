@@ -44,18 +44,45 @@ export const sidebarLinks: SidebarLink[] = [
   },
   {
     label: "Rate Management",
-    href: "/dashboard/rate-management",
     icon: "/icons/rate.svg",
+    children: [
+      {
+        label: "Crypto Rates",
+        href: "/dashboard/rate-management/crypto",
+        icon: "/icons/rate.svg",
+      },
+      {
+        label: "Giftcard Rates",
+        href: "/dashboard/rate-management/giftcard",
+        icon: "/icons/rate.svg",
+      },
+    ],
   },
   {
     label: "Rewards",
-    href: "/dashboard/rewards",
     icon: "/icons/rewards.svg",
+    children: [
+      {
+        label: "Spin and Win",
+        href: "/dashboard/rewards/spin-win",
+        icon: "/icons/rewards.svg",
+      },
+      {
+        label: "Leaderboard",
+        href: "/dashboard/rewards/leaderboard",
+        icon: "/icons/rewards.svg",
+      },
+    ],
   },
   {
     label: "Support & Feedback",
     href: "/dashboard/support",
     icon: "/icons/support.svg",
+  },
+  {
+    label: "Giftcards",
+    href: "/dashboard/giftcards",
+    icon: "/icons/giftcard.svg",
   },
   {
     label: "Settings",
