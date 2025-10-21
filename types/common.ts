@@ -7,3 +7,14 @@ export type ModalType =
   | "confirm-new-administrator"
   | "logout"
   | null;
+
+export interface RowData {
+  [key: string]: string | number;
+}
+
+export interface MenuItem {
+  label: string;
+  href?: string;
+  onClick?: (row: RowData) => void;
+  color?: string;
+}
