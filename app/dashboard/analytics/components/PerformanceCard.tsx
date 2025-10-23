@@ -22,7 +22,7 @@ export default function PerformanceCard() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
         <div className="lg:col-span-2 border-r-2 border-gray-100 pr-8">
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-6 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
             <div className="flex items-center gap-3">
               <Image src="/icons/deposit.svg" alt="" width={22} height={22} />
               <div>
