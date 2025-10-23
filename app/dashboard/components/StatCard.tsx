@@ -1,6 +1,6 @@
 "use client";
 
-import { Sparklines, SparklinesLine, SparklinesCurve } from "react-sparklines";
+import { Sparklines, SparklinesLine } from "react-sparklines";
 import Select from "@/components/ui/Select";
 
 interface StatCardProps {
@@ -16,43 +16,51 @@ export default function StatCard({
   label,
   value,
   change,
-  data = [5, 10, 5, 20, 8, 15, 10],
+  data,
   bgColor,
   selectOptions,
 }: StatCardProps) {
   return (
     <div
-      className="relative rounded-xl shadow-sm p-5 flex flex-col gap-2 overflow-hidden"
+      className="relative rounded-2xl p-5 flex flex-col gap-3 overflow-hidden"
       style={{ backgroundColor: bgColor || "white" }}>
       <div className="flex justify-between items-center">
         <span
           className={`text-sm font-medium ${
-            bgColor ? "text-white" : "text-gray-500"
+            bgColor ? "text-white/90" : "text-gray-500"
           }`}>
           {label}
         </span>
         {selectOptions && <Select options={selectOptions} />}
       </div>
 
-      <span
-        className={`text-2xl font-semibold ${
-          bgColor ? "text-white" : "text-secondary"
-        }`}>
-        {value}
-      </span>
-      <span
-        className={`${bgColor ? "text-green-200" : "text-green-500"} text-sm`}>
-        {change}
-      </span>
+      <div className="space-y-0.5">
+        <span
+          className={`text-2xl font-bold leading-tight ${
+            bgColor ? "text-white" : "text-gray-800"
+          }`}>
+          {value}
+        </span>
+        <div
+          className={`flex flex-col ${
+            bgColor ? "text-white/70" : "text-gray-500"
+          }`}>
+          <span className="text-sm font-medium">{change}</span>
+          <span className="text-xs">Today</span>
+        </div>
+      </div>
 
-      <div className="absolute bottom-2 right-2 w-28 h-12 opacity-40">
-        <Sparklines data={data} width={100} height={50}>
+      <div className="absolute bottom-3 right-3 w-32 h-16 opacity-50">
+        <Sparklines data={data} width={150} height={80}>
           <SparklinesLine
-            color={bgColor ? "#FFC966" : "#4ade80"}
-            style={{ strokeWidth: 2 }}
-          />
-          <SparklinesCurve
-            style={{ fill: bgColor ? "#FFC966" : "#4ade80", strokeWidth: 0 }}
+            color="#FE7F32"
+            style={{
+              fill: "#FE7F32",
+              fillOpacity: 0.3,
+              strokeWidth: 2,
+              strokeLinejoin: "round",
+              strokeLinecap: "round",
+            }}
           />
         </Sparklines>
       </div>

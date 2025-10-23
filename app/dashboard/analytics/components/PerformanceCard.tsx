@@ -1,78 +1,97 @@
 "use client";
 
-import { Line } from "react-chartjs-2";
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Tooltip,
-} from "chart.js";
-
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Tooltip
-);
+import Image from "next/image";
+import Select from "@/components/ui/Select";
+import { Sparklines, SparklinesLine } from "react-sparklines";
+import VirtualCardChart from "./VirtualCardChart";
 
 export default function PerformanceCard() {
-  const data = {
-    labels: [
-      "Jan",
-      "Feb",
-      "Mar",
-      "Apr",
-      "May",
-      "Jun",
-      "Jul",
-      "Aug",
-      "Sep",
-      "Oct",
-      "Nov",
-      "Dec",
-    ],
-    datasets: [
-      {
-        data: [50, 70, 65, 90, 75, 100, 80, 110, 95, 105, 120, 100],
-        borderColor: "#FF6A00",
-        backgroundColor: "rgba(255,106,0,0.1)",
-        tension: 0.4,
-        fill: true,
-      },
-    ],
-  };
+  const data = [50, 70, 65, 90, 75, 100, 80, 110, 95, 105, 120, 100];
 
   return (
-    <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-      <h2 className="font-semibold text-gray-700 mb-2">Performance</h2>
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-        <div>
-          <p className="text-gray-500 text-sm">Total Balance</p>
-          <p className="font-bold text-lg">₦1,000,000,000</p>
+    <div className="bg-white rounded-2xl p-6">
+      <div className="flex justify-between items-center mb-4">
+        <p className="text-sm font-medium text-gray-600">Performance</p>
+        <Select options={["All time"]} />
+      </div>
+
+      <div className="mb-6">
+        <p className="text-gray-500 text-sm">Total Balance</p>
+        <p className="text-3xl font-bold text-gray-800">₦1,000,000,000</p>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+        <div className="lg:col-span-2 border-r-2 border-gray-100 pr-8">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-6 mb-6">
+            <div className="flex items-center gap-3">
+              <Image src="/icons/deposit.svg" alt="" width={22} height={22} />
+              <div>
+                <p className="text-gray-500 text-sm">Total Deposit</p>
+                <p className="font-bold text-lg text-gray-800">
+                  ₦1,000,000,000
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <Image
+                src="/icons/withdrawal.svg"
+                alt=""
+                width={22}
+                height={22}
+              />
+              <div>
+                <p className="text-gray-500 text-sm">Total Withdrawal</p>
+                <p className="font-bold text-lg text-gray-800">
+                  ₦1,000,000,000
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <Image src="/icons/people.svg" alt="" width={22} height={22} />
+              <div>
+                <p className="text-gray-500 text-sm">Total Users</p>
+                <p className="font-bold text-lg text-gray-800">200,000</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="w-full h-24">
+            <Sparklines data={data}>
+              <SparklinesLine
+                color="#FE7F32"
+                style={{
+                  fill: "none",
+                  strokeWidth: 1.8,
+                  strokeLinejoin: "round",
+                  strokeLinecap: "round",
+                }}
+              />
+            </Sparklines>
+            <div className="flex justify-between text-xs text-gray-400 mt-2 px-1">
+              {[
+                "Jan",
+                "Feb",
+                "Mar",
+                "Apr",
+                "May",
+                "Jun",
+                "Jul",
+                "Aug",
+                "Sep",
+                "Oct",
+                "Nov",
+                "Dec",
+              ].map((month) => (
+                <span key={month}>{month}</span>
+              ))}
+            </div>
+          </div>
         </div>
-        <div>
-          <p className="text-gray-500 text-sm">Total Deposit</p>
-          <p className="font-bold text-lg text-green-500">₦1,000,000,000</p>
-        </div>
-        <div>
-          <p className="text-gray-500 text-sm">Total Withdrawal</p>
-          <p className="font-bold text-lg text-red-500">₦1,000,000,000</p>
-        </div>
-        <div>
-          <p className="text-gray-500 text-sm">Total Users</p>
-          <p className="font-bold text-lg text-orange-500">200,000</p>
+
+        <div className="lg:pl-8">
+          <VirtualCardChart />
         </div>
       </div>
-      <Line
-        data={data}
-        options={{
-          plugins: { legend: { display: false } },
-          scales: { x: { display: true }, y: { display: false } },
-        }}
-      />
     </div>
   );
 }

@@ -25,19 +25,26 @@ ChartJS.register(
 
 interface ChartCardProps {
   title: string;
-  type: "line" | "bar";
   className?: string;
 }
 
 export default function ChartCard({ title, className }: ChartCardProps) {
   const data = {
-    labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+    labels: Array.from({ length: 12 }, (_, i) => `${i + 1}`),
     datasets: [
       {
-        label: title,
-        data: [12, 19, 10, 15, 20, 25],
-        borderColor: "#FE7F32",
-        backgroundColor: "rgba(254,127,50,0.2)",
+        label: "Crypto",
+        data: [200, 400, 600, 800, 700, 1000, 900, 850, 950, 700, 800, 1000],
+        borderColor: "#1671D9",
+        backgroundColor: "rgba(22,113,217,0.2)",
+        tension: 0.4,
+        fill: true,
+      },
+      {
+        label: "Giftcards",
+        data: [150, 300, 500, 700, 600, 900, 850, 800, 900, 650, 750, 950],
+        borderColor: "#F56630",
+        backgroundColor: "rgba(245,102,48,0.2)",
         tension: 0.4,
         fill: true,
       },
@@ -45,7 +52,7 @@ export default function ChartCard({ title, className }: ChartCardProps) {
   };
 
   return (
-    <div className={`bg-white rounded-xl shadow-sm p-5 ${className}`}>
+    <div className={`bg-white rounded-2xl p-6 ${className}`}>
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-semibold text-secondary">{title}</h2>
         <Select options={["Crypto", "Giftcard"]} />

@@ -38,8 +38,7 @@ export default function LeaderboardCard({
   ];
 
   return (
-    <div
-      className={`bg-white rounded-xl shadow-sm p-5 flex flex-col gap-4 ${className}`}>
+    <div className={`bg-white rounded-2xl p-5 flex flex-col ${className}`}>
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-semibold text-secondary">{title}</h2>
         <button className="text-sm text-primary hover:underline">

@@ -1,6 +1,5 @@
 import TrendCharts from "./components/TrendCharts";
 import PerformanceCard from "./components/PerformanceCard";
-import VirtualCardChart from "./components/VirtualCardChart";
 import StatCard from "./components/StatCard";
 
 export default async function AnalyticsPage() {
@@ -8,44 +7,40 @@ export default async function AnalyticsPage() {
     {
       label: "Overall Crypto Volume",
       value: "₦1,000,000",
+      subChange: "+₦120,000",
       change: "+10%",
-      data: [5, 10, 5, 20, 8, 15, 10],
+      data: [5, 12, 8, 20, 10, 18, 25, 15, 22],
       color: "#00A3FF",
-      period: "All time",
+      icon: "/icons/crypto-volume.svg",
     },
     {
       label: "Overall Bills Payment",
       value: "₦1,000,000",
+      subChange: "+120 Transactions",
       change: "+5%",
-      data: [15, 20, 10, 30, 25, 40, 35],
+      data: [10, 18, 14, 25, 20, 28, 22, 30, 27],
       color: "#8B5CF6",
-      period: "All time",
+      icon: "/icons/bills-payment.svg",
     },
     {
       label: "Giftcards",
       value: "₦1,000,000",
+      subChange: "+120 Users",
       change: "+15%",
-      data: [10, 15, 12, 18, 22, 17, 19],
+      data: [8, 15, 12, 20, 17, 25, 22, 18, 24],
       color: "#22C55E",
-      period: "All time",
+      icon: "/icons/giftcards.svg",
     },
   ];
 
   return (
     <div className="space-y-8">
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2">
-          <PerformanceCard />
-        </div>
-        <VirtualCardChart />
-      </div>
-
+      <PerformanceCard />
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {miniCards.map((stat, i) => (
           <StatCard key={i} {...stat} />
         ))}
       </div>
-
       <TrendCharts />
     </div>
   );

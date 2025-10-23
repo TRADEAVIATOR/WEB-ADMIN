@@ -12,21 +12,38 @@ interface PieChartCardProps {
 
 export default function PieChartCard({ title, className }: PieChartCardProps) {
   const data = {
-    labels: ["Crypto", "Giftcards", "Others"],
+    labels: ["Mastercard", "Visa"],
     datasets: [
       {
         label: title,
-        data: [60, 30, 10],
-        backgroundColor: ["#FE7F32", "#FACC15", "#3B82F6"],
-        borderWidth: 1,
+        data: [75, 25],
+        backgroundColor: ["#FE7F32", "#532000"],
+        borderWidth: 0,
       },
     ],
   };
 
+  const options = {
+    plugins: {
+      legend: {
+        position: "bottom" as const,
+        labels: {
+          boxWidth: 14,
+          boxHeight: 14,
+          color: "#374151",
+          font: { size: 12 },
+        },
+      },
+    },
+    maintainAspectRatio: false,
+  };
+
   return (
-    <div className={`bg-white rounded-xl shadow-sm p-5 ${className}`}>
-      <h2 className="text-sm font-semibold text-gray-600 mb-3">{title}</h2>
-      <Pie data={data} />
+    <div className={`bg-white rounded-2xl p-5 ${className}`}>
+      <h2 className="text-sm font-semibold text-gray-700 mb-4">{title}</h2>
+      <div className="h-72 flex items-center justify-center">
+        <Pie data={data} options={options} />
+      </div>
     </div>
   );
 }

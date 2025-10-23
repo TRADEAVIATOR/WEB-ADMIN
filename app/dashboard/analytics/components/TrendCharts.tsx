@@ -11,6 +11,9 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
+import { FiTrendingUp } from "react-icons/fi";
+import Select from "@/components/ui/Select";
+import { Sparklines, SparklinesLine } from "react-sparklines";
 
 ChartJS.register(
   CategoryScale,
@@ -23,78 +26,112 @@ ChartJS.register(
 );
 
 export default function TrendCharts() {
+  const data = {
+    labels: ["JAN", "FEB", "MAR", "APR", "MAY", "JUN"],
+    datasets: [
+      {
+        label: "Giftcard",
+        data: [200, 400, 350, 450, 600, 800],
+        borderColor: "#A479FF",
+        backgroundColor: "#A479FF",
+        tension: 0.4,
+        fill: false,
+        pointRadius: 4,
+        pointHoverRadius: 5,
+      },
+      {
+        label: "Crypto",
+        data: [150, 250, 300, 400, 550, 1000],
+        borderColor: "#00C159",
+        backgroundColor: "#00C159",
+        tension: 0.4,
+        fill: false,
+        pointRadius: 4,
+        pointHoverRadius: 5,
+      },
+    ],
+  };
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-        <h2 className="font-semibold text-gray-700 mb-4">
-          Crypto and Giftcard
-        </h2>
-        <Line
-          data={{
-            labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
-            datasets: [
-              {
-                label: "Giftcard",
-                data: [200, 300, 250, 350, 400, 650],
-                borderColor: "#22C55E",
-                fill: false,
-              },
-              {
-                label: "Crypto",
-                data: [100, 150, 200, 250, 300, 700],
-                borderColor: "#8B5CF6",
-                fill: false,
-              },
-            ],
-          }}
-          options={{
-            plugins: { legend: { display: true, position: "bottom" } },
-          }}
-        />
+      <div className="bg-white p-6 rounded-2xl">
+        <div className="flex justify-between items-center">
+          <p className="text-sm font-medium text-gray-600">
+            Crypto and Giftcard
+          </p>
+          <Select options={["All time"]} />
+        </div>
+        <div className="flex items-center text-green-500 text-sm font-medium gap-1 mb-4">
+          <FiTrendingUp /> +5%
+        </div>
+        <Line data={data} />
       </div>
 
-      <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-        <h2 className="font-semibold text-gray-700 mb-4">User Growth</h2>
-        <Line
-          data={{
-            labels: ["M", "T", "W", "T", "F", "S", "S"],
-            datasets: [
-              {
-                label: "Users",
-                data: [200, 400, 800, 1000, 700, 1200, 1000],
-                borderColor: "#FF6A00",
-                backgroundColor: "rgba(255,106,0,0.1)",
-                tension: 0.4,
-                fill: true,
-              },
-            ],
-          }}
-          options={{ plugins: { legend: { display: false } } }}
-        />
+      <div className="bg-white p-6 rounded-2xl">
+        <div className="flex justify-between items-center mb-1">
+          <h2 className="font-semibold text-gray-700">User Growth</h2>
+          <p className="text-lg font-bold text-gray-800">1,000,000</p>
+        </div>
+
+        <div className="flex justify-between items-center text-sm mb-4">
+          <p className="text-gray-500">Last 7 days</p>
+          <div className="flex items-center text-green-500 font-medium gap-1">
+            <FiTrendingUp /> +5%
+          </div>
+        </div>
+
+        <div className="w-full h-24">
+          <Sparklines
+            data={[200, 400, 800, 1000, 700, 1200, 1000]}
+            width={300}
+            height={90}
+            margin={5}>
+            <SparklinesLine
+              color="#FE7F32"
+              style={{
+                fill: "#FFF6F1",
+                fillOpacity: 1,
+                strokeWidth: 2,
+                strokeLinejoin: "round",
+                strokeLinecap: "round",
+              }}
+            />
+          </Sparklines>
+
+          <div className="flex justify-between text-xs text-gray-500 mt-2 px-1">
+            {["M", "T", "W", "T", "F", "S", "S"].map((label, i) => (
+              <span key={i}>{label}</span>
+            ))}
+          </div>
+        </div>
       </div>
 
-      <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-        <h2 className="font-semibold text-gray-700 mb-4">
-          Virtual Card Spending
-        </h2>
+      <div className="bg-white p-6 rounded-2xl">
+        <div className="flex justify-between items-center">
+          <p className="text-sm font-medium text-gray-600">
+            Virtual Card Spending
+          </p>
+          <Select options={["All time"]} />
+        </div>
         <Bar
           data={{
-            labels: ["Jan", "Feb", "Mar", "Apr"],
+            labels: ["JAN", "FEB", "MAR", "APR"],
             datasets: [
               {
                 label: "Visa",
                 data: [70000, 85000, 60000, 90000],
-                backgroundColor: "#00A3FF",
+                backgroundColor: "#FE7F32",
+                borderRadius: 6,
+                barThickness: 18,
               },
               {
                 label: "Mastercard",
                 data: [90000, 95000, 88000, 97000],
-                backgroundColor: "#FF6A00",
+                backgroundColor: "#532000",
+                borderRadius: 6,
+                barThickness: 18,
               },
             ],
-          }}
-          options={{
-            plugins: { legend: { display: true, position: "bottom" } },
           }}
         />
       </div>
