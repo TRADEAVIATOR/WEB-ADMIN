@@ -6,13 +6,13 @@ import { sidebarLinks, sidebarBottomLinks } from "@/constants/sidebarLinks";
 import { usePathname } from "next/navigation";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { useModal } from "@/context/ModalContext";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 
 export default function Sidebar() {
   const pathname = usePathname();
   const [openMenus, setOpenMenus] = useState<string[]>([]);
-
   const { openModal } = useModal();
+  const navRef = useRef<HTMLElement | null>(null);
 
   const toggleMenu = (label: string) => {
     setOpenMenus((prev) =>
@@ -45,15 +45,19 @@ export default function Sidebar() {
 
     if (link.href) {
       return (
-        <Link key={index} href={link.href} className={classes}>
+        <Link
+          key={index}
+          href={link.href}
+          className={classes}
+          data-active={isActive ? "true" : undefined}>
           <Image
             src={link.icon}
             alt={link.label}
             width={isChild ? 16 : 18}
             height={isChild ? 16 : 18}
-            className="object-contain"
+            className="object-contain flex-shrink-0"
           />
-          {link.label}
+          <span className="truncate">{link.label}</span>
         </Link>
       );
     }
@@ -68,21 +72,31 @@ export default function Sidebar() {
           alt={link.label}
           width={isChild ? 16 : 18}
           height={isChild ? 16 : 18}
-          className="object-contain"
+          className="object-contain flex-shrink-0"
         />
-        {link.label}
+        <span className="truncate">{link.label}</span>
       </button>
     );
   };
 
+  useEffect(() => {
+    if (!navRef.current) return;
+    const activeEl = navRef.current.querySelector<HTMLElement>(
+      "[data-active='true']"
+    );
+    if (activeEl) {
+      activeEl.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    }
+  }, [pathname, openMenus]);
+
   return (
     <aside
       className="
-        fixed md:static z-40 
-        h-full md:h-auto 
-        bg-white border-r border-gray-200 
-        flex flex-col justify-between 
-        transition-all duration-300
+        fixed md:static z-40
+        h-screen
+        bg-white border-r border-gray-200
+        flex flex-col justify-between
+        w-64
       ">
       <div className="flex flex-col h-full overflow-hidden">
         <div className="px-6 py-6 flex items-center justify-center flex-shrink-0">
@@ -95,17 +109,26 @@ export default function Sidebar() {
           />
         </div>
 
-        <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent px-0">
-          <nav className="space-y-2 mt-2 pb-6">
+        <div className="flex-1 min-h-0">
+          <nav
+            ref={navRef}
+            className="h-full overflow-y-auto px-0 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent py-4 space-y-2">
             {sidebarLinks.map((link, index) => {
               if (link.children) {
                 const isOpenMenu = openMenus.includes(link.label);
+                const isAnyChildActive = link.children.some(
+                  (c) =>
+                    pathname === c.href ||
+                    (c.href &&
+                      c.href !== "/dashboard" &&
+                      pathname.startsWith(c.href))
+                );
                 return (
-                  <div key={index}>
+                  <div key={index} className="px-6">
                     <button
                       onClick={() => toggleMenu(link.label)}
-                      className={`flex items-center justify-between w-full px-6 py-3.5 text-sm font-medium rounded-md transition-colors ${
-                        isOpenMenu
+                      className={`flex items-center justify-between w-full py-3.5 text-sm font-medium rounded-md transition-colors ${
+                        isOpenMenu || isAnyChildActive
                           ? "bg-primary/10 text-primary"
                           : "text-gray-700 hover:bg-gray-50"
                       }`}>
@@ -115,9 +138,9 @@ export default function Sidebar() {
                           alt={link.label}
                           width={18}
                           height={18}
-                          className="object-contain"
+                          className="object-contain flex-shrink-0"
                         />
-                        {link.label}
+                        <span className="truncate">{link.label}</span>
                       </div>
                       {isOpenMenu ? (
                         <ChevronDown size={16} />
@@ -137,15 +160,20 @@ export default function Sidebar() {
                 );
               }
 
-              return renderLink(link, false, index);
+              return (
+                <div key={index} className="px-6">
+                  {renderLink(link, false, index)}
+                </div>
+              );
             })}
+            <div className="h-20" />
           </nav>
         </div>
 
-        <div className="pb-8 space-y-2 mt-4 pt-4 border-t border-gray-100 flex-shrink-0 px-0">
-          {sidebarBottomLinks.map((link, index) =>
-            renderLink(link, false, index)
-          )}
+        <div className="pb-6 mt-4 pt-4 border-t border-gray-100 flex-shrink-0 px-6">
+          {sidebarBottomLinks.map((link, index) => (
+            <div key={index}>{renderLink(link, false, index)}</div>
+          ))}
         </div>
       </div>
     </aside>

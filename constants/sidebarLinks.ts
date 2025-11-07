@@ -85,6 +85,16 @@ export const sidebarLinks: SidebarLink[] = [
     icon: "/icons/giftcard.svg",
   },
   {
+    label: "Notifications",
+    href: "/dashboard/notifications",
+    icon: "/icons/bell.svg",
+  },
+  {
+    label: "Available Giftcards",
+    href: "/dashboard/giftcards/available",
+    icon: "/icons/giftcard.svg",
+  },
+  {
     label: "Settings",
     href: "/dashboard/settings",
     icon: "/icons/settings.svg",
