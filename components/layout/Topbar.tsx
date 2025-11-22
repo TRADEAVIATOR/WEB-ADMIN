@@ -5,13 +5,15 @@ import { sidebarLinks, sidebarBottomLinks } from "@/constants/sidebarLinks";
 import { Menu } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useModal } from "@/context/ModalContext";
+import NotificationsPanel from "./NotificationsPanel";
 import { useState } from "react";
 import Link from "next/link";
 
 export default function Topbar() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const pathname = usePathname();
+  const [showNotifications, setShowNotifications] = useState(false);
 
+  const pathname = usePathname();
   const { openModal } = useModal();
 
   const findCurrentPage = (path: string) => {
@@ -42,17 +44,21 @@ export default function Topbar() {
 
       <div className="flex items-center gap-5">
         <button>
-          <Image
-            src="/icons/topbar-settings.svg"
-            alt="Settings"
-            width={22}
-            height={22}
-            className="object-contain cursor-pointer hover:opacity-80 transition"
-            priority
-          />
+          <Link href="/dashboard/settings">
+            <Image
+              src="/icons/topbar-settings.svg"
+              alt="Settings"
+              width={22}
+              height={22}
+              className="object-contain cursor-pointer hover:opacity-80 transition"
+              priority
+            />
+          </Link>
         </button>
 
-        <button className="flex items-center gap-2">
+        <button
+          onClick={() => setShowNotifications(!showNotifications)}
+          className="relative flex items-center gap-2">
           <Image
             src="/icons/notification.svg"
             alt="Notifications"
@@ -61,24 +67,36 @@ export default function Topbar() {
             className="object-contain cursor-pointer hover:opacity-80 transition"
             priority
           />
+
+          <span
+            className="
+              absolute -top-1 -right-1
+              flex items-center justify-center
+              w-4 h-4 text-[10px] font-semibold
+              rounded-full
+              bg-primary text-white">
+            4
+          </span>
         </button>
 
         <button className="flex items-center gap-2">
-          <Image
-            src="/icons/avatar.svg"
-            alt="Profile"
-            width={32}
-            height={32}
-            className="object-contain cursor-pointer hover:opacity-80 transition"
-            priority
-          />
+          <Link href={"/dashboard/profile"}>
+            <Image
+              src="/icons/avatar.svg"
+              alt="Profile"
+              width={32}
+              height={32}
+              className="object-contain cursor-pointer hover:opacity-80 transition"
+              priority
+            />
+          </Link>
         </button>
       </div>
 
       {menuOpen && (
         <div className="absolute top-14 left-0 w-full bg-white border-t border-gray-200 shadow-md flex flex-col p-4 space-y-3 md:hidden animate-slide-down">
           {sidebarLinks.map((link, index) => (
-            <div key={link.href || link.label || index}>
+            <div key={index}>
               <Link
                 href={link.href || "#"}
                 className="text-gray-700 text-sm font-medium hover:text-primary transition block"
@@ -90,7 +108,7 @@ export default function Topbar() {
                 <div className="pl-4 mt-1 space-y-1">
                   {link.children.map((child, childIndex) => (
                     <Link
-                      key={child.href || child.label || childIndex}
+                      key={childIndex}
                       href={child.href || "#"}
                       className="text-gray-600 text-sm font-normal hover:text-primary transition block"
                       onClick={() => setMenuOpen(false)}>
@@ -106,7 +124,7 @@ export default function Topbar() {
 
           {sidebarBottomLinks.map((link, index) => (
             <Link
-              key={link.href || link.label || index}
+              key={index}
               href={link.href || "#"}
               className="text-red-600 text-sm font-medium hover:text-red-700 transition block"
               onClick={() => openModal("logout")}>
@@ -114,6 +132,10 @@ export default function Topbar() {
             </Link>
           ))}
         </div>
+      )}
+
+      {showNotifications && (
+        <NotificationsPanel onClose={() => setShowNotifications(false)} />
       )}
     </header>
   );
