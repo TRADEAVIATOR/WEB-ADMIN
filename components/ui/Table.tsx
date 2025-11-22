@@ -2,26 +2,26 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { MenuItem, RowData } from "@/types/common";
 import { MoreVertical } from "lucide-react";
 import Pagination from "./Pagination";
-import { MenuItem, RowData } from "@/types/common";
 
 interface Column {
   key: string;
   label: string;
 }
 
-interface DataTableProps {
+interface DataTableProps<T extends RowData> {
   columns: Column[];
-  data: RowData[];
-  menuItems?: MenuItem[];
+  data: T[];
+  menuItems?: MenuItem<T>[];
 }
 
-export default function DataTable({
+export default function DataTable<T extends RowData>({
   columns,
   data,
   menuItems = [],
-}: DataTableProps) {
+}: DataTableProps<T>) {
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
   const [openMenuIndex, setOpenMenuIndex] = useState<number | null>(null);
 

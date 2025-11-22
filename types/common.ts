@@ -9,12 +9,12 @@ export type ModalType =
   | null;
 
 export interface RowData {
-  [key: string]: string | number;
+  [key: string]: string | number | boolean | null | undefined;
 }
 
-export interface MenuItem {
+export interface MenuItem<T = RowData> {
   label: string;
   href?: string;
-  onClick?: (row: RowData) => void;
   color?: string;
+  onClick?: (row: T) => void;
 }
