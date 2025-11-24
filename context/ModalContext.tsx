@@ -2,24 +2,27 @@
 
 import ModalManager from "@/components/shared/ModalManager";
 import { createContext, useContext, useState, ReactNode } from "react";
-import { ModalType } from "@/types/common";
+import { FilterField, ModalType } from "@/types/common";
 
 interface ModalContextType {
-  openModal: <T = unknown>(type: Exclude<ModalType, null>, data?: T) => void;
+  openModal: (type: Exclude<ModalType, null>, data?: FilterField[]) => void;
   closeModal: () => void;
   modalType: ModalType;
-  modalData: unknown;
+  modalData: FilterField[] | null;
 }
 
 const ModalContext = createContext<ModalContextType | undefined>(undefined);
 
 export function ModalProvider({ children }: { children: ReactNode }) {
   const [modalType, setModalType] = useState<ModalType>(null);
-  const [modalData, setModalData] = useState<unknown>(null);
+  const [modalData, setModalData] = useState<FilterField[] | null>(null);
 
-  const openModal = <T,>(type: Exclude<ModalType, null>, data?: T) => {
+  const openModal = (
+    type: Exclude<ModalType, null>,
+    data: FilterField[] = []
+  ) => {
     setModalType(type);
-    setModalData(data ?? null);
+    setModalData(data);
   };
 
   const closeModal = () => {
@@ -33,7 +36,7 @@ export function ModalProvider({ children }: { children: ReactNode }) {
       {children}
       <ModalManager
         modalType={modalType}
-        modalData={modalData}
+        modalData={modalData ?? []}
         onClose={closeModal}
       />
     </ModalContext.Provider>
