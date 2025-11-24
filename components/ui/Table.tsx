@@ -1,10 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { MenuItem, RowData } from "@/types/common";
 import { MoreVertical } from "lucide-react";
-import Pagination from "./Pagination";
 
 interface Column {
   key: string;
@@ -24,6 +23,23 @@ export default function DataTable<T extends RowData>({
 }: DataTableProps<T>) {
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
   const [openMenuIndex, setOpenMenuIndex] = useState<number | null>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setOpenMenuIndex(null);
+      }
+    };
+
+    if (openMenuIndex !== null) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [openMenuIndex]);
 
   const handleSelectAll = (checked: boolean) => {
     if (checked) setSelectedRows(data.map((_, index) => index.toString()));
@@ -40,112 +56,200 @@ export default function DataTable<T extends RowData>({
 
   const isRowSelected = (index: number) =>
     selectedRows.includes(index.toString());
+
   const toggleMenu = (index: number) =>
     setOpenMenuIndex((prev) => (prev === index ? null : index));
 
   return (
-    <>
-      <div className="w-full overflow-x-auto border border-gray-100 relative">
-        <table className="min-w-full text-sm bg-white">
-          <thead className="bg-[#F0F2F5] text-[#101928]">
-            <tr>
-              <th className="py-3 px-4 text-left">
-                <input
-                  type="checkbox"
-                  checked={
-                    selectedRows.length === data.length && data.length > 0
-                  }
-                  onChange={(e) => handleSelectAll(e.target.checked)}
-                  className="accent-[#FE7F32] cursor-pointer"
-                />
-              </th>
-              {columns.map((col) => (
-                <th
-                  key={col.key}
-                  className="py-3 px-4 text-left font-medium whitespace-nowrap">
-                  {col.label}
-                </th>
-              ))}
-              <th className="py-3 px-4 text-right font-medium">Actions</th>
-            </tr>
-          </thead>
-
-          <tbody>
+    <div className="w-full max-w-full">
+      <div className="block lg:hidden">
+        {data.length === 0 ? (
+          <p className="text-center text-gray-500 py-6 text-sm">
+            No records found.
+          </p>
+        ) : (
+          <div className="space-y-3">
             {data.map((row, idx) => (
-              <tr
+              <div
                 key={idx}
-                className={`border-b border-gray-100 last:border-b-0 transition-colors relative ${
-                  isRowSelected(idx) ? "bg-[#FFF5EE]" : "hover:bg-gray-50"
+                className={`border border-gray-200 rounded-lg p-4 ${
+                  isRowSelected(idx)
+                    ? "bg-[#FFF5EE] border-[#FE7F32]"
+                    : "bg-white"
                 }`}>
-                <td className="py-3 px-4">
+                <div className="flex items-start justify-between mb-3">
                   <input
                     type="checkbox"
                     checked={isRowSelected(idx)}
                     onChange={(e) => handleSelectRow(idx, e.target.checked)}
-                    className="accent-[#FE7F32] cursor-pointer"
+                    className="accent-[#FE7F32] cursor-pointer mt-1"
                   />
-                </td>
-                {columns.map((col) => (
-                  <td
-                    key={col.key}
-                    className="py-3 px-4 whitespace-nowrap text-[#101928]">
-                    {row[col.key]}
-                  </td>
-                ))}
-                <td className="py-3 px-4 text-right relative">
-                  <button
-                    className="p-1 text-gray-500 hover:text-[#FE7F32]"
-                    onClick={() => toggleMenu(idx)}>
-                    <MoreVertical size={18} />
-                  </button>
+                  <div
+                    className="relative"
+                    ref={openMenuIndex === idx ? menuRef : null}>
+                    <button
+                      className="p-1 text-gray-500 hover:text-[#FE7F32]"
+                      onClick={() => toggleMenu(idx)}>
+                      <MoreVertical size={18} />
+                    </button>
 
-                  {openMenuIndex === idx && (
-                    <div className="absolute right-4 mt-2 w-40 bg-white border border-gray-100 rounded-lg shadow-lg z-10 animate-fadeIn">
-                      <ul className="py-2 text-sm text-gray-700">
-                        {menuItems.map((item, i) => {
-                          const baseClasses = `block px-4 py-2 hover:bg-gray-50 cursor-pointer ${
-                            item.color || "text-gray-700"
-                          }`;
-                          if (item.href)
+                    {openMenuIndex === idx && (
+                      <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded-lg shadow-lg z-20 animate-fadeIn">
+                        <ul className="py-2 text-sm text-gray-700">
+                          {menuItems.map((item, i) => {
+                            const baseClasses = `block px-4 py-2 hover:bg-gray-50 cursor-pointer ${
+                              item.color || "text-gray-700"
+                            }`;
+                            if (item.href)
+                              return (
+                                <li key={i}>
+                                  <Link
+                                    href={item.href}
+                                    className={baseClasses}
+                                    onClick={() => setOpenMenuIndex(null)}>
+                                    {item.label}
+                                  </Link>
+                                </li>
+                              );
                             return (
-                              <li key={i}>
-                                <Link
-                                  href={item.href}
-                                  className={baseClasses}
-                                  onClick={() => setOpenMenuIndex(null)}>
-                                  {item.label}
-                                </Link>
+                              <li
+                                key={i}
+                                onClick={() => {
+                                  item.onClick?.(row);
+                                  setOpenMenuIndex(null);
+                                }}
+                                className={baseClasses}>
+                                {item.label}
                               </li>
                             );
-                          return (
-                            <li
-                              key={i}
-                              onClick={() => {
-                                item.onClick?.(row);
-                                setOpenMenuIndex(null);
-                              }}
-                              className={baseClasses}>
-                              {item.label}
-                            </li>
-                          );
-                        })}
-                      </ul>
-                    </div>
-                  )}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+                          })}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                </div>
 
-        {data.length === 0 && (
-          <p className="text-center text-gray-500 py-6 text-sm">
-            No records found.
-          </p>
+                <div className="space-y-2">
+                  {columns.map((col) => (
+                    <div
+                      key={col.key}
+                      className="flex justify-between items-start gap-4">
+                      <span className="text-xs font-medium text-gray-500 uppercase flex-shrink-0">
+                        {col.label}
+                      </span>
+                      <span className="text-sm text-[#101928] text-right break-words">
+                        {row[col.key]}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
         )}
       </div>
 
-      <Pagination currentPage={1} totalPages={6} onPageChange={() => {}} />
+      <div className="hidden lg:block w-full overflow-x-auto border border-gray-100 rounded-lg">
+        <div className="min-w-full inline-block align-middle">
+          <table className="min-w-full text-sm bg-white">
+            <thead className="bg-[#F0F2F5] text-[#101928]">
+              <tr>
+                <th className="py-3 px-4 text-left w-12 sticky left-0 bg-[#F0F2F5] z-50">
+                  <input
+                    type="checkbox"
+                    checked={
+                      selectedRows.length === data.length && data.length > 0
+                    }
+                    onChange={(e) => handleSelectAll(e.target.checked)}
+                    className="accent-[#FE7F32] cursor-pointer"
+                  />
+                </th>
+                {columns.map((col) => (
+                  <th
+                    key={col.key}
+                    className="py-3 px-4 text-left font-medium whitespace-nowrap">
+                    {col.label}
+                  </th>
+                ))}
+                <th className="py-3 px-4 text-right font-medium whitespace-nowrap w-24">
+                  Actions
+                </th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {data.map((row, idx) => (
+                <tr
+                  key={idx}
+                  className={`border-b border-gray-100 last:border-b-0 transition-colors ${
+                    isRowSelected(idx) ? "bg-[#FFF5EE]" : "hover:bg-gray-50"
+                  }`}>
+                  <td className="py-3 px-4 sticky left-0 bg-inherit z-10">
+                    <input
+                      type="checkbox"
+                      checked={isRowSelected(idx)}
+                      onChange={(e) => handleSelectRow(idx, e.target.checked)}
+                      className="accent-[#FE7F32] cursor-pointer"
+                    />
+                  </td>
+                  {columns.map((col) => (
+                    <td
+                      key={col.key}
+                      className="py-3 px-4 whitespace-nowrap text-[#101928] max-w-xs truncate">
+                      {row[col.key]}
+                    </td>
+                  ))}
+                  <td className="py-3 px-4 text-right whitespace-nowrap">
+                    <div
+                      className="relative inline-block"
+                      ref={openMenuIndex === idx ? menuRef : null}>
+                      <button
+                        className="p-1 text-gray-500 hover:text-[#FE7F32]"
+                        onClick={() => toggleMenu(idx)}>
+                        <MoreVertical size={18} />
+                      </button>
+
+                      {openMenuIndex === idx && (
+                        <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-100 rounded-lg shadow-lg z-20 animate-fadeIn">
+                          <ul className="py-2 text-sm text-gray-700">
+                            {menuItems.map((item, i) => {
+                              const baseClasses = `block px-4 py-2 hover:bg-gray-50 cursor-pointer ${
+                                item.color || "text-gray-700"
+                              }`;
+                              if (item.href)
+                                return (
+                                  <li key={i}>
+                                    <Link
+                                      href={item.href}
+                                      className={baseClasses}
+                                      onClick={() => setOpenMenuIndex(null)}>
+                                      {item.label}
+                                    </Link>
+                                  </li>
+                                );
+                              return (
+                                <li
+                                  key={i}
+                                  onClick={() => {
+                                    item.onClick?.(row);
+                                    setOpenMenuIndex(null);
+                                  }}
+                                  className={baseClasses}>
+                                  {item.label}
+                                </li>
+                              );
+                            })}
+                          </ul>
+                        </div>
+                      )}
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
 
       <style jsx>{`
         @keyframes fadeIn {
@@ -162,6 +266,6 @@ export default function DataTable<T extends RowData>({
           animation: fadeIn 0.15s ease-in-out;
         }
       `}</style>
-    </>
+    </div>
   );
 }

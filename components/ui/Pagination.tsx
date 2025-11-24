@@ -21,6 +21,23 @@ export default function Pagination({
     if (currentPage < totalPages) onPageChange(currentPage + 1);
   };
 
+  const getPageNumbers = () => {
+    const delta = 2;
+
+    const start = Math.max(1, currentPage - delta);
+    const end = Math.min(totalPages, currentPage + delta);
+
+    const range: number[] = [];
+
+    for (let i = start; i <= end; i++) {
+      range.push(i);
+    }
+
+    return range;
+  };
+
+  const pageNumbers = getPageNumbers();
+
   return (
     <div className="flex items-center justify-between bg-white border border-gray-200 rounded-lg px-4 py-2 mt-6">
       <p className="text-sm text-gray-600">
@@ -36,23 +53,18 @@ export default function Pagination({
           <ChevronLeft size={16} />
         </button>
 
-        {Array.from({ length: totalPages }, (_, i) => i + 1)
-          .slice(
-            Math.max(0, currentPage - 3),
-            Math.min(totalPages, currentPage + 2)
-          )
-          .map((page) => (
-            <button
-              key={page}
-              onClick={() => onPageChange(page)}
-              className={`w-8 h-8 flex items-center justify-center rounded-lg text-sm border transition ${
-                currentPage === page
-                  ? "bg-[#FE7F32] text-white border-[#FE7F32]"
-                  : "border-gray-200 text-gray-700 hover:bg-gray-50"
-              }`}>
-              {page}
-            </button>
-          ))}
+        {pageNumbers.map((page) => (
+          <button
+            key={page}
+            onClick={() => onPageChange(page)}
+            className={`w-8 h-8 flex items-center justify-center rounded-lg text-sm border transition ${
+              currentPage === page
+                ? "bg-[#FE7F32] text-white border-[#FE7F32]"
+                : "border-gray-200 text-gray-700 hover:bg-gray-50"
+            }`}>
+            {page}
+          </button>
+        ))}
 
         <button
           onClick={handleNext}

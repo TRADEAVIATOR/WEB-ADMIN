@@ -61,18 +61,7 @@ export const sidebarLinks: SidebarLink[] = [
   {
     label: "Rewards",
     icon: "/icons/rewards.svg",
-    children: [
-      {
-        label: "Spin and Win",
-        href: "/dashboard/rewards/spin-win",
-        icon: "/icons/rewards.svg",
-      },
-      {
-        label: "Leaderboard",
-        href: "/dashboard/rewards/leaderboard",
-        icon: "/icons/rewards.svg",
-      },
-    ],
+    href: "/dashboard/rewards",
   },
   {
     label: "Support & Feedback",

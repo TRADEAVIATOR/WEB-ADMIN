@@ -1,64 +1,48 @@
-"use client";
-
-import ActionRequiredCard from "./components/ActionRequiredCard";
-import ActivityTable from "./components/ActivityTable";
+import ResultState from "@/components/ui/ResultState";
+import StatCard from "./components/StatCard";
 import ChartCard from "./components/ChartCard";
+import ActivityTable from "./components/ActivityTable";
+import { getDashboardMetrics, getDashboardGrowth } from "@/lib/api/dashboard";
+import { calculateChange, extractSparklineData } from "@/lib/utils/dashboard";
 import LeaderboardCard from "./components/LeaderboardCard";
 import PieChartCard from "./components/PieChartCard";
-import StatCard from "./components/StatCard";
+import ActionRequiredCard from "./components/ActionRequiredCard";
+import { DashboardGrowth, DashboardMetrics } from "@/types/models";
+import { formatNaira } from "@/lib/utils/format";
 
-export default function DashboardPage() {
-  const stats = [
+export const dynamic = "force-dynamic";
+
+export default async function DashboardPage() {
+  const [metricsRes, growthRes] = await Promise.all([
+    getDashboardMetrics(),
+    getDashboardGrowth(),
+  ]);
+
+  if (metricsRes.error || growthRes.error) {
+    return <ResultState type="error" message="Unable to load dashboard." />;
+  }
+
+  const metrics: DashboardMetrics = metricsRes.data.data;
+  const growth: DashboardGrowth = growthRes.data.data;
+
+  const statCards = [
     {
       label: "Total Users",
-      value: "202,078",
-      change: "+5%",
-      data: [12, 18, 10, 25, 20, 15, 22, 28, 18, 24, 16, 21],
+      value: metrics.overview.totalUsers.toLocaleString(),
+      change: calculateChange(growth.charts.transactionsByType, "users"),
+      data: extractSparklineData(growth.charts.transactionsByType),
     },
     {
       label: "User Balance",
-      value: "$120,000",
-      change: "+$120,000",
-      data: [20, 25, 18, 30, 22, 28, 24, 35, 29, 32, 27, 31],
+      value: formatNaira(metrics.overview.normalWalletBalance),
+      change: calculateChange(growth.charts.cryptoVolumeByMonth, "balance"),
+      data: extractSparklineData(growth.charts.cryptoVolumeByMonth),
     },
     {
       label: "Total Crypto Volume",
-      value: "$78,000,000",
-      change: "+$120,000",
-      data: [25, 35, 28, 32, 30, 38, 34, 40, 36, 42, 39, 45],
-    },
-  ];
-
-  const activities = [
-    {
-      id: 1,
-      description: "$300 wallet topup from @rosheed",
-      details: "Wallet top completed via bank deposit",
-      time: "3 min ago",
-    },
-    {
-      id: 2,
-      description: "$300 wallet topup from @rosheed",
-      details: "Wallet top completed via bank deposit",
-      time: "3 min ago",
-    },
-    {
-      id: 3,
-      description: "$300 wallet topup from @rosheed",
-      details: "Wallet top completed via bank deposit",
-      time: "3 min ago",
-    },
-    {
-      id: 4,
-      description: "$300 wallet topup from @rosheed",
-      details: "Wallet top completed via bank deposit",
-      time: "3 min ago",
-    },
-    {
-      id: 5,
-      description: "$300 wallet topup from @rosheed",
-      details: "Wallet top completed via bank deposit",
-      time: "3 min ago",
+      value: formatNaira(metrics.overview.totalCryptoVolume),
+      change: calculateChange(growth.charts.cryptoDistribution, "crypto"),
+      data: extractSparklineData(growth.charts.cryptoDistribution),
     },
   ];
 
@@ -69,33 +53,35 @@ export default function DashboardPage() {
           Welcome back, <span className="text-primary">Big Brain</span>
         </h1>
         <p className="text-gray-500 text-sm md:text-base">
-          Here’s what’s happening on{" "}
-          <span className="font-medium text-secondary">TradeAviator</span> today
+          Here’s what’s happening today on{" "}
+          <span className="font-medium text-secondary">TradeAviator</span>
         </p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {stats.map((stat, index) => (
-          <StatCard
-            key={stat.label}
-            label={stat.label}
-            value={stat.value}
-            change={stat.change}
-            data={[5, 8, 12, 9, 15, 20]}
-            bgColor={index === 0 ? "#6E2B03" : undefined}
-            selectOptions={
-              index === 1 || index === 2 ? ["Option 1", "Option 2"] : undefined
-            }
-          />
+        {statCards.map((stat) => (
+          <StatCard key={stat.label} {...stat} />
         ))}
-        <ActionRequiredCard />
+        <ActionRequiredCard
+          giftcards={metrics.actionRequired.giftcardRequests}
+          pending={metrics.actionRequired.pendingTransactions}
+        />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        <ChartCard title="Total Transactions" className="lg:col-span-8" />
+        <ChartCard
+          title="Total Transactions"
+          data={growth.charts.transactionsByType}
+          className="lg:col-span-8"
+        />
         <ActivityTable
           title="Recent Activities"
-          data={activities}
+          data={metrics.recentActivities.slice(0, 7).map((act, index) => ({
+            id: index,
+            description: act.description,
+            details: act.type,
+            time: new Date(act.createdAt).toLocaleString(),
+          }))}
           className="lg:col-span-4"
         />
       </div>
@@ -104,6 +90,7 @@ export default function DashboardPage() {
         <LeaderboardCard title="Leaderboard" className="lg:col-span-8" />
         <PieChartCard
           title="Virtual Card Analytics"
+          data={growth.charts.cardsDistribution}
           className="lg:col-span-4"
         />
       </div>

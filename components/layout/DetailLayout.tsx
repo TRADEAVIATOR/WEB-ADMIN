@@ -1,6 +1,7 @@
 "use client";
 
 import { ReactNode, useState } from "react";
+import { useRouter } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
 import { cn } from "@/lib/utils/classnames";
 
@@ -13,25 +14,21 @@ interface Tab {
 interface DetailLayoutProps {
   header: ReactNode;
   tabs: Tab[];
-  onBack?: () => void;
 }
 
-export default function DetailLayout({
-  header,
-  tabs,
-  onBack,
-}: DetailLayoutProps) {
+export default function DetailLayout({ header, tabs }: DetailLayoutProps) {
   const [activeTab, setActiveTab] = useState(tabs[0]?.key || "");
+  const router = useRouter();
 
   const handleBack = () => {
-    if (onBack) onBack();
+    router.back();
   };
 
   return (
     <div className="bg-white rounded-2xl p-6 w-full">
       <button
         onClick={handleBack}
-        className="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-800 font-medium mb-6 transition">
+        className="cursor-pointer flex items-center gap-2 text-sm text-gray-600 hover:text-gray-800 font-medium mb-6 transition">
         <ChevronLeft size={18} />
         <span>Back</span>
       </button>

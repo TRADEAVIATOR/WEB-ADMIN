@@ -1,14 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { SelectProps } from "@/types/props";
 import clsx from "clsx";
-
-interface SelectProps {
-  options: string[];
-  value?: string;
-  onChange?: (value: string) => void;
-  className?: string;
-}
 
 export default function Select({
   options,

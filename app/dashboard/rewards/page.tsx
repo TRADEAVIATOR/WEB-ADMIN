@@ -1,45 +1,53 @@
 import PageHeader from "@/components/ui/PageHeader";
-import DataTable from "@/components/ui/Table";
+import DataTableClient from "./DataTableClient";
+import { getRewards } from "@/lib/api/rewards";
+import ResultState from "@/components/ui/ResultState";
+import { RewardsResponse } from "@/types/api";
 
-export default function RewardsPage() {
-  const columns = [
-    { key: "id", label: "ID" },
-    { key: "user", label: "User" },
-    { key: "status", label: "KYC Status" },
-    { key: "type", label: "Type" },
-    { key: "email", label: "Email" },
-    { key: "amount", label: "Amount" },
-    { key: "phone", label: "Phone Number" },
-    { key: "date", label: "Date Joined" },
-  ];
+export const dynamic = "force-dynamic";
 
-  const data = [
-    {
-      id: "#TA-231001",
-      user: "Imran Rosheed",
-      status: "Successful",
-      type: "Crypto",
-      email: "imramrosheed2019@mail.com",
-      amount: "$12,000",
-      phone: "+2348104452286",
-      date: "Sep 7, 2025 - 12:24PM",
-    },
-    {
-      id: "#TA-231002",
-      user: "Seiyefa Amakiri",
-      status: "Pending",
-      type: "Giftcard",
-      email: "seiyefa@mail.com",
-      amount: "$8,500",
-      phone: "+2348101111111",
-      date: "Sep 8, 2025 - 10:00AM",
-    },
-  ];
+export default async function RewardsPage({
+  searchParams,
+}: {
+  searchParams?: Promise<{ page?: string }>;
+}) {
+  const params = await searchParams;
+  const page = params?.page ? Number(params.page) : 1;
+
+  const res = await getRewards(page);
+
+  if (!res || res.error) {
+    return <ResultState type="error" message="Unable to fetch rewards." />;
+  }
+
+  const payload = res.data as RewardsResponse | undefined;
+
+  if (!payload) {
+    return (
+      <ResultState
+        type="error"
+        message="Invalid server response. Please try again later."
+      />
+    );
+  }
+
+  if (!payload || payload.results.length === 0) {
+    return (
+      <>
+        <PageHeader />
+        <ResultState type="empty" message="No rewards found." />
+      </>
+    );
+  }
 
   return (
     <>
       <PageHeader />
-      <DataTable columns={columns} data={data} />
+      <DataTableClient
+        initialData={payload.results}
+        initialPage={payload.pagination.currentPage}
+        totalPages={payload.pagination.totalPages}
+      />
     </>
   );
 }

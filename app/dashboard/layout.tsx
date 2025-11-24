@@ -20,11 +20,9 @@ export default function RootLayout({
             <Sidebar />
           </div>
 
-          <main className="flex-1 flex flex-col w-full md:ml-64 transition-all duration-300">
+          <main className="flex-1 flex flex-col w-full md:ml-64 transition-all duration-300 overflow-hidden">
             <Topbar />
-            <div className="flex-1 p-4 sm:p-6 md:p-8 overflow-auto">
-              {children}
-            </div>
+            <div className="flex-1 p-4 sm:p-6 md:p-8">{children}</div>
           </main>
         </div>
       </body>

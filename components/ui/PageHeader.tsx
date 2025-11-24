@@ -1,31 +1,26 @@
 "use client";
 
+import { Search, Calendar } from "lucide-react";
+import { PageHeaderProps } from "@/types/props";
 import { useModal } from "@/context/ModalContext";
-import { ModalType } from "@/types/common";
-import { Search, Filter, Calendar } from "lucide-react";
 import Button from "./Button";
-import { ReactNode } from "react";
-
-interface PageHeaderProps {
-  onSearch?: (value: string) => void;
-  onFilterClick?: () => void;
-  onDateSelect?: () => void;
-  showDateSelect?: boolean;
-  buttonText?: string;
-  buttonIcon?: ReactNode;
-  modalTypeToOpen?: ModalType;
-}
 
 export default function PageHeader({
   onSearch,
-  onFilterClick,
   onDateSelect,
   showDateSelect = true,
   buttonText,
   buttonIcon,
+  filterFields,
   modalTypeToOpen,
 }: PageHeaderProps) {
   const { openModal } = useModal();
+
+  const handleFilterClick = () => {
+    if (filterFields?.length) {
+      openModal("generic-filter", filterFields);
+    }
+  };
 
   return (
     <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
@@ -43,12 +38,13 @@ export default function PageHeader({
           />
         </div>
 
-        <button
-          onClick={onFilterClick}
-          className="flex items-center gap-2 px-4 py-2.5 border border-gray-200 rounded-full text-sm text-gray-700 bg-white hover:bg-gray-50 transition">
-          <Filter size={17} />
-          <span>Filter</span>
-        </button>
+        {filterFields?.length ? (
+          <button
+            onClick={handleFilterClick}
+            className="flex items-center gap-2 px-4 py-2.5 border border-gray-200 rounded-full text-sm text-gray-700 bg-white hover:bg-gray-50 transition">
+            <span>Filter</span>
+          </button>
+        ) : null}
       </div>
 
       {buttonText && modalTypeToOpen ? (

@@ -1,33 +1,59 @@
-"use client";
-
 import DetailLayout from "@/components/layout/DetailLayout";
+import UserDetailsHeader from "./components/UserDetailsHeader";
 import PersonalDetailsTab from "./components/PersonalDetailsTab";
 import BankingDetailsTab from "./components/BankingDetailsTab";
-import UserDetailsHeader from "./components/UserDetailsHeader";
 import TransactionsTab from "./components/TransactionsTab";
 import StatisticsTab from "./components/StatisticsTab";
+import { getCustomer } from "@/lib/api/customers";
+import ResultState from "@/components/ui/ResultState";
 
-export default function UserDetailsPage() {
+export const dynamic = "force-dynamic";
+
+export default async function UserDetailsPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+
+  if (!id) {
+    return <ResultState type="error" message="Invalid user ID." />;
+  }
+
+  const res = await getCustomer(id);
+
+  if (res.error) {
+    const message =
+      typeof res.error === "string" ? res.error : "Failed to fetch customer.";
+    return <ResultState type="error" message={message} />;
+  }
+
+  const customer = res.data?.customer;
+
+  if (!customer) {
+    return <ResultState type="empty" message="Customer not found." />;
+  }
+
   const tabs = [
     {
       key: "personal",
       label: "Personal Details",
-      content: <PersonalDetailsTab />,
+      content: <PersonalDetailsTab customer={customer} />,
     },
     {
       key: "banking",
       label: "Banking Details",
-      content: <BankingDetailsTab />,
+      content: <BankingDetailsTab customer={customer} />,
     },
     {
       key: "transactions",
       label: "Transactions",
-      content: <TransactionsTab />,
+      content: <TransactionsTab customerId={customer.id} />,
     },
     {
       key: "statistics",
       label: "Statistics",
-      content: <StatisticsTab />,
+      content: <StatisticsTab customerId={customer.id} />,
     },
   ];
 
@@ -35,9 +61,10 @@ export default function UserDetailsPage() {
     <DetailLayout
       header={
         <UserDetailsHeader
-          kycStatus="Successful"
-          name="Imran Rosheed"
-          userId="#TA-231001"
+          userId={customer.id}
+          name={customer.fullname}
+          kycStatus={customer.isKycVerified ? "Successful" : "Pending"}
+          avatarUrl={customer.profilePicture || "/icons/avatar.svg"}
         />
       }
       tabs={tabs}

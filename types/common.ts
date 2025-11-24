@@ -6,6 +6,9 @@ export type ModalType =
   | "add-new-administrator"
   | "confirm-new-administrator"
   | "logout"
+  | "approve-giftcard"
+  | "reject-giftcard"
+  | "generic-filter"
   | null;
 
 export interface RowData {
@@ -18,3 +21,18 @@ export interface MenuItem<T = RowData> {
   color?: string;
   onClick?: (row: T) => void;
 }
+
+export interface Pagination {
+  currentPage: number;
+  totalPages: number;
+  totalItems: number;
+  limit: number;
+  hasMore: boolean;
+}
+
+export type FilterField = {
+  label: string;
+  name: string;
+  type: "checkbox" | "select" | "text";
+  options?: { label: string; value: string }[];
+};

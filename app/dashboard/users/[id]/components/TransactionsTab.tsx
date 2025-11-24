@@ -2,7 +2,11 @@
 
 import DataTable from "@/components/ui/Table";
 
-export default function TransactionsTab() {
+export default function TransactionsTab({
+  customerId,
+}: {
+  customerId: string;
+}) {
   const columns = [
     { key: "id", label: "ID" },
     { key: "user", label: "User" },
@@ -15,7 +19,7 @@ export default function TransactionsTab() {
 
   const data = [
     {
-      id: "#TA-231001",
+      id: customerId,
       user: "Imran Rosheed",
       type: "Crypto",
       amount: "$12,000",

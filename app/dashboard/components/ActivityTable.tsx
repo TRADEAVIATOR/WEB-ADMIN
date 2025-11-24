@@ -1,17 +1,6 @@
 "use client";
 
-interface Activity {
-  id: number;
-  description: string;
-  details: string;
-  time: string;
-}
-
-interface RecentActivitiesProps {
-  title?: string;
-  data: Activity[];
-  className?: string;
-}
+import { RecentActivitiesProps } from "@/types/props";
 
 export default function RecentActivities({
   title = "Recent Activities",
@@ -20,7 +9,7 @@ export default function RecentActivities({
 }: RecentActivitiesProps) {
   return (
     <div
-      className={`bg-white rounded-2xl p-6 flex flex-col gap-4 ${className}`}>
+      className={`bg-white rounded-2xl p-6 flex flex-col gap-4 border border-gray-100 ${className}`}>
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-semibold text-secondary">{title}</h2>
         <button className="text-sm text-primary hover:underline">

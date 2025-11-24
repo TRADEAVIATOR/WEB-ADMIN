@@ -2,18 +2,9 @@
 
 import Select from "@/components/ui/Select";
 import { AiOutlineArrowUp } from "react-icons/ai";
+import { LeaderboardItem } from "@/types/models";
+import { LeaderboardCardProps } from "@/types/props";
 import Image from "next/image";
-
-interface LeaderboardCardProps {
-  title: string;
-  className?: string;
-}
-
-interface LeaderboardItem {
-  name: string;
-  score: string;
-  status: string;
-}
 
 export default function LeaderboardCard({
   title,
@@ -38,7 +29,8 @@ export default function LeaderboardCard({
   ];
 
   return (
-    <div className={`bg-white rounded-2xl p-5 flex flex-col ${className}`}>
+    <div
+      className={`bg-white rounded-2xl p-5 flex flex-col border border-gray-100 ${className}`}>
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-semibold text-secondary">{title}</h2>
         <button className="text-sm text-primary hover:underline">

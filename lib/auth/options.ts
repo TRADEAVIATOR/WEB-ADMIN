@@ -17,8 +17,8 @@ export const authOptions: NextAuthOptions = {
           return {
             id: "admin-1",
             name: "Super Admin",
-            email: credentials.email.trim().toLowerCase(),
             role: "superadmin" as const,
+            email: credentials.email,
           };
         }
         return null;

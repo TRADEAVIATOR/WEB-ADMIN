@@ -1,45 +1,56 @@
-import PageHeader from "@/components/ui/PageHeader";
-import DataTable from "@/components/ui/Table";
+import { getTransactions } from "@/lib/api/transactions";
+import DataTableClient from "./DataTableClient";
+import ResultState from "@/components/ui/ResultState";
 
-export default function TransactionsPage() {
-  const columns = [
-    { key: "id", label: "ID" },
-    { key: "user", label: "User" },
-    { key: "status", label: "KYC Status" },
-    { key: "type", label: "Type" },
-    { key: "email", label: "Email" },
-    { key: "amount", label: "Amount" },
-    { key: "phone", label: "Phone Number" },
-    { key: "date", label: "Date Joined" },
-  ];
+export default async function TransactionsPage({
+  searchParams,
+}: {
+  searchParams?: Promise<{ page?: string }>;
+}) {
+  const params = await searchParams;
+  const page = params?.page ? Number(params.page) : 1;
 
-  const data = [
-    {
-      id: "#TA-231001",
-      user: "Imran Rosheed",
-      status: "Successful",
-      type: "Crypto",
-      email: "imramrosheed2019@mail.com",
-      amount: "$12,000",
-      phone: "+2348104452286",
-      date: "Sep 7, 2025 - 12:24PM",
-    },
-    {
-      id: "#TA-231002",
-      user: "Seiyefa Amakiri",
-      status: "Pending",
-      type: "Giftcard",
-      email: "seiyefa@mail.com",
-      amount: "$8,500",
-      phone: "+2348101111111",
-      date: "Sep 8, 2025 - 10:00AM",
-    },
-  ];
+  const res = await getTransactions(page);
+
+  if (!res || res.error) {
+    return <ResultState type="error" message="Unable to fetch transactions." />;
+  }
+
+  const payload = res.data?.data as
+    | {
+        transactions: any[];
+        pagination: {
+          currentPage: number;
+          totalPages: number;
+          totalItems: number;
+          limit: number;
+          hasMore: boolean;
+        };
+      }
+    | undefined;
+
+  if (!payload) {
+    return (
+      <ResultState
+        type="error"
+        message="Invalid server response. Please try again later."
+      />
+    );
+  }
+
+  if (!payload.transactions || payload.transactions.length === 0) {
+    return (
+      <>
+        <ResultState type="empty" message="No transactions found." />
+      </>
+    );
+  }
 
   return (
-    <>
-      <PageHeader />
-      <DataTable columns={columns} data={data} />
-    </>
+    <DataTableClient
+      initialData={payload.transactions}
+      initialPage={payload.pagination.currentPage}
+      totalPages={payload.pagination.totalPages}
+    />
   );
 }

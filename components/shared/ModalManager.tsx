@@ -6,15 +6,14 @@ import AddGiftcardRateModal from "../modals/AddGiftcardRateModal";
 import ConfirmNewAdministratorModal from "../modals/ConfirmNewAdministratorModal";
 import ConfirmNewCryptoRateModal from "../modals/ConfirmNewCryptoRateModal";
 import ConfirmNewGiftcardRateModal from "../modals/ConfirmNewGiftcardRateModal";
+import GenericFilterModal from "../modals/GenericFilterModal";
+import GiftcardApprovalModal from "../modals/GiftcardApprovalModal";
+import GiftcardRejectionModal from "../modals/GiftcardRejectionModal";
 import LogoutModal from "../modals/LogoutModal";
-
-interface ModalManagerProps {
-  modalType: string | null;
-  modalData: unknown;
-  onClose: () => void;
-}
+import { ModalManagerProps } from "@/types/props";
 
 export default function ModalManager({
+  modalData,
   modalType,
   onClose,
 }: ModalManagerProps) {
@@ -39,6 +38,21 @@ export default function ModalManager({
 
     case "confirm-new-administrator":
       return <ConfirmNewAdministratorModal isOpen={true} onClose={onClose} />;
+
+    case "approve-giftcard":
+      return <GiftcardApprovalModal isOpen={true} onClose={onClose} />;
+
+    case "reject-giftcard":
+      return <GiftcardRejectionModal isOpen={true} onClose={onClose} />;
+
+    case "generic-filter":
+      return (
+        <GenericFilterModal
+          isOpen={true}
+          onClose={onClose}
+          fields={modalData}
+        />
+      );
 
     default:
       return null;
