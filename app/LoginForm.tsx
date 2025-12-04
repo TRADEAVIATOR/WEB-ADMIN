@@ -1,5 +1,6 @@
 "use client";
 
+import { toast } from "react-hot-toast";
 import { useState, useEffect, FormEvent } from "react";
 import { signIn, useSession } from "next-auth/react";
 import Input from "@/components/ui/Input";
@@ -10,7 +11,7 @@ export default function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const { data: session, status } = useSession();
+  const { status } = useSession();
   const router = useRouter();
 
   useEffect(() => {
@@ -21,6 +22,7 @@ export default function LoginForm() {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    if (loading) return;
     setLoading(true);
 
     const res = await signIn("credentials", {
@@ -31,12 +33,18 @@ export default function LoginForm() {
 
     setLoading(false);
 
-    if (res?.ok) router.push("/dashboard");
+    if (res?.error) {
+      toast.error("Invalid email or password");
+      return;
+    }
+
+    if (res?.ok) {
+      toast.success("Login successful");
+      router.push("/dashboard");
+    }
   };
 
-  if (status === "loading") {
-    return null;
-  }
+  if (status === "loading") return null;
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">

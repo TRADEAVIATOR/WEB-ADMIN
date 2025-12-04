@@ -33,6 +33,21 @@ export const sidebarLinks: SidebarLink[] = [
     ],
   },
   {
+    label: "Tickets",
+    href: "/dashboard/tickets",
+    icon: "/icons/tickets.svg",
+  },
+  {
+    label: "Events",
+    href: "/dashboard/events",
+    icon: "/icons/events.svg",
+  },
+  {
+    label: "Disputes",
+    href: "/dashboard/disputes",
+    icon: "/icons/disputes.svg",
+  },
+  {
     label: "Transactions",
     href: "/dashboard/transactions",
     icon: "/icons/transactions.svg",

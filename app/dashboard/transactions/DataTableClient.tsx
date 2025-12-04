@@ -3,11 +3,11 @@
 import { useRouter } from "next/navigation";
 import DataTable from "@/components/ui/Table";
 import Pagination from "@/components/ui/Pagination";
-import { RowData } from "@/types/common";
+import { MenuItem, RowData } from "@/types/common";
 import { DataTableClientProps } from "@/types/props";
 import { formatNaira } from "@/lib/utils/format";
-import { Transaction } from "@/types/models";
 import PageHeader from "@/components/ui/PageHeader";
+import { Transaction } from "@/types/models";
 
 export default function DataTableClient({
   initialData = [],
@@ -51,6 +51,13 @@ export default function DataTableClient({
     }),
   }));
 
+  const menuItems: MenuItem<RowData>[] = [
+    {
+      label: "View",
+      onClick: (row) => router.push(`/dashboard/transactions/${row.id}`),
+    },
+  ];
+
   const handlePageChange = (page: number) => {
     router.push(`/dashboard/transactions?page=${page}`);
   };
@@ -71,7 +78,7 @@ export default function DataTableClient({
           },
         ]}
       />
-      <DataTable columns={columns} data={rows} />
+      <DataTable columns={columns} data={rows} menuItems={menuItems} />
       <Pagination
         currentPage={currentPage}
         totalPages={totalPages}

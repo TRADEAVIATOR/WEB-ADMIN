@@ -1,18 +1,25 @@
 import { tryServer } from "@/lib/utils/tryServer";
-import { api } from "@/lib/axios";
+import { authApi } from "../axios";
 
 export const getCustomers = async (page = 1, limit = 10) => {
+  const client = await authApi();
   return tryServer(
-    api.get(`/customers?page=${page}&limit=${limit}`).then((r) => r.data)
+    client
+      .get(`/admin/customers?page=${page}&limit=${limit}`)
+      .then((r) => r.data)
   );
 };
 
 export const getCustomer = async (id: string) => {
-  return tryServer(api.get(`/customers/${id}`).then((res) => res.data));
+  const client = await authApi();
+  return tryServer(
+    client.get(`/admin/customers/${id}`).then((res) => res.data)
+  );
 };
 
 export const toggleCustomerStatus = async (id: string) => {
+  const client = await authApi();
   return tryServer(
-    api.patch(`/customers/${id}/toggle-status`).then((res) => res.data)
+    client.patch(`/admin/customers/${id}/toggle-status`).then((res) => res.data)
   );
 };

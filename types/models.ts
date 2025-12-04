@@ -41,6 +41,13 @@ export interface Transaction {
   amount: string;
   currency: string;
   createdAt: string;
+  updatedAt?: string | null;
+  channel?: string | null;
+  user?: {
+    id: string;
+    fullname: string;
+    email: string;
+  } | null;
 }
 
 export interface RewardUser {
@@ -150,4 +157,82 @@ export interface LeaderboardItem {
   name: string;
   score: string;
   status: string;
+}
+
+export interface Ticket {
+  tierId: string;
+  tierName: string;
+  price: string;
+  currency: string;
+  totalQuantity: number;
+  soldQuantity: number;
+  remainingQuantity: number;
+  revenue: number;
+  eventId: string;
+  eventTitle: string;
+  eventDate: string;
+  eventLocation: string;
+  eventImageUrls: string[];
+}
+
+export interface Dispute {
+  id: string;
+  userId: string;
+  transactionId: string;
+  category: string;
+  type: string;
+  status: string;
+  narration: string | null;
+  amount: string;
+  currency: string;
+  channel?: string | null;
+  provider?: string | null;
+  reference?: string | null;
+  createdAt: string;
+  updatedAt: string;
+  recipient?: string | null;
+  recipientBank?: string | null;
+  internalRef?: string | null;
+  user?: {
+    id: string;
+    fullname: string;
+    phone?: string;
+    email: string;
+  };
+  disputes?: {
+    transactionId: string;
+    category: string;
+    reason: string;
+    status: string;
+    description?: string | null;
+    userId: string;
+  }[];
+  transaction?: {
+    id: string;
+    amount: string;
+    type: string;
+    status: string;
+  };
+}
+
+export interface TicketTier {
+  id: string;
+  tierName: string;
+  price: number;
+  currency: string;
+  remainingQuantity: number;
+  soldQuantity: number;
+  revenue: number;
+}
+
+export interface Event {
+  id: string;
+  title: string;
+  description: string;
+  date: string;
+  location: string;
+  imageUrls: string[];
+  createdAt: string;
+  updatedAt: string;
+  ticketTiers: TicketTier[];
 }

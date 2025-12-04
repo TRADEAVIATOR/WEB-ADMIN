@@ -1,10 +1,12 @@
 import { tryServer } from "../utils/tryServer";
-import { api } from "../axios";
+import { authApi } from "../axios";
 
 export const getDashboardMetrics = async () => {
-  return tryServer(api.get("/dashboard").then((r) => r.data));
+  const client = await authApi();
+  return tryServer(client.get("/admin/dashboard").then((r) => r.data));
 };
 
 export const getDashboardGrowth = async () => {
-  return tryServer(api.get("/dashboard/growth").then((r) => r.data));
+  const client = await authApi();
+  return tryServer(client.get("/admin/dashboard/growth").then((r) => r.data));
 };

@@ -1,6 +1,7 @@
 import { getTransactions } from "@/lib/api/transactions";
 import DataTableClient from "./DataTableClient";
 import ResultState from "@/components/ui/ResultState";
+import { TransactionsResponse } from "@/types/api";
 
 export default async function TransactionsPage({
   searchParams,
@@ -16,18 +17,7 @@ export default async function TransactionsPage({
     return <ResultState type="error" message="Unable to fetch transactions." />;
   }
 
-  const payload = res.data?.data as
-    | {
-        transactions: any[];
-        pagination: {
-          currentPage: number;
-          totalPages: number;
-          totalItems: number;
-          limit: number;
-          hasMore: boolean;
-        };
-      }
-    | undefined;
+  const payload = res.data?.data as TransactionsResponse | undefined;
 
   if (!payload) {
     return (
@@ -39,11 +29,7 @@ export default async function TransactionsPage({
   }
 
   if (!payload.transactions || payload.transactions.length === 0) {
-    return (
-      <>
-        <ResultState type="empty" message="No transactions found." />
-      </>
-    );
+    return <ResultState type="empty" message="No transactions found." />;
   }
 
   return (

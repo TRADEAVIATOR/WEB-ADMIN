@@ -9,10 +9,6 @@ export default withAuth(
       return NextResponse.redirect(new URL("/", req.url));
     }
 
-    if (token.role !== "superadmin") {
-      return NextResponse.redirect(new URL("/", req.url));
-    }
-
     return NextResponse.next();
   },
   {
