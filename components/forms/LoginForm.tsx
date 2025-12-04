@@ -3,7 +3,7 @@
 import { toast } from "react-hot-toast";
 import { useState, useEffect, FormEvent } from "react";
 import { signIn, useSession } from "next-auth/react";
-import Input from "@/components/ui/Input";
+import FormField from "@/components/ui/FormField";
 import Button from "@/components/ui/Button";
 import { useRouter } from "next/navigation";
 
@@ -49,7 +49,7 @@ export default function LoginForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="space-y-4">
-        <Input
+        <FormField
           label="Email Address"
           type="email"
           placeholder="Enter your email"
@@ -58,7 +58,7 @@ export default function LoginForm() {
           className="rounded-full bg-[#F5F5F5] py-3 px-4 text-base"
           required
         />
-        <Input
+        <FormField
           label="Password"
           type="password"
           placeholder="Enter your password"

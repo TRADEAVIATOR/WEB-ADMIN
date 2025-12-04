@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Modal from "@/components/ui/Modal";
 import { useModal } from "@/context/ModalContext";
-import Input from "@/components/ui/Input";
+import FormField from "@/components/ui/FormField";
 import Button from "@/components/ui/Button";
 
 interface AddAdministratorModalProps {
@@ -42,21 +42,21 @@ export default function AddAdministratorModal({
       title="Add New Administrator"
       desc="Enter details">
       <form onSubmit={handleSubmit} className="space-y-4">
-        <Input
+        <FormField
           label="Full Name"
           name="fullName"
           value={formData.fullName}
           onChange={handleChange}
           placeholder="Enter full name"
         />
-        <Input
+        <FormField
           label="Username"
           name="username"
           value={formData.username}
           onChange={handleChange}
           placeholder="Enter username"
         />
-        <Input
+        <FormField
           label="Email Address"
           name="email"
           type="email"
@@ -64,7 +64,7 @@ export default function AddAdministratorModal({
           onChange={handleChange}
           placeholder="Enter email address"
         />
-        <Input
+        <FormField
           label="Role"
           name="role"
           value={formData.role}

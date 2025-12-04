@@ -223,16 +223,29 @@ export interface TicketTier {
   remainingQuantity: number;
   soldQuantity: number;
   revenue: number;
+  description?: string;
+  name: string;
 }
 
 export interface Event {
   id: string;
   title: string;
-  description: string;
+  description?: string;
   date: string;
   location: string;
   imageUrls: string[];
+  ticketTiers: TicketTier[];
   createdAt: string;
   updatedAt: string;
-  ticketTiers: TicketTier[];
+}
+
+export interface AdminProfile {
+  name: string;
+  profilePicture?: string | null;
+  email?: string;
+  username?: string;
+  role?: string;
+  joined?: string;
+  status?: string;
+  permissions?: string[];
 }

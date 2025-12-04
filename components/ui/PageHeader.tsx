@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { Search, Calendar } from "lucide-react";
 import { PageHeaderProps } from "@/types/props";
 import { useModal } from "@/context/ModalContext";
@@ -11,6 +12,7 @@ export default function PageHeader({
   showDateSelect = true,
   buttonText,
   buttonIcon,
+  buttonHref,
   filterFields,
   modalTypeToOpen,
 }: PageHeaderProps) {
@@ -20,6 +22,41 @@ export default function PageHeader({
     if (filterFields?.length) {
       openModal("generic-filter", filterFields);
     }
+  };
+
+  const renderActionButton = () => {
+    if (buttonHref) {
+      return (
+        <Link href={buttonHref}>
+          <Button className="flex items-center gap-2 text-white text-sm px-5 py-2.5 rounded-full">
+            {buttonIcon && buttonIcon}
+            <span>{buttonText}</span>
+          </Button>
+        </Link>
+      );
+    }
+
+    if (buttonText && modalTypeToOpen) {
+      return (
+        <Button
+          onClick={() => openModal(modalTypeToOpen)}
+          className="flex items-center gap-2 text-white text-sm px-5 py-2.5 rounded-full">
+          {buttonIcon && buttonIcon}
+          <span>{buttonText}</span>
+        </Button>
+      );
+    }
+
+    return (
+      showDateSelect && (
+        <button
+          onClick={onDateSelect}
+          className="flex items-center gap-2 px-4 py-2.5 border border-gray-200 rounded-full text-sm text-gray-700 bg-white hover:bg-gray-50 transition">
+          <Calendar size={17} />
+          <span>Select Dates</span>
+        </button>
+      )
+    );
   };
 
   return (
@@ -47,23 +84,7 @@ export default function PageHeader({
         ) : null}
       </div>
 
-      {buttonText && modalTypeToOpen ? (
-        <Button
-          onClick={() => openModal(modalTypeToOpen)}
-          className="flex items-center gap-2 text-white text-sm px-5 py-2.5 rounded-full">
-          {buttonIcon && buttonIcon}
-          <span>{buttonText}</span>
-        </Button>
-      ) : (
-        showDateSelect && (
-          <button
-            onClick={onDateSelect}
-            className="flex items-center gap-2 px-4 py-2.5 border border-gray-200 rounded-full text-sm text-gray-700 bg-white hover:bg-gray-50 transition">
-            <Calendar size={17} />
-            <span>Select Dates</span>
-          </button>
-        )
-      )}
+      {renderActionButton()}
     </div>
   );
 }

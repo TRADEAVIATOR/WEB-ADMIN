@@ -1,8 +1,8 @@
 "use client";
 
 import { FiEye } from "react-icons/fi";
+import FormField from "@/components/ui/FormField";
 import Button from "@/components/ui/Button";
-import Input from "@/components/ui/Input";
 
 export default function BirthdayTab() {
   async function onSubmit(e: React.FormEvent) {
@@ -26,42 +26,42 @@ export default function BirthdayTab() {
       </div>
 
       <form onSubmit={onSubmit} className="space-y-4">
-        <Input
+        <FormField
           label="User"
           name="user"
           placeholder="Enter user"
           className="rounded-full bg-[#F5F5F5] py-3 px-4 text-base"
           required
         />
-        <Input
+        <FormField
           label="Birthday date"
           name="birthdayDate"
           type="date"
           className="rounded-full bg-[#F5F5F5] py-3 px-4 text-base"
           required
         />
-        <Input
+        <FormField
           label="Birthday wish title"
           name="birthdayTitle"
           placeholder="Happy birthday!"
           className="rounded-full bg-[#F5F5F5] py-3 px-4 text-base"
           required
         />
-        <Input
+        <FormField
           label="Birthday wish"
           name="birthdayWish"
           placeholder="Write your message"
           className="rounded-full bg-[#F5F5F5] py-3 px-4 text-base"
           required
         />
-        <Input
+        <FormField
           label="Notification type"
           name="type"
           placeholder="Select notification type"
           className="rounded-full bg-[#F5F5F5] py-3 px-4 text-base"
           required
         />
-        <Input
+        <FormField
           label="Delivery channel"
           name="channel"
           placeholder="Select delivery channel"
@@ -72,14 +72,14 @@ export default function BirthdayTab() {
         <h3 className="text-sm font-medium">Schedule Send</h3>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <Input
+          <FormField
             label="Date"
             name="date"
             type="date"
             className="rounded-full bg-[#F5F5F5] py-3 px-4 text-base"
             required
           />
-          <Input
+          <FormField
             label="Time"
             name="time"
             type="time"

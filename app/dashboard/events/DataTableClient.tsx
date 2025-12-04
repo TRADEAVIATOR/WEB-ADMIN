@@ -23,21 +23,25 @@ export default function EventsDataTableClient({
     { key: "tickets", label: "Ticket Tiers" },
   ];
 
-  const rows: RowData[] = initialData.map((event) => ({
-    id: event.id,
-    title: event.title,
-    description:
-      event.description.length > 50
-        ? event.description.substring(0, 50) + "..."
-        : event.description,
-    date: new Date(event.date).toLocaleDateString("en-US", {
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-    }),
-    location: event.location,
-    tickets: event.ticketTiers.length,
-  }));
+  const rows: RowData[] = initialData.map((event) => {
+    const description = event.description ?? "";
+
+    return {
+      id: event.id,
+      title: event.title,
+      description:
+        description.length > 50
+          ? description.substring(0, 50) + "..."
+          : description,
+      date: new Date(event.date).toLocaleDateString("en-US", {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+      }),
+      location: event.location,
+      tickets: event.ticketTiers.length,
+    };
+  });
 
   const handlePageChange = (page: number) => {
     router.push(`/dashboard/events?page=${page}`);
@@ -47,6 +51,10 @@ export default function EventsDataTableClient({
     {
       label: "View",
       onClick: (row: any) => router.push(`/dashboard/events/${row.id}`),
+    },
+    {
+      label: "Edit",
+      onClick: (row: any) => router.push(`/dashboard/events/${row.id}/edit`),
     },
   ];
 

@@ -1,9 +1,8 @@
 "use client";
 
-import React from "react";
 import Modal from "../ui/Modal";
+import FormField from "../ui/FormField";
 import Button from "../ui/Button";
-import Input from "../ui/Input";
 
 interface GiftcardRejectionModalProps {
   isOpen: boolean;
@@ -22,7 +21,7 @@ export default function GiftcardRejectionModal({
       onClose={onClose}
       title="Reject Giftcard"
       desc="Are you sure you want to reject this giftcard? This action will notify the user, and cannot be undone.">
-      <Input
+      <FormField
         label="Reason for Rejection (Optional)"
         placeholder="Enter your reason for rejecting this giftcard"
       />

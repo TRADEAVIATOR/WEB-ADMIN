@@ -74,4 +74,5 @@ export interface PageHeaderProps {
   buttonIcon?: ReactNode;
   modalTypeToOpen?: ModalType;
   filterFields?: FilterField[];
+  buttonHref?: string;
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import Modal from "@/components/ui/Modal";
-import Input from "@/components/ui/Input";
+import FormField from "@/components/ui/FormField";
 import Button from "@/components/ui/Button";
 import { useModal } from "@/context/ModalContext";
 import { useState } from "react";
@@ -42,21 +42,21 @@ export default function AddGiftcardRateModal({
       title="Add New Giftcard Rate"
       desc="Create new giftcard rate">
       <form onSubmit={handleSubmit} className="space-y-5">
-        <Input
+        <FormField
           label="Giftcard Brand"
           name="brand"
           placeholder="Enter giftcard brand"
           value={formData.brand}
           onChange={handleChange}
         />
-        <Input
+        <FormField
           label="Currency"
           name="currency"
           placeholder="Enter currency"
           value={formData.currency}
           onChange={handleChange}
         />
-        <Input
+        <FormField
           label="Set Rate"
           name="rate"
           type="number"
@@ -64,7 +64,7 @@ export default function AddGiftcardRateModal({
           value={formData.rate}
           onChange={handleChange}
         />
-        <Input
+        <FormField
           label="Giftcard Type"
           name="type"
           placeholder="Enter giftcard type"
@@ -75,7 +75,7 @@ export default function AddGiftcardRateModal({
         <Button
           type="submit"
           className="ml-auto block"
-          onClick={() => openModal('confirm-new-giftcard-rate')}>
+          onClick={() => openModal("confirm-new-giftcard-rate")}>
           Proceed
         </Button>
       </form>

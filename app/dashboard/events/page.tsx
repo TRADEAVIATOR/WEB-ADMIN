@@ -2,6 +2,7 @@ import PageHeader from "@/components/ui/PageHeader";
 import ResultState from "@/components/ui/ResultState";
 import DataTableClient from "./DataTableClient";
 import { getEvents } from "@/lib/api/events";
+import { FiPlus } from "react-icons/fi";
 
 export const dynamic = "force-dynamic";
 
@@ -36,7 +37,12 @@ export default async function EventsPage({
 
   return (
     <>
-      <PageHeader />
+      <PageHeader
+        buttonIcon={<FiPlus size={16} />}
+        buttonText="Add New Event"
+        buttonHref="/dashboard/events/add"
+      />
+
       <DataTableClient
         initialData={payload.results}
         initialPage={payload.pagination.currentPage}

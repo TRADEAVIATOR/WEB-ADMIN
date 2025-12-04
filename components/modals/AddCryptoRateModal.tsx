@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Modal from "@/components/ui/Modal";
-import Input from "@/components/ui/Input";
+import FormField from "@/components/ui/FormField";
 import Button from "@/components/ui/Button";
 import { useModal } from "@/context/ModalContext";
 
@@ -33,7 +33,7 @@ export default function AddCryptoRateModal({
       title="Add New Crypto Rate"
       desc="Create new crypto rate">
       <form onSubmit={handleSubmit} className="space-y-4">
-        <Input
+        <FormField
           label="Select Crypto"
           type="text"
           placeholder="Enter crypto name (e.g. Bitcoin)"
@@ -41,7 +41,7 @@ export default function AddCryptoRateModal({
           onChange={(e) => setCrypto(e.target.value)}
         />
 
-        <Input
+        <FormField
           label="Set Rate"
           type="number"
           placeholder="Enter rate (e.g. 1500)"
