@@ -4,6 +4,9 @@ import Image from "next/image";
 import { FiX } from "react-icons/fi";
 import { useMemo } from "react";
 
+import bellScheduled from "@/assets/icons/bell-scheduled.svg";
+import noNotifications from "@/assets/icons/no-notifications.svg";
+
 interface Notification {
   id: string;
   title: string;
@@ -67,7 +70,7 @@ export default function NotificationsPanel({
               key={item.id}
               className="flex gap-3 items-start border-b last:border-b-0 border-gray-100 pb-3">
               <Image
-                src="/icons/bell-scheduled.svg"
+                src={bellScheduled}
                 width={36}
                 height={36}
                 alt="Notification icon"
@@ -95,7 +98,7 @@ export default function NotificationsPanel({
           <div className="py-10 flex flex-col items-center text-center">
             <Image
               alt="No notifications"
-              src="/icons/no-notifications.svg"
+              src={noNotifications}
               width={90}
               height={90}
             />

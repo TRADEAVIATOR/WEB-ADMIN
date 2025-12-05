@@ -3,6 +3,7 @@
 import { AdminProfile } from "@/types/models";
 import { useRouter } from "next/navigation";
 import { ChevronLeft, MoreVertical } from "lucide-react";
+import AvatarImg from "@/assets/icons/avatar.svg";
 import Image from "next/image";
 
 interface AdminProfileClientProps {
@@ -27,7 +28,7 @@ export default function AdminProfileClient({ admin }: AdminProfileClientProps) {
           <div className="flex items-center gap-4 sm:gap-6 w-full sm:w-auto">
             <div className="relative flex-shrink-0">
               <Image
-                src={admin.profilePicture || "/icons/avatar.svg"}
+                src={admin.profilePicture || AvatarImg}
                 alt="Admin Avatar"
                 width={80}
                 height={80}

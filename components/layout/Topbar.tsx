@@ -1,13 +1,17 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { sidebarLinks, sidebarBottomLinks } from "@/constants/sidebarLinks";
 import { Menu } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useModal } from "@/context/ModalContext";
 import NotificationsPanel from "./NotificationsPanel";
 import { useState } from "react";
-import Link from "next/link";
+
+import settingsIcon from "@/assets/icons/topbar-settings.svg";
+import notificationIcon from "@/assets/icons/notification.svg";
+import avatarIcon from "@/assets/icons/avatar.svg";
 
 export default function Topbar() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -46,7 +50,7 @@ export default function Topbar() {
         <button>
           <Link href="/dashboard/settings">
             <Image
-              src="/icons/topbar-settings.svg"
+              src={settingsIcon}
               alt="Settings"
               width={22}
               height={22}
@@ -60,7 +64,7 @@ export default function Topbar() {
           onClick={() => setShowNotifications(!showNotifications)}
           className="relative flex items-center gap-2">
           <Image
-            src="/icons/notification.svg"
+            src={notificationIcon}
             alt="Notifications"
             width={24}
             height={24}
@@ -82,7 +86,7 @@ export default function Topbar() {
         <button className="flex items-center gap-2">
           <Link href={"/dashboard/profile"}>
             <Image
-              src="/icons/avatar.svg"
+              src={avatarIcon}
               alt="Profile"
               width={32}
               height={32}

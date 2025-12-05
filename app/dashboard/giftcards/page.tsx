@@ -1,23 +1,29 @@
+"use client";
+
 import DataTableClient from "./DataTableClient";
 import PageHeader from "@/components/ui/PageHeader";
 import Image from "next/image";
+
+import OrdersIcon from "@/assets/icons/orders.svg";
+import SuccessRateIcon from "@/assets/icons/success-rate.svg";
+import AverageValueIcon from "@/assets/icons/average-value.svg";
 
 export default function Page() {
   const stats = [
     {
       label: "Total Orders",
       value: "1,000",
-      icon: "/icons/orders.svg",
+      icon: OrdersIcon,
     },
     {
       label: "Success Rate",
       value: "100%",
-      icon: "/icons/success-rate.svg",
+      icon: SuccessRateIcon,
     },
     {
       label: "Average Order Value",
       value: "₦1,000",
-      icon: "/icons/average-value.svg",
+      icon: AverageValueIcon,
     },
   ];
 

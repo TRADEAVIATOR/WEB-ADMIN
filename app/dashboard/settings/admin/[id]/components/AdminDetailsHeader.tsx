@@ -1,6 +1,7 @@
 "use client";
 
 import { MoreVertical } from "lucide-react";
+import AvatarImg from "@/assets/icons/avatar.svg";
 import Image from "next/image";
 
 interface AdminDetailsHeaderProps {
@@ -21,7 +22,7 @@ export default function AdminDetailsHeader({
       <div className="flex items-center gap-4 sm:gap-6 w-full sm:w-auto">
         <div className="relative flex-shrink-0">
           <Image
-            src={"/icons/avatar.svg"}
+            src={AvatarImg}
             alt={`${name} Avatar`}
             width={80}
             height={80}

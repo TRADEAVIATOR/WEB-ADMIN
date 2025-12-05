@@ -2,6 +2,10 @@
 
 import Image from "next/image";
 
+import ChipIcon from "@/assets/icons/chip.svg";
+import MasterCardIcon from "@/assets/icons/mastercard.svg";
+import BrandLogo from "@/assets/icons/brand-logo.svg";
+
 interface VirtualCardHeaderProps {
   cardNumber: string;
   expiry: string;
@@ -23,7 +27,7 @@ export default function VirtualCardHeader({
         <div className="relative z-10 flex flex-col justify-between h-full p-6 text-white">
           <div className="flex justify-between items-center">
             <Image
-              src="/icons/chip.svg"
+              src={ChipIcon}
               alt="Card Chip"
               width={40}
               height={30}
@@ -31,7 +35,7 @@ export default function VirtualCardHeader({
             />
 
             <Image
-              src="/icons/brand-logo.svg"
+              src={BrandLogo}
               alt="Platform Logo"
               width={90}
               height={35}
@@ -43,7 +47,7 @@ export default function VirtualCardHeader({
             <div className="flex justify-between items-center text-sm">
               <p>{expiry}</p>
               <Image
-                src="/icons/mastercard.svg"
+                src={MasterCardIcon}
                 alt={cardType}
                 width={42}
                 height={42}

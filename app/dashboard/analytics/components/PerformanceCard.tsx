@@ -5,6 +5,10 @@ import Select from "@/components/ui/Select";
 import { Sparklines, SparklinesLine } from "react-sparklines";
 import VirtualCardChart from "./VirtualCardChart";
 
+import DepositIcon from "@/assets/icons/deposit.svg";
+import WithdrawalIcon from "@/assets/icons/withdrawal.svg";
+import PeopleIcon from "@/assets/icons/people.svg";
+
 export default function PerformanceCard() {
   const data = [50, 70, 65, 90, 75, 100, 80, 110, 95, 105, 120, 100];
 
@@ -24,7 +28,7 @@ export default function PerformanceCard() {
         <div className="lg:col-span-2 border-r-2 border-gray-100 pr-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
             <div className="flex items-center gap-3">
-              <Image src="/icons/deposit.svg" alt="" width={22} height={22} />
+              <Image src={DepositIcon} alt="Deposit" width={22} height={22} />
               <div>
                 <p className="text-gray-500 text-sm">Total Deposit</p>
                 <p className="font-bold text-lg text-gray-800">
@@ -32,10 +36,11 @@ export default function PerformanceCard() {
                 </p>
               </div>
             </div>
+
             <div className="flex items-center gap-3">
               <Image
-                src="/icons/withdrawal.svg"
-                alt=""
+                src={WithdrawalIcon}
+                alt="Withdrawal"
                 width={22}
                 height={22}
               />
@@ -46,8 +51,9 @@ export default function PerformanceCard() {
                 </p>
               </div>
             </div>
+
             <div className="flex items-center gap-3">
-              <Image src="/icons/people.svg" alt="" width={22} height={22} />
+              <Image src={PeopleIcon} alt="Users" width={22} height={22} />
               <div>
                 <p className="text-gray-500 text-sm">Total Users</p>
                 <p className="font-bold text-lg text-gray-800">200,000</p>

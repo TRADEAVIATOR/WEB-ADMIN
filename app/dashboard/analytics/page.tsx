@@ -2,6 +2,10 @@ import TrendCharts from "./components/TrendCharts";
 import PerformanceCard from "./components/PerformanceCard";
 import StatCard from "./components/StatCard";
 
+import CryptoVolumeIcon from "@/assets/icons/crypto-volume.svg";
+import BillsPaymentIcon from "@/assets/icons/bills-payment.svg";
+import GiftcardsIcon from "@/assets/icons/giftcards.svg";
+
 export default async function AnalyticsPage() {
   const miniCards = [
     {
@@ -11,7 +15,7 @@ export default async function AnalyticsPage() {
       change: "+10%",
       data: [5, 12, 8, 20, 10, 18, 25, 15, 22],
       color: "#00A3FF",
-      icon: "/icons/crypto-volume.svg",
+      icon: CryptoVolumeIcon,
     },
     {
       label: "Overall Bills Payment",
@@ -20,7 +24,7 @@ export default async function AnalyticsPage() {
       change: "+5%",
       data: [10, 18, 14, 25, 20, 28, 22, 30, 27],
       color: "#8B5CF6",
-      icon: "/icons/bills-payment.svg",
+      icon: BillsPaymentIcon,
     },
     {
       label: "Giftcards",
@@ -29,7 +33,7 @@ export default async function AnalyticsPage() {
       change: "+15%",
       data: [8, 15, 12, 20, 17, 25, 22, 18, 24],
       color: "#22C55E",
-      icon: "/icons/giftcards.svg",
+      icon: GiftcardsIcon,
     },
   ];
 

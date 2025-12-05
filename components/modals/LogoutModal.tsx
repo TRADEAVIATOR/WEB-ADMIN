@@ -18,7 +18,6 @@ export default function LogoutModal({ isOpen, onClose }: LogoutModalProps) {
   const handleLogout = async () => {
     try {
       setIsLoading(true);
-      await logoutAdmin();
       onClose();
       await signOut({ callbackUrl: "/" });
       toast.success("Logged out successfully");

@@ -5,104 +5,120 @@ export interface SidebarLink {
   children?: SidebarLink[];
 }
 
+import DashboardIcon from "@/assets/icons/dashboard.svg";
+import AnalyticsIcon from "@/assets/icons/analytics.svg";
+import UsersIcon from "@/assets/icons/users.svg";
+import TicketsIcon from "@/assets/icons/users.svg";
+import EventsIcon from "@/assets/icons/users.svg";
+import DisputesIcon from "@/assets/icons/users.svg";
+import TransactionsIcon from "@/assets/icons/transactions.svg";
+import VirtualCardIcon from "@/assets/icons/virtual-card.svg";
+import RateIcon from "@/assets/icons/rate.svg";
+import RewardsIcon from "@/assets/icons/rewards.svg";
+import SupportIcon from "@/assets/icons/support.svg";
+import GiftcardIcon from "@/assets/icons/giftcard.svg";
+import BellIcon from "@/assets/icons/bell.svg";
+import SettingsIcon from "@/assets/icons/settings.svg";
+import LogoutIcon from "@/assets/icons/logout.svg";
+
 export const sidebarLinks: SidebarLink[] = [
   {
     label: "Dashboard",
     href: "/dashboard",
-    icon: "/icons/dashboard.svg",
+    icon: DashboardIcon,
   },
   {
     label: "Analytics",
     href: "/dashboard/analytics",
-    icon: "/icons/analytics.svg",
+    icon: AnalyticsIcon,
   },
   {
     label: "User Management",
-    icon: "/icons/users.svg",
+    icon: UsersIcon,
     children: [
       {
         label: "All Users",
         href: "/dashboard/users",
-        icon: "/icons/users.svg",
+        icon: UsersIcon,
       },
       {
         label: "Admin Management",
         href: "/dashboard/admins",
-        icon: "/icons/users.svg",
+        icon: UsersIcon,
       },
     ],
   },
   {
     label: "Tickets",
     href: "/dashboard/tickets",
-    icon: "/icons/tickets.svg",
+    icon: TicketsIcon,
   },
   {
     label: "Events",
     href: "/dashboard/events",
-    icon: "/icons/events.svg",
+    icon: EventsIcon,
   },
   {
     label: "Disputes",
     href: "/dashboard/disputes",
-    icon: "/icons/disputes.svg",
+    icon: DisputesIcon,
   },
   {
     label: "Transactions",
     href: "/dashboard/transactions",
-    icon: "/icons/transactions.svg",
+    icon: TransactionsIcon,
   },
   {
     label: "Virtual Card",
     href: "/dashboard/virtual-card",
-    icon: "/icons/virtual-card.svg",
+    icon: VirtualCardIcon,
   },
   {
     label: "Rate Management",
-    icon: "/icons/rate.svg",
+    icon: RateIcon,
     children: [
       {
         label: "Crypto Rates",
         href: "/dashboard/rate-management/crypto",
-        icon: "/icons/rate.svg",
+        icon: RateIcon,
       },
       {
         label: "Giftcard Rates",
         href: "/dashboard/rate-management/giftcard",
-        icon: "/icons/rate.svg",
+        icon: RateIcon,
       },
     ],
   },
   {
     label: "Rewards",
-    icon: "/icons/rewards.svg",
     href: "/dashboard/rewards",
+    icon: RewardsIcon,
   },
   {
     label: "Support & Feedback",
     href: "/dashboard/support",
-    icon: "/icons/support.svg",
+    icon: SupportIcon,
   },
   {
     label: "Giftcards",
     href: "/dashboard/giftcards",
-    icon: "/icons/giftcard.svg",
+    icon: GiftcardIcon,
   },
   {
     label: "Notifications",
     href: "/dashboard/notifications",
-    icon: "/icons/bell.svg",
+    icon: BellIcon,
   },
   {
     label: "Settings",
     href: "/dashboard/settings",
-    icon: "/icons/settings.svg",
+    icon: SettingsIcon,
   },
 ];
 
 export const sidebarBottomLinks: SidebarLink[] = [
   {
     label: "Logout",
-    icon: "/icons/logout.svg",
+    icon: LogoutIcon,
   },
 ];

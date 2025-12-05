@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import BellScheduledImg from "@/assets/icons/bell-scheduled.svg";
+import NoNotificationsImg from "@/assets/icons/no-notifications.svg";
 
 export default function HolidayTab() {
   const [activeTab, setActiveTab] = useState<"drafts" | "scheduled">("drafts");
@@ -30,7 +32,7 @@ export default function HolidayTab() {
           {[1, 2, 3].map((i) => (
             <div key={i} className="flex items-start gap-4 pb-4">
               <Image
-                src="/icons/bell-scheduled.svg"
+                src={BellScheduledImg}
                 alt="Scheduled Notification"
                 width={26}
                 height={26}
@@ -58,7 +60,7 @@ export default function HolidayTab() {
       {activeTab === "drafts" && (
         <div className="flex flex-col items-center text-center py-28">
           <Image
-            src="/icons/no-notifications.svg"
+            src={NoNotificationsImg}
             alt="No Scheduled Notifications"
             width={140}
             height={140}

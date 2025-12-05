@@ -7,6 +7,7 @@ import { usePathname } from "next/navigation";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { useModal } from "@/context/ModalContext";
 import { useState, useRef, useEffect } from "react";
+import Logo from "@/assets/logo.svg";
 
 export default function Sidebar() {
   const pathname = usePathname();
@@ -101,7 +102,7 @@ export default function Sidebar() {
       <div className="flex flex-col h-full overflow-hidden">
         <div className="px-6 py-6 flex items-center justify-center flex-shrink-0">
           <Image
-            src="/logo.svg"
+            src={Logo}
             alt="Logo"
             width={120}
             height={120}

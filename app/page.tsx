@@ -1,12 +1,13 @@
-import LoginForm from "../components/forms/LoginForm";
 import Image from "next/image";
+import LoginForm from "../components/forms/LoginForm";
+import Logo from "@/assets/logo.svg";
 
 export default function Page() {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <header className="bg-white py-6 flex justify-center shadow-sm">
         <Image
-          src="/logo.svg"
+          src={Logo}
           alt="Logo"
           width={140}
           height={140}

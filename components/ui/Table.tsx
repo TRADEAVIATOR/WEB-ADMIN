@@ -33,7 +33,9 @@ export default function DataTable<T extends RowData>({
     };
 
     if (openMenuIndex !== null) {
-      document.addEventListener("mousedown", handleClickOutside);
+      setTimeout(() => {
+        document.addEventListener("mousedown", handleClickOutside);
+      }, 0);
     }
 
     return () => {
@@ -84,49 +86,58 @@ export default function DataTable<T extends RowData>({
                     onChange={(e) => handleSelectRow(idx, e.target.checked)}
                     className="accent-[#FE7F32] cursor-pointer mt-1"
                   />
-                  <div
-                    className="relative"
-                    ref={openMenuIndex === idx ? menuRef : null}>
-                    <button
-                      className="p-1 text-gray-500 hover:text-[#FE7F32]"
-                      onClick={() => toggleMenu(idx)}>
-                      <MoreVertical size={18} />
-                    </button>
 
-                    {openMenuIndex === idx && (
-                      <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded-lg shadow-lg z-20 animate-fadeIn">
-                        <ul className="py-2 text-sm text-gray-700">
-                          {menuItems.map((item, i) => {
-                            const baseClasses = `block px-4 py-2 hover:bg-gray-50 cursor-pointer ${
-                              item.color || "text-gray-700"
-                            }`;
-                            if (item.href)
+                  {menuItems.length > 0 && (
+                    <div
+                      className="relative"
+                      ref={openMenuIndex === idx ? menuRef : null}>
+                      <button
+                        className="p-1 text-gray-500 hover:text-[#FE7F32]"
+                        onClick={() => toggleMenu(idx)}>
+                        <MoreVertical size={18} />
+                      </button>
+
+                      {openMenuIndex === idx && (
+                        <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded-lg shadow-lg z-20 animate-fadeIn">
+                          <ul className="py-2 text-sm text-gray-700">
+                            {menuItems.map((item, i) => {
+                              const baseClasses = `block px-4 py-2 hover:bg-gray-50 cursor-pointer ${
+                                item.color || "text-gray-700"
+                              }`;
+
+                              if (item.href)
+                                return (
+                                  <li key={i}>
+                                    <Link
+                                      href={item.href}
+                                      className={baseClasses}
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setOpenMenuIndex(null);
+                                      }}>
+                                      {item.label}
+                                    </Link>
+                                  </li>
+                                );
+
                               return (
-                                <li key={i}>
-                                  <Link
-                                    href={item.href}
-                                    className={baseClasses}
-                                    onClick={() => setOpenMenuIndex(null)}>
-                                    {item.label}
-                                  </Link>
+                                <li
+                                  key={i}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    item.onClick?.(row);
+                                    setOpenMenuIndex(null);
+                                  }}
+                                  className={baseClasses}>
+                                  {item.label}
                                 </li>
                               );
-                            return (
-                              <li
-                                key={i}
-                                onClick={() => {
-                                  item.onClick?.(row);
-                                  setOpenMenuIndex(null);
-                                }}
-                                className={baseClasses}>
-                                {item.label}
-                              </li>
-                            );
-                          })}
-                        </ul>
-                      </div>
-                    )}
-                  </div>
+                            })}
+                          </ul>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
 
                 <div className="space-y-2">
@@ -192,6 +203,7 @@ export default function DataTable<T extends RowData>({
                       className="accent-[#FE7F32] cursor-pointer"
                     />
                   </td>
+
                   {columns.map((col) => (
                     <td
                       key={col.key}
@@ -199,50 +211,59 @@ export default function DataTable<T extends RowData>({
                       {row[col.key]}
                     </td>
                   ))}
-                  <td className="py-3 px-4 text-right whitespace-nowrap">
-                    <div
-                      className="relative inline-block"
-                      ref={openMenuIndex === idx ? menuRef : null}>
-                      <button
-                        className="p-1 text-gray-500 hover:text-[#FE7F32]"
-                        onClick={() => toggleMenu(idx)}>
-                        <MoreVertical size={18} />
-                      </button>
 
-                      {openMenuIndex === idx && (
-                        <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-100 rounded-lg shadow-lg z-20 animate-fadeIn">
-                          <ul className="py-2 text-sm text-gray-700">
-                            {menuItems.map((item, i) => {
-                              const baseClasses = `block px-4 py-2 hover:bg-gray-50 cursor-pointer ${
-                                item.color || "text-gray-700"
-                              }`;
-                              if (item.href)
+                  <td className="py-3 px-4 text-right whitespace-nowrap">
+                    {menuItems.length > 0 && (
+                      <div
+                        className="relative inline-block"
+                        ref={openMenuIndex === idx ? menuRef : null}>
+                        <button
+                          className="p-1 text-gray-500 hover:text-[#FE7F32]"
+                          onClick={() => toggleMenu(idx)}>
+                          <MoreVertical size={18} />
+                        </button>
+
+                        {openMenuIndex === idx && (
+                          <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-100 rounded-lg shadow-lg z-20 animate-fadeIn">
+                            <ul className="py-2 text-sm text-gray-700">
+                              {menuItems.map((item, i) => {
+                                const baseClasses = `block px-4 py-2 hover:bg-gray-50 cursor-pointer ${
+                                  item.color || "text-gray-700"
+                                }`;
+
+                                if (item.href)
+                                  return (
+                                    <li key={i}>
+                                      <Link
+                                        href={item.href}
+                                        className={baseClasses}
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          setOpenMenuIndex(null);
+                                        }}>
+                                        {item.label}
+                                      </Link>
+                                    </li>
+                                  );
+
                                 return (
-                                  <li key={i}>
-                                    <Link
-                                      href={item.href}
-                                      className={baseClasses}
-                                      onClick={() => setOpenMenuIndex(null)}>
-                                      {item.label}
-                                    </Link>
+                                  <li
+                                    key={i}
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      item.onClick?.(row);
+                                      setOpenMenuIndex(null);
+                                    }}
+                                    className={baseClasses}>
+                                    {item.label}
                                   </li>
                                 );
-                              return (
-                                <li
-                                  key={i}
-                                  onClick={() => {
-                                    item.onClick?.(row);
-                                    setOpenMenuIndex(null);
-                                  }}
-                                  className={baseClasses}>
-                                  {item.label}
-                                </li>
-                              );
-                            })}
-                          </ul>
-                        </div>
-                      )}
-                    </div>
+                              })}
+                            </ul>
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </td>
                 </tr>
               ))}

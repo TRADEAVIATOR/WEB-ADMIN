@@ -4,6 +4,7 @@ import Select from "@/components/ui/Select";
 import { AiOutlineArrowUp } from "react-icons/ai";
 import { LeaderboardItem } from "@/types/models";
 import { LeaderboardCardProps } from "@/types/props";
+import AvatarIcon from "@/assets/icons/avatar.svg";
 import Image from "next/image";
 
 export default function LeaderboardCard({
@@ -48,7 +49,7 @@ export default function LeaderboardCard({
           <div key={idx} className="flex items-center justify-between py-3">
             <div className="flex items-center gap-3">
               <Image
-                src={"/icons/avatar.svg"}
+                src={AvatarIcon}
                 alt={item.name}
                 width={40}
                 height={40}

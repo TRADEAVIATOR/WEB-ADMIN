@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import AvatarImg from "@/assets/icons/avatar.svg";
 import { Clock, MoreVertical, X } from "lucide-react";
 import { FaCheckCircle } from "react-icons/fa";
 
@@ -8,7 +9,6 @@ interface UserDetailsHeaderProps {
   userId: string;
   name: string;
   kycStatus: "Successful" | "Pending" | "Failed";
-  avatarUrl?: string;
   onMenuClick?: () => void;
 }
 
@@ -16,7 +16,6 @@ export default function UserDetailsHeader({
   userId,
   name,
   kycStatus,
-  avatarUrl = "/icons/avatar.svg",
   onMenuClick,
 }: UserDetailsHeaderProps) {
   const statusStyles = {
@@ -42,7 +41,7 @@ export default function UserDetailsHeader({
       <div className="flex items-center gap-4 sm:gap-6 w-full sm:w-auto">
         <div className="relative flex-shrink-0">
           <Image
-            src={avatarUrl}
+            src={AvatarImg}
             alt={`${name} Avatar`}
             width={80}
             height={80}

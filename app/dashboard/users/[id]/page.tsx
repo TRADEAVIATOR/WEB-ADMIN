@@ -62,9 +62,8 @@ export default async function UserDetailsPage({
       header={
         <UserDetailsHeader
           userId={customer.id}
-          name={customer.fullname}
           kycStatus={customer.isKycVerified ? "Successful" : "Pending"}
-          avatarUrl={customer.profilePicture || "/icons/avatar.svg"}
+          name={customer.fullname}
         />
       }
       tabs={tabs}
