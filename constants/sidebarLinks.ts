@@ -101,8 +101,19 @@ export const sidebarLinks: SidebarLink[] = [
   },
   {
     label: "Giftcards",
-    href: "/dashboard/giftcards",
     icon: GiftcardIcon,
+    children: [
+      {
+        label: "Buy",
+        href: "/dashboard/giftcards/buy/sales",
+        icon: GiftcardIcon,
+      },
+      {
+        label: "Sell",
+        href: "/dashboard/giftcards/sell/orders",
+        icon: GiftcardIcon,
+      },
+    ],
   },
   {
     label: "Notifications",

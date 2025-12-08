@@ -7,6 +7,7 @@ import { RowData } from "@/types/common";
 import { DataTableClientProps } from "@/types/props";
 import { formatNaira } from "@/lib/utils/format";
 import { Reward } from "@/types/models";
+import Badge from "@/components/ui/Badge";
 
 export default function DataTableClient({
   initialData = [],
@@ -31,7 +32,18 @@ export default function DataTableClient({
   const rows: RowData[] = initialData.map((reward) => ({
     id: reward.id,
     user: reward.user.fullname,
-    status: reward.status,
+    status: (
+      <Badge
+        text={reward.status}
+        color={
+          reward.status === "SUCCESS"
+            ? "green"
+            : reward.status === "PENDING"
+            ? "yellow"
+            : "red"
+        }
+      />
+    ),
     type: reward.type,
     rewardType: reward.rewardType,
     amount: formatNaira(reward.amount) || "₦0",

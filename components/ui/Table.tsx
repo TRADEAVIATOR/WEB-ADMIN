@@ -2,8 +2,9 @@
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { MenuItem, RowData } from "@/types/common";
+import { MenuItem, ModalType, RowData } from "@/types/common";
 import { MoreVertical } from "lucide-react";
+import { useModal } from "@/context/ModalContext";
 
 interface Column {
   key: string;
@@ -14,16 +15,19 @@ interface DataTableProps<T extends RowData> {
   columns: Column[];
   data: T[];
   menuItems?: MenuItem<T>[];
+  modalKey?: ModalType;
 }
 
 export default function DataTable<T extends RowData>({
   columns,
   data,
   menuItems = [],
+  modalKey,
 }: DataTableProps<T>) {
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
   const [openMenuIndex, setOpenMenuIndex] = useState<number | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
+  const { openModal } = useModal();
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -62,6 +66,11 @@ export default function DataTable<T extends RowData>({
   const toggleMenu = (index: number) =>
     setOpenMenuIndex((prev) => (prev === index ? null : index));
 
+  const handleRowClick = (row: T) => {
+    if (!modalKey) return;
+    openModal(modalKey, row);
+  };
+  
   return (
     <div className="w-full max-w-full">
       <div className="block lg:hidden">
@@ -74,7 +83,8 @@ export default function DataTable<T extends RowData>({
             {data.map((row, idx) => (
               <div
                 key={idx}
-                className={`border border-gray-200 rounded-lg p-4 ${
+                onClick={() => handleRowClick(row)}
+                className={`border border-gray-200 rounded-lg p-4 cursor-pointer ${
                   isRowSelected(idx)
                     ? "bg-[#FFF5EE] border-[#FE7F32]"
                     : "bg-white"
@@ -83,14 +93,18 @@ export default function DataTable<T extends RowData>({
                   <input
                     type="checkbox"
                     checked={isRowSelected(idx)}
-                    onChange={(e) => handleSelectRow(idx, e.target.checked)}
+                    onChange={(e) => {
+                      e.stopPropagation();
+                      handleSelectRow(idx, e.target.checked);
+                    }}
                     className="accent-[#FE7F32] cursor-pointer mt-1"
                   />
 
                   {menuItems.length > 0 && (
                     <div
                       className="relative"
-                      ref={openMenuIndex === idx ? menuRef : null}>
+                      ref={openMenuIndex === idx ? menuRef : null}
+                      onClick={(e) => e.stopPropagation()}>
                       <button
                         className="p-1 text-gray-500 hover:text-[#FE7F32]"
                         onClick={() => toggleMenu(idx)}>
@@ -111,10 +125,7 @@ export default function DataTable<T extends RowData>({
                                     <Link
                                       href={item.href}
                                       className={baseClasses}
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        setOpenMenuIndex(null);
-                                      }}>
+                                      onClick={() => setOpenMenuIndex(null)}>
                                       {item.label}
                                     </Link>
                                   </li>
@@ -123,8 +134,7 @@ export default function DataTable<T extends RowData>({
                               return (
                                 <li
                                   key={i}
-                                  onClick={(e) => {
-                                    e.stopPropagation();
+                                  onClick={() => {
                                     item.onClick?.(row);
                                     setOpenMenuIndex(null);
                                   }}
@@ -192,10 +202,13 @@ export default function DataTable<T extends RowData>({
               {data.map((row, idx) => (
                 <tr
                   key={idx}
-                  className={`border-b border-gray-100 last:border-b-0 transition-colors ${
+                  onClick={() => handleRowClick(row)}
+                  className={`border-b border-gray-100 last:border-b-0 transition-colors cursor-pointer ${
                     isRowSelected(idx) ? "bg-[#FFF5EE]" : "hover:bg-gray-50"
                   }`}>
-                  <td className="py-3 px-4 sticky left-0 bg-inherit z-10">
+                  <td
+                    className="py-3 px-4 sticky left-0 bg-inherit z-10"
+                    onClick={(e) => e.stopPropagation()}>
                     <input
                       type="checkbox"
                       checked={isRowSelected(idx)}
@@ -212,7 +225,9 @@ export default function DataTable<T extends RowData>({
                     </td>
                   ))}
 
-                  <td className="py-3 px-4 text-right whitespace-nowrap">
+                  <td
+                    className="py-3 px-4 text-right whitespace-nowrap"
+                    onClick={(e) => e.stopPropagation()}>
                     {menuItems.length > 0 && (
                       <div
                         className="relative inline-block"
@@ -237,10 +252,7 @@ export default function DataTable<T extends RowData>({
                                       <Link
                                         href={item.href}
                                         className={baseClasses}
-                                        onClick={(e) => {
-                                          e.stopPropagation();
-                                          setOpenMenuIndex(null);
-                                        }}>
+                                        onClick={() => setOpenMenuIndex(null)}>
                                         {item.label}
                                       </Link>
                                     </li>
@@ -249,8 +261,7 @@ export default function DataTable<T extends RowData>({
                                 return (
                                   <li
                                     key={i}
-                                    onClick={(e) => {
-                                      e.stopPropagation();
+                                    onClick={() => {
                                       item.onClick?.(row);
                                       setOpenMenuIndex(null);
                                     }}

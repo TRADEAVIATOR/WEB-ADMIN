@@ -8,6 +8,7 @@ import { DataTableClientProps } from "@/types/props";
 import { formatNaira } from "@/lib/utils/format";
 import PageHeader from "@/components/ui/PageHeader";
 import { Transaction } from "@/types/models";
+import Badge from "@/components/ui/Badge";
 
 export default function DataTableClient({
   initialData = [],
@@ -36,7 +37,18 @@ export default function DataTableClient({
     userId: tx.userId,
     category: tx.category,
     type: tx.type,
-    status: tx.status,
+    status: (
+      <Badge
+        text={tx.status}
+        color={
+          tx.status === "SUCCESS"
+            ? "green"
+            : tx.status === "PENDING"
+            ? "yellow"
+            : "red"
+        }
+      />
+    ),
     amount: formatNaira(tx.amount),
     currency: tx.currency.toUpperCase(),
     recipient: tx.recipient || "-",

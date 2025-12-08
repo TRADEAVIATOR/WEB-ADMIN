@@ -9,6 +9,7 @@ import { Dispute } from "@/types/models";
 import { updateDisputeStatusClient } from "@/lib/api/disputes";
 import { useSession } from "next-auth/react";
 import toast from "react-hot-toast";
+import Badge from "@/components/ui/Badge";
 
 export default function DataTableClient({
   initialData = [],
@@ -35,7 +36,18 @@ export default function DataTableClient({
     id: dispute.id,
     user: dispute.user?.fullname || "-",
     reason: dispute.narration || "-",
-    status: dispute.status || "-",
+    status: (
+      <Badge
+        text={dispute.status}
+        color={
+          dispute.status === "SUCCESS"
+            ? "green"
+            : dispute.status === "PENDING"
+            ? "yellow"
+            : "red"
+        }
+      />
+    ),
     transactionId: dispute.transaction?.id || dispute.transactionId || "-",
     amount: dispute.transaction?.amount
       ? `₦${Number(dispute.transaction.amount).toLocaleString()}`

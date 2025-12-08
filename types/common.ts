@@ -1,3 +1,5 @@
+import { ReactNode } from "react";
+
 export type ModalType =
   | "add-crypto-rate"
   | "confirm-new-crypto-rate"
@@ -12,7 +14,7 @@ export type ModalType =
   | null;
 
 export interface RowData {
-  [key: string]: string | number | boolean | null | undefined;
+  [key: string]: string | number | boolean | null | undefined | ReactNode;
 }
 
 export interface MenuItem<T = RowData> {

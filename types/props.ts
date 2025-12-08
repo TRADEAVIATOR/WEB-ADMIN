@@ -56,13 +56,13 @@ export interface LeaderboardCardProps {
 export interface GenericFilterModalProps {
   isOpen: boolean;
   onClose: () => void;
-  fields: FilterField[];
+  fields: unknown;
   title?: string;
 }
 
 export interface ModalManagerProps {
   modalType: string | null;
-  modalData: FilterField[];
+  modalData: unknown;
   onClose: () => void;
 }
 
@@ -75,4 +75,5 @@ export interface PageHeaderProps {
   modalTypeToOpen?: ModalType;
   filterFields?: FilterField[];
   buttonHref?: string;
+  buttonAction?: () => void;
 }

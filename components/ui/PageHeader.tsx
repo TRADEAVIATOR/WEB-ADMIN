@@ -15,6 +15,7 @@ export default function PageHeader({
   buttonHref,
   filterFields,
   modalTypeToOpen,
+  buttonAction,
 }: PageHeaderProps) {
   const { openModal } = useModal();
 
@@ -36,10 +37,16 @@ export default function PageHeader({
       );
     }
 
-    if (buttonText && modalTypeToOpen) {
+    if (buttonText) {
       return (
         <Button
-          onClick={() => openModal(modalTypeToOpen)}
+          onClick={() => {
+            if (buttonAction) {
+              buttonAction();
+            } else if (modalTypeToOpen) {
+              openModal(modalTypeToOpen);
+            }
+          }}
           className="flex items-center gap-2 text-white text-sm px-5 py-2.5 rounded-full">
           {buttonIcon && buttonIcon}
           <span>{buttonText}</span>

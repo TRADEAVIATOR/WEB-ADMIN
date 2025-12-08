@@ -3,24 +3,23 @@
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 
-export default function Tabs() {
-  const pathname = usePathname();
+export interface TabItem {
+  label: string;
+  href: string;
+}
 
-  const tabs = [
-    {
-      label: "Summary",
-      href: "/dashboard/giftcards",
-    },
-    {
-      label: "Giftcards Available to Buy",
-      href: "/dashboard/giftcards/available",
-    },
-  ];
+interface TabsProps {
+  tabs: TabItem[];
+  basePath?: string;
+}
+
+export default function Tabs({ tabs, basePath = "" }: TabsProps) {
+  const pathname = usePathname();
 
   return (
     <div className="flex gap-6 border-b border-gray-200">
       {tabs.map((tab) => {
-        const isActive = pathname === tab.href;
+        const isActive = pathname === `${basePath}${tab.href}`;
 
         return (
           <Link

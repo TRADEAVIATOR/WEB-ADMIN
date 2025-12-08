@@ -7,6 +7,9 @@ export default function RecentActivities({
   data,
   className,
 }: RecentActivitiesProps) {
+  const truncate = (text: string, maxLength = 30) =>
+    text.length > maxLength ? text.slice(0, maxLength) + "…" : text;
+
   return (
     <div
       className={`bg-white rounded-2xl p-6 flex flex-col gap-4 border border-gray-100 ${className}`}>
@@ -24,7 +27,7 @@ export default function RecentActivities({
             className="flex flex-col sm:flex-row sm:items-center sm:justify-between py-3">
             <div className="flex flex-col gap-0.5">
               <p className="text-sm font-medium text-gray-800">
-                {activity.description}
+                {truncate(activity.description)}
               </p>
               <p className="text-sm text-gray-500">{activity.details}</p>
             </div>

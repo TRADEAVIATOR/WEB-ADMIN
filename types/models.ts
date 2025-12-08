@@ -249,3 +249,92 @@ export interface AdminProfile {
   status?: string;
   permissions?: string[];
 }
+
+export interface GiftCardProduct {
+  id: string;
+  reloadlyId: string;
+  name: string;
+  country: string;
+  countryCode: string;
+  currency: string;
+  denomination: string;
+  minAmount: string;
+  maxAmount: string;
+  imageUrl: string;
+  isActive: boolean;
+  reloadlyData: unknown;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface GiftCardOrder {
+  id: string;
+  userId: string;
+  productId: string;
+  orderReference: string;
+  cardType: string;
+  country: string;
+  denomination: string;
+  quantity: number;
+  rate: string;
+  cardTotal: string;
+  fee: string;
+  promoDiscount: string;
+  nairaValue: string;
+  paymentMethod: string;
+  transactionId: string;
+  status: string;
+  failureReason?: string | null;
+  createdAt: string;
+  updatedAt: string;
+  users?: any;
+  giftcardProduct?: any;
+}
+
+export interface GiftCardSale {
+  id: string;
+  userId: string;
+  acceptedCardId: string;
+  cardType: string;
+  country: string;
+  countryCode: string;
+  cardRange: string;
+  cardValue: string;
+  cardCurrency: string;
+  quantity: number;
+  receiptType: string;
+  cardImages: string[];
+  userNotes: string | null;
+  buyingRate: string;
+  totalCardValue: string;
+  payoutAmount: string;
+  promoCode: string | null;
+  promoDiscount: string | null;
+  status: "PENDING" | "SUCCESS" | "CANCELLED" | string;
+  reviewedBy?: string | null;
+  reviewedAt?: string | null;
+  reviewNotes?: string | null;
+  rejectionReason?: string | null;
+  paymentMethod: string;
+  transactionId?: string | null;
+  paidAt?: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface AcceptedGiftCard {
+  id: string;
+  cardName: string;
+  cardType: string;
+  country: string;
+  countryCode: string;
+  currency: string;
+  brand: string;
+  minValue: string;
+  maxValue: string;
+  imageUrl: string;
+  instructions: string;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
