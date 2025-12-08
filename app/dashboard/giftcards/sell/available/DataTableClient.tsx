@@ -10,9 +10,10 @@ import Badge from "@/components/ui/Badge";
 import PageHeader from "@/components/ui/PageHeader";
 import { FiRefreshCw } from "react-icons/fi";
 import { syncGiftCardProductsClient } from "@/lib/api/giftcards";
+import { HiOutlineCurrencyDollar } from "react-icons/hi2";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
 import toast from "react-hot-toast";
-import { useSession } from "next-auth/react";
 
 export default function DataTableClient({
   initialData = [],
@@ -38,6 +39,7 @@ export default function DataTableClient({
 
   const rows: RowData[] = initialData.map((item) => ({
     id: item.id,
+
     imageUrl: (
       <div className="w-10 h-10 relative">
         <Image
@@ -49,16 +51,35 @@ export default function DataTableClient({
         />
       </div>
     ),
+
     name: item.name,
     country: `${item.country} (${item.countryCode})`,
-    currency: item.currency,
+
+    currency: (
+      <Badge
+        text={item.currency}
+        color="blue"
+        icon={<HiOutlineCurrencyDollar className="w-3 h-3" />}
+      />
+    ),
+
     denomination: item.denomination,
     range: `${item.minAmount} - ${item.maxAmount}`,
+
     status: item.isActive ? (
-      <Badge text="Active" color="green" />
+      <Badge
+        text="Active"
+        color="green"
+        icon={<span className="w-2 h-2 rounded-full bg-green-500" />}
+      />
     ) : (
-      <Badge text="Inactive" color="red" />
+      <Badge
+        text="Inactive"
+        color="red"
+        icon={<span className="w-2 h-2 rounded-full bg-red-500" />}
+      />
     ),
+
     createdAt: new Date(item.createdAt).toLocaleDateString("en-US", {
       day: "numeric",
       month: "short",

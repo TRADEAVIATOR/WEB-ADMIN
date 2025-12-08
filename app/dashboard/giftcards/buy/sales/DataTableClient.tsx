@@ -5,7 +5,7 @@ import Image from "next/image";
 import DataTable from "@/components/ui/Table";
 import Pagination from "@/components/ui/Pagination";
 import { DataTableClientProps } from "@/types/props";
-import { RowData } from "@/types/common";
+import { MenuItem, RowData } from "@/types/common";
 import { GiftCardSale } from "@/types/models";
 
 export default function DataTableClient({
@@ -59,13 +59,20 @@ export default function DataTableClient({
     }),
   }));
 
+  const menuItems: MenuItem<RowData>[] = [
+    {
+      label: "View",
+      onClick: (row) => router.push(`/dashboard/giftcards/buy/sales/${row.id}`),
+    },
+  ];
+
   const handlePageChange = (page: number) => {
     router.push(`/dashboard/giftcards/buy/sales?page=${page}`);
   };
 
   return (
     <>
-      <DataTable columns={columns} data={rows} />
+      <DataTable columns={columns} data={rows} menuItems={menuItems} />
       <Pagination
         currentPage={currentPage}
         totalPages={totalPages}
