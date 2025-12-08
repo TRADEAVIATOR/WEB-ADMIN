@@ -6,11 +6,7 @@ import { ChevronLeft } from "lucide-react";
 import Image from "next/image";
 import { Event } from "@/types/models";
 
-interface EventDetailsProps {
-  event: Event;
-}
-
-export default function EventDetails({ event }: EventDetailsProps) {
+export default function EventDetails({ event }: { event: Event }) {
   const router = useRouter();
 
   const createdAt = new Date(event.createdAt).toLocaleString();

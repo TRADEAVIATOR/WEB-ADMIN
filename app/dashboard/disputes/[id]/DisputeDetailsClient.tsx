@@ -5,13 +5,11 @@ import DetailItem from "@/components/shared/DetailItem";
 import { ChevronLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 
-interface DisputeDetailsClientProps {
-  dispute: Dispute;
-}
-
 export default function DisputeDetailsClient({
   dispute,
-}: DisputeDetailsClientProps) {
+}: {
+  dispute: Dispute;
+}) {
   const router = useRouter();
 
   const amountNumber = Number(dispute.amount) || 0;

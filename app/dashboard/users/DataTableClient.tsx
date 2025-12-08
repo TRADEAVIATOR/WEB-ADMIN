@@ -2,12 +2,16 @@
 
 import { useRouter } from "next/navigation";
 import DataTable from "@/components/ui/Table";
+import { HiCheckCircle, HiXCircle } from "react-icons/hi2";
 import Pagination from "@/components/ui/Pagination";
-import { toggleCustomerStatus } from "@/lib/api/customers";
+import { toggleCustomerStatusClient } from "@/lib/api/customers";
 import { RowData, MenuItem } from "@/types/common";
 import { DataTableClientProps } from "@/types/props";
 import { formatNaira } from "@/lib/utils/format";
 import { Customer } from "@/types/models";
+import Badge from "@/components/ui/Badge";
+import { useSession } from "next-auth/react";
+import toast from "react-hot-toast";
 
 export default function DataTableClient({
   initialData = [],
@@ -16,6 +20,9 @@ export default function DataTableClient({
 }: DataTableClientProps<Customer>) {
   const router = useRouter();
   const currentPage = initialPage;
+
+  const { data: session } = useSession();
+  const token = session?.accessToken ?? "";
 
   const columns = [
     { key: "fullname", label: "Full Name" },
@@ -35,14 +42,39 @@ export default function DataTableClient({
     phone: customer.phone,
     email: customer.email,
     depositBalance: formatNaira(customer.wallets[0]?.depositBalance) || "0",
-    isVerified: customer.isVerified ? "Verified" : "Not Verified",
-    isKycVerified: customer.isKycVerified ? "Verified" : "Pending",
+    isVerified: customer.isVerified ? (
+      <Badge text="Verified" color="green" icon={<HiCheckCircle size={14} />} />
+    ) : (
+      <Badge text="Not Verified" color="red" icon={<HiXCircle size={14} />} />
+    ),
+    isKycVerified: customer.isKycVerified ? (
+      <Badge text="Verified" color="green" icon={<HiCheckCircle size={14} />} />
+    ) : (
+      <Badge text="Pending" color="yellow" icon={<HiXCircle size={14} />} />
+    ),
     createdAt: new Date(customer.createdAt).toLocaleDateString("en-US", {
       day: "numeric",
       month: "short",
       year: "numeric",
     }),
   }));
+
+  const handleToggleCustomerStatus = async (customerId: string) => {
+    const toastId = toast.loading("Updating customer status...");
+
+    try {
+      const res = await toggleCustomerStatusClient(customerId, token);
+      if (!res.error) {
+        toast.success("Customer status updated successfully!", { id: toastId });
+      } else {
+        toast.error(res.message || "Failed to update customer status.", {
+          id: toastId,
+        });
+      }
+    } catch (error: any) {
+      toast.error(error?.message || "An error occurred.", { id: toastId });
+    }
+  };
 
   const menuItems: MenuItem<RowData>[] = [
     {
@@ -52,7 +84,7 @@ export default function DataTableClient({
     {
       label: "Toggle Active",
       color: "text-red-600",
-      onClick: (row) => toggleCustomerStatus(String(row.id)),
+      onClick: (row) => handleToggleCustomerStatus(String(row.id)),
     },
   ];
 

@@ -7,6 +7,7 @@ import { MenuItem, RowData } from "@/types/common";
 import { DataTableClientProps } from "@/types/props";
 import { Dispute } from "@/types/models";
 import { updateDisputeStatusClient } from "@/lib/api/disputes";
+import { HiCheckCircle, HiClock, HiXCircle } from "react-icons/hi2";
 import { useSession } from "next-auth/react";
 import toast from "react-hot-toast";
 import Badge from "@/components/ui/Badge";
@@ -18,6 +19,7 @@ export default function DataTableClient({
 }: DataTableClientProps<Dispute>) {
   const router = useRouter();
   const { data: session } = useSession();
+  const token = session?.accessToken ?? "";
 
   const currentPage = initialPage;
 
@@ -32,33 +34,67 @@ export default function DataTableClient({
     { key: "updatedAt", label: "Updated At" },
   ];
 
-  const rows: RowData[] = initialData.map((dispute) => ({
-    id: dispute.id,
-    user: dispute.user?.fullname || "-",
-    reason: dispute.narration || "-",
-    status: (
-      <Badge
-        text={dispute.status}
-        color={
-          dispute.status === "SUCCESS"
-            ? "green"
-            : dispute.status === "PENDING"
-            ? "yellow"
-            : "red"
-        }
-      />
-    ),
-    transactionId: dispute.transaction?.id || dispute.transactionId || "-",
-    amount: dispute.transaction?.amount
-      ? `₦${Number(dispute.transaction.amount).toLocaleString()}`
-      : "-",
-    createdAt: dispute.createdAt
-      ? new Date(dispute.createdAt).toLocaleString()
-      : "-",
-    updatedAt: dispute.updatedAt
-      ? new Date(dispute.updatedAt).toLocaleString()
-      : "-",
-  }));
+  const rows: RowData[] = initialData.map((dispute) => {
+    let statusColor: "green" | "yellow" | "red";
+    let statusIcon: React.ReactNode = null;
+
+    switch (dispute.status) {
+      case "SUCCESS":
+        statusColor = "green";
+        statusIcon = <HiCheckCircle className="w-4 h-4" />;
+        break;
+      case "PENDING":
+        statusColor = "yellow";
+        statusIcon = <HiClock className="w-4 h-4" />;
+        break;
+      case "FAILED":
+      case "CANCELLED":
+        statusColor = "red";
+        statusIcon = <HiXCircle className="w-4 h-4" />;
+        break;
+      default:
+        statusColor = "yellow";
+    }
+
+    return {
+      id: dispute.id,
+      user: dispute.user?.fullname || "-",
+      reason: dispute.narration || "-",
+      status: (
+        <Badge text={dispute.status} color={statusColor} icon={statusIcon} />
+      ),
+      transactionId: dispute.transaction?.id || dispute.transactionId || "-",
+      amount: dispute.transaction?.amount
+        ? `₦${Number(dispute.transaction.amount).toLocaleString()}`
+        : "-",
+      createdAt: dispute.createdAt
+        ? new Date(dispute.createdAt).toLocaleString()
+        : "-",
+      updatedAt: dispute.updatedAt
+        ? new Date(dispute.updatedAt).toLocaleString()
+        : "-",
+    };
+  });
+
+  const handleUpdateDisputeStatus = async (
+    transactionId: string,
+    status: string
+  ) => {
+    const toastId = toast.loading("Updating dispute status...");
+
+    try {
+      const res = await updateDisputeStatusClient(transactionId, status, token);
+      if (!res.error) {
+        toast.success("Dispute status updated successfully!", { id: toastId });
+      } else {
+        toast.error(res.message || "Failed to update dispute status.", {
+          id: toastId,
+        });
+      }
+    } catch (error: any) {
+      toast.error(error?.message || "An error occurred.", { id: toastId });
+    }
+  };
 
   const menuItems: MenuItem<RowData>[] = [
     {
@@ -68,27 +104,8 @@ export default function DataTableClient({
     {
       label: "Update Status",
       color: "text-blue-600",
-      onClick: async (row) => {
-        const token = session?.accessToken;
-
-        if (!token) {
-          toast.error("You are not authenticated.");
-          return;
-        }
-
-        try {
-          await updateDisputeStatusClient(
-            String(row.transactionId),
-            "RESOLVED",
-            token
-          );
-          toast.success("Dispute status updated successfully!");
-        } catch (err: any) {
-          toast.error(
-            err.response?.data?.message || "Failed to update dispute status."
-          );
-        }
-      },
+      onClick: (row) =>
+        handleUpdateDisputeStatus(String(row.transactionId), "RESOLVED"),
     },
   ];
 
