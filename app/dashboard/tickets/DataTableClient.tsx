@@ -6,6 +6,7 @@ import Pagination from "@/components/ui/Pagination";
 import { RowData } from "@/types/common";
 import { DataTableClientProps } from "@/types/props";
 import { Ticket } from "@/types/models";
+import Badge from "@/components/ui/Badge";
 
 export default function DataTableClient({
   initialData = [],
@@ -28,7 +29,7 @@ export default function DataTableClient({
 
   const rows: RowData[] = initialData.map((ticket) => ({
     id: ticket.tierId,
-    tierName: `${ticket.tierName}`,
+    tierName: <Badge text={ticket.tierName} color="blue" />,
     price: `${ticket.currency} ${ticket.price}`,
     remainingQuantity: ticket.remainingQuantity,
     soldQuantity: ticket.soldQuantity,

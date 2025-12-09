@@ -9,6 +9,7 @@ import { formatNaira } from "@/lib/utils/format";
 import PageHeader from "@/components/ui/PageHeader";
 import { Transaction } from "@/types/models";
 import Badge from "@/components/ui/Badge";
+import { TransactionCategory } from "@/types/enums";
 
 export default function DataTableClient({
   initialData = [],
@@ -32,11 +33,43 @@ export default function DataTableClient({
     { key: "createdAt", label: "Date" },
   ];
 
+  const categoryColorMap: Record<
+    TransactionCategory,
+    "green" | "yellow" | "red" | "blue"
+  > = {
+    DEPOSIT: "green",
+    OUTWARDS: "yellow",
+    WITHDRAWAL: "red",
+    TRANSFER: "blue",
+    REVERSAL: "red",
+    GIFTCARDS: "blue",
+    CRYPTO: "yellow",
+    DATA: "blue",
+    AIRTIME: "blue",
+    CABLE: "blue",
+    SPORTS: "blue",
+    ELECTRICITY: "yellow",
+    EVENTS: "green",
+    EDUCATION: "green",
+    CASHBACK: "green",
+    REFERRAL_BONUS: "green",
+    CARD_CREATION: "blue",
+    VOUCHER: "blue",
+    CARD_FUNDING: "green",
+  };
+
   const rows: RowData[] = initialData.map((tx) => ({
     id: tx.id,
     userId: tx.userId,
-    category: tx.category,
-    type: tx.type,
+    category: (
+      <Badge
+        text={tx.category}
+        color={categoryColorMap[tx.category as TransactionCategory] || "gray"} // default gray
+      />
+    ),
+    type: (
+      <Badge text={tx.type} color={tx.type === "CREDIT" ? "green" : "red"} />
+    ),
     status: (
       <Badge
         text={tx.status}
@@ -83,9 +116,9 @@ export default function DataTableClient({
             name: "status",
             type: "checkbox",
             options: [
-              { label: "Successful", value: "successful" },
-              { label: "Failed", value: "failed" },
-              { label: "Pending", value: "pending" },
+              { label: "Successful", value: "SUCCESS" },
+              { label: "Failed", value: "FAILED" },
+              { label: "Pending", value: "PENDING" },
             ],
           },
         ]}

@@ -51,13 +51,21 @@ export default function Sidebar() {
           href={link.href}
           className={classes}
           data-active={isActive ? "true" : undefined}>
-          <Image
-            src={link.icon}
-            alt={link.label}
-            width={isChild ? 16 : 18}
-            height={isChild ? 16 : 18}
-            className="object-contain flex-shrink-0"
-          />
+          {isChild ? (
+            <span
+              className={`w-2 h-2 rounded-full ${
+                isActive ? "bg-primary" : "bg-gray-400"
+              }`}
+            />
+          ) : (
+            <Image
+              src={link.icon}
+              alt={link.label}
+              width={18}
+              height={18}
+              className="object-contain flex-shrink-0"
+            />
+          )}
           <span className="truncate">{link.label}</span>
         </Link>
       );
@@ -68,13 +76,21 @@ export default function Sidebar() {
         key={index}
         className={classes}
         onClick={() => openModal("logout")}>
-        <Image
-          src={link.icon}
-          alt={link.label}
-          width={isChild ? 16 : 18}
-          height={isChild ? 16 : 18}
-          className="object-contain flex-shrink-0"
-        />
+        {isChild ? (
+          <span
+            className={`w-2 h-2 rounded-full ${
+              isActive ? "bg-primary" : "bg-gray-400"
+            }`}
+          />
+        ) : (
+          <Image
+            src={link.icon}
+            alt={link.label}
+            width={18}
+            height={18}
+            className="object-contain flex-shrink-0"
+          />
+        )}
         <span className="truncate">{link.label}</span>
       </button>
     );

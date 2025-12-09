@@ -4,8 +4,10 @@ export interface EventFormValues {
   location: string;
   date: string;
   time: string;
+  eventImages: (File | string)[];
   tickets: {
-    type: string;
-    amount: number;
+    name: string;
+    quantity: number;
+    price: string;
   }[];
 }

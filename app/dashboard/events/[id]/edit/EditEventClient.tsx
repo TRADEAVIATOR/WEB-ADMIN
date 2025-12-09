@@ -6,12 +6,15 @@ import { EventFormValues } from "@/types/forms";
 import { ChevronLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
+import { useSession } from "next-auth/react";
 
 export default function EditEventClient({ initialValues, eventId }) {
   const router = useRouter();
+  const { data: session } = useSession();
+  const token = session?.accessToken ?? "";
 
   const handleEditEvent = async (values: EventFormValues) => {
-    const res = await editEvent({ ...values, eventId });
+    const res = await editEvent({ ...values }, eventId, token);
     if (res?.error) {
       toast.error("Failed to update event");
       return;

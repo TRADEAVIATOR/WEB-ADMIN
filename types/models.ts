@@ -19,6 +19,7 @@ export interface Customer {
   email: string;
   tier: string;
   createdAt: string;
+  referralCode: string;
   isVerified: boolean;
   isKycVerified: boolean;
   isActive: boolean;
@@ -47,7 +48,20 @@ export interface Transaction {
     id: string;
     fullname: string;
     email: string;
+    phone: string;
   } | null;
+  meta?: {
+    code: string;
+    message: string;
+    success: boolean;
+    internalStatus: string;
+    data: {
+      status: string;
+      orderNo: string;
+      errorMsg: string | null;
+      reference: string;
+    };
+  };
 }
 
 export interface RewardUser {
@@ -199,7 +213,7 @@ export interface Dispute {
     phone?: string;
     email: string;
   };
-  disputes?: {
+  disputes: {
     transactionId: string;
     category: string;
     reason: string;

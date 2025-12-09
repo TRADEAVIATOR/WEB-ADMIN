@@ -4,6 +4,7 @@ import { Dispute } from "@/types/models";
 import DetailItem from "@/components/shared/DetailItem";
 import { ChevronLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { formatNaira } from "@/lib/utils/format";
 
 export default function DisputeDetailsClient({
   dispute,
@@ -39,15 +40,15 @@ export default function DisputeDetailsClient({
       <div className="max-w-4xl mx-auto space-y-8">
         <div className="space-y-5">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-b border-gray-100 pb-4">
-            <DetailItem label="Transaction ID" value={dispute.transactionId} />
+            <DetailItem
+              label="Transaction ID"
+              value={dispute.disputes[0].transactionId}
+            />
             <DetailItem label="Reference" value={dispute.reference || "-"} />
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-b border-gray-100 pb-4">
-            <DetailItem
-              label="Amount"
-              value={`₦${amountNumber.toLocaleString()}`}
-            />
+            <DetailItem label="Amount" value={formatNaira(amountNumber)} />
             <DetailItem label="Type" value={dispute.type || "-"} />
           </div>
 

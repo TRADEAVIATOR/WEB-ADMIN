@@ -15,7 +15,7 @@ export default function AddCryptoRateModal({
   isOpen,
   onClose,
 }: AddCryptoRateModalProps) {
-  const [crypto, setCrypto] = useState("");
+  const [crypto, setCrypto] = useState("BTC");
   const [rate, setRate] = useState("");
 
   const { openModal } = useModal();
@@ -35,10 +35,15 @@ export default function AddCryptoRateModal({
       <form onSubmit={handleSubmit} className="space-y-4">
         <FormField
           label="Select Crypto"
-          type="text"
-          placeholder="Enter crypto name (e.g. Bitcoin)"
+          as="select"
           value={crypto}
           onChange={(e) => setCrypto(e.target.value)}
+          options={[
+            { value: "BTC", label: "BTC" },
+            { value: "USDT", label: "USDT" },
+            { value: "ETH", label: "ETH" },
+            { value: "USDC", label: "USDC" },
+          ]}
         />
 
         <FormField

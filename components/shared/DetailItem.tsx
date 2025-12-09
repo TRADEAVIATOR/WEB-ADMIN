@@ -1,9 +1,11 @@
+import { ReactNode } from "react";
+
 export default function DetailItem({
   label,
   value,
 }: {
   label: string;
-  value: string;
+  value: string | ReactNode;
 }) {
   return (
     <div>

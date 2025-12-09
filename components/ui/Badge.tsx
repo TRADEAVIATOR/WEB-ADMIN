@@ -5,7 +5,7 @@ import clsx from "clsx";
 
 interface BadgeProps {
   text: string | number;
-  color?: "green" | "red" | "yellow" | "blue" | "gray";
+  color?: "green" | "red" | "yellow" | "blue" | "gray" | string;
   icon?: ReactNode;
   className?: string;
 }

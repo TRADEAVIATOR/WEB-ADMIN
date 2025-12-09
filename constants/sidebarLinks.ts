@@ -8,9 +8,9 @@ export interface SidebarLink {
 import DashboardIcon from "@/assets/icons/dashboard.svg";
 import AnalyticsIcon from "@/assets/icons/analytics.svg";
 import UsersIcon from "@/assets/icons/users.svg";
-import TicketsIcon from "@/assets/icons/users.svg";
-import EventsIcon from "@/assets/icons/users.svg";
-import DisputesIcon from "@/assets/icons/users.svg";
+import TicketsIcon from "@/assets/icons/tickets.svg";
+import EventsIcon from "@/assets/icons/events.svg";
+import DisputesIcon from "@/assets/icons/disputes.svg";
 import TransactionsIcon from "@/assets/icons/transactions.svg";
 import VirtualCardIcon from "@/assets/icons/virtual-card.svg";
 import RateIcon from "@/assets/icons/rate.svg";

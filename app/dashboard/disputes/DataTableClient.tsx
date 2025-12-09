@@ -7,7 +7,12 @@ import { MenuItem, RowData } from "@/types/common";
 import { DataTableClientProps } from "@/types/props";
 import { Dispute } from "@/types/models";
 import { updateDisputeStatusClient } from "@/lib/api/disputes";
-import { HiCheckCircle, HiClock, HiXCircle } from "react-icons/hi2";
+import {
+  HiCheckCircle,
+  HiClock,
+  HiInformationCircle,
+  HiXCircle,
+} from "react-icons/hi2";
 import { useSession } from "next-auth/react";
 import toast from "react-hot-toast";
 import Badge from "@/components/ui/Badge";
@@ -34,47 +39,60 @@ export default function DataTableClient({
     { key: "updatedAt", label: "Updated At" },
   ];
 
-  const rows: RowData[] = initialData.map((dispute) => {
-    let statusColor: "green" | "yellow" | "red";
-    let statusIcon: React.ReactNode = null;
+  const rows: RowData[] = initialData.flatMap((item) => {
+    return item.disputes.map((d) => {
+      let statusColor: "green" | "yellow" | "red" | "blue" = "yellow";
+      let statusIcon: React.ReactNode = null;
 
-    switch (dispute.status) {
-      case "SUCCESS":
-        statusColor = "green";
-        statusIcon = <HiCheckCircle className="w-4 h-4" />;
-        break;
-      case "PENDING":
-        statusColor = "yellow";
-        statusIcon = <HiClock className="w-4 h-4" />;
-        break;
-      case "FAILED":
-      case "CANCELLED":
-        statusColor = "red";
-        statusIcon = <HiXCircle className="w-4 h-4" />;
-        break;
-      default:
-        statusColor = "yellow";
-    }
+      switch (d.status) {
+        case "RESOLVED":
+          statusColor = "green";
+          statusIcon = <HiCheckCircle className="w-4 h-4" />;
+          break;
 
-    return {
-      id: dispute.id,
-      user: dispute.user?.fullname || "-",
-      reason: dispute.narration || "-",
-      status: (
-        <Badge text={dispute.status} color={statusColor} icon={statusIcon} />
-      ),
-      transactionId: dispute.transaction?.id || dispute.transactionId || "-",
-      amount: dispute.transaction?.amount
-        ? `₦${Number(dispute.transaction.amount).toLocaleString()}`
-        : "-",
-      createdAt: dispute.createdAt
-        ? new Date(dispute.createdAt).toLocaleString()
-        : "-",
-      updatedAt: dispute.updatedAt
-        ? new Date(dispute.updatedAt).toLocaleString()
-        : "-",
-    };
+        case "PENDING":
+          statusColor = "yellow";
+          statusIcon = <HiClock className="w-4 h-4" />;
+          break;
+
+        case "IN_REVIEW":
+          statusColor = "blue";
+          statusIcon = <HiInformationCircle className="w-4 h-4" />;
+          break;
+
+        case "REJECTED":
+          statusColor = "red";
+          statusIcon = <HiXCircle className="w-4 h-4" />;
+          break;
+
+        default:
+          statusColor = "yellow";
+          statusIcon = <HiClock className="w-4 h-4" />;
+          break;
+      }
+
+      return {
+        id: item.id,
+        user: item.user?.fullname || "-",
+        reason: d.reason || "-",
+        status: <Badge text={d.status} color={statusColor} icon={statusIcon} />,
+        transactionId: item.id,
+        amount: item.amount ? `₦${Number(item.amount).toLocaleString()}` : "-",
+        createdAt: item.createdAt
+          ? new Date(item.createdAt).toLocaleString()
+          : "-",
+        updatedAt: item.updatedAt
+          ? new Date(item.updatedAt).toLocaleString()
+          : "-",
+      };
+    });
   });
+
+  const DISPUTE_STATUS_OPTIONS = [
+    { key: "IN_REVIEW", label: "Mark as In Review", color: "text-blue-600" },
+    { key: "RESOLVED", label: "Mark as Resolved", color: "text-green-600" },
+    { key: "REJECTED", label: "Reject Dispute", color: "text-red-600" },
+  ];
 
   const handleUpdateDisputeStatus = async (
     transactionId: string,
@@ -101,12 +119,12 @@ export default function DataTableClient({
       label: "View",
       onClick: (row) => router.push(`/dashboard/disputes/${row.id}`),
     },
-    {
-      label: "Update Status",
-      color: "text-blue-600",
+    ...DISPUTE_STATUS_OPTIONS.map((opt) => ({
+      label: opt.label,
+      color: opt.color,
       onClick: (row) =>
-        handleUpdateDisputeStatus(String(row.transactionId), "RESOLVED"),
-    },
+        handleUpdateDisputeStatus(String(row.transactionId), opt.key),
+    })),
   ];
 
   const handlePageChange = (page: number) => {

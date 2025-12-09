@@ -1,6 +1,6 @@
 import { tryServer } from "../utils/tryServer";
 import { EventFormValues } from "@/types/forms";
-import { authApi } from "../axios";
+import { api, authApi } from "../axios";
 
 export const getEvents = async (page = 1, limit = 10) => {
   const client = await authApi();
@@ -16,13 +16,7 @@ export const getEvent = async (id: string) => {
   return tryServer(client.get(`/admin/events/${id}`).then((res) => res.data));
 };
 
-interface CreateEventParams extends EventFormValues {
-  eventImages?: File[];
-}
-
-export const createEvent = async (data: CreateEventParams) => {
-  const api = await authApi();
-
+const buildFormData = (data: EventFormValues) => {
   const formData = new FormData();
   formData.append("title", data.title);
   formData.append("description", data.description);
@@ -35,50 +29,39 @@ export const createEvent = async (data: CreateEventParams) => {
 
   formData.append("ticketTiers", JSON.stringify(data.tickets));
 
-  if (data.eventImages?.length) {
-    data.eventImages.forEach((file) => formData.append("eventImages", file));
-  }
+  data.eventImages?.forEach((file) => formData.append("eventImages", file));
+
+  return formData;
+};
+
+export const createEvent = async (data: EventFormValues, token: string) => {
+  const formData = buildFormData(data);
 
   return tryServer(
     api
-      .post("/events/create", formData, {
+      .post("/admin/events/create", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
         },
       })
       .then((res) => res.data)
   );
 };
 
-interface EditEventParams extends EventFormValues {
-  eventId: string;
-  eventImages?: File[];
-}
-
-export const editEvent = async (data: EditEventParams) => {
-  const api = await authApi();
-
-  const formData = new FormData();
-  formData.append("title", data.title);
-  formData.append("description", data.description);
-  formData.append("location", data.location);
-
-  const eventDateTime = data.time
-    ? `${data.date}T${data.time}:00.000Z`
-    : data.date;
-  formData.append("date", eventDateTime);
-
-  formData.append("ticketTiers", JSON.stringify(data.tickets));
-
-  if (data.eventImages?.length) {
-    data.eventImages.forEach((file) => formData.append("eventImages", file));
-  }
+export const editEvent = async (
+  data: EventFormValues,
+  eventId: string,
+  token: string
+) => {
+  const formData = buildFormData(data);
 
   return tryServer(
     api
-      .put(`/events/${data.eventId}`, formData, {
-        headers: {
+      .put(`/admin/events/${eventId}`, formData, {
+        headers: { 
           "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
         },
       })
       .then((res) => res.data)

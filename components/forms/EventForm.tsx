@@ -1,14 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useState, ChangeEvent } from "react";
 import Button from "@/components/ui/Button";
 import { AiOutlinePlus } from "react-icons/ai";
 import FormField from "../ui/FormField";
 import { EventFormValues } from "@/types/forms";
+import Image from "next/image";
 
 interface EventFormProps {
   initialValues?: Partial<EventFormValues>;
-  onSubmit: (values: EventFormValues) => void;
+  onSubmit: (values: any) => void;
   isLoading?: boolean;
 }
 
@@ -23,6 +24,7 @@ export default function EventForm({
     location: initialValues?.location || "",
     date: initialValues?.date || "",
     time: initialValues?.time || "",
+    eventImages: initialValues?.eventImages || [],
     tickets: initialValues?.tickets || [],
   });
 
@@ -32,10 +34,7 @@ export default function EventForm({
 
   const handleTicketChange = (
     index: number,
-    field: keyof {
-      type: string;
-      amount: number;
-    },
+    field: keyof { name: string; quantity: number; price: string },
     value: any
   ) => {
     const updatedTickets = [...values.tickets];
@@ -46,7 +45,7 @@ export default function EventForm({
   const addTicket = () => {
     setValues((prev) => ({
       ...prev,
-      tickets: [...prev.tickets, { type: "", amount: 0 }],
+      tickets: [...prev.tickets, { name: "", quantity: 1, price: "" }],
     }));
   };
 
@@ -55,18 +54,44 @@ export default function EventForm({
     setValues((prev) => ({ ...prev, tickets: updatedTickets }));
   };
 
+  const handleImagesChange = (e: ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files) return;
+    const filesArray = Array.from(e.target.files);
+    setValues((prev) => ({
+      ...prev,
+      eventImages: [...prev.eventImages, ...filesArray],
+    }));
+  };
+
+  const removeImage = (index: number) => {
+    const updatedImages = values.eventImages.filter((_, i) => i !== index);
+    setValues((prev) => ({ ...prev, eventImages: updatedImages }));
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const eventDateTime = values.date
+      ? new Date(`${values.date}T${values.time || "00:00"}`).toISOString()
+      : "";
+
+    onSubmit({
+      title: values.title,
+      description: values.description,
+      location: values.location,
+      date: eventDateTime,
+      ticketTiers: values.tickets,
+      eventImages: values.eventImages,
+    });
+  };
+
   return (
-    <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        onSubmit(values);
-      }}
-      className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-6">
       <FormField
         label="Title"
         placeholder="Event Name"
         value={values.title}
         onChange={(e) => handleChange("title", e.target.value)}
+        required
       />
 
       <FormField
@@ -76,6 +101,7 @@ export default function EventForm({
         onChange={(e) => handleChange("description", e.target.value)}
         as="textarea"
         rows={5}
+        required
       />
 
       <FormField
@@ -83,6 +109,7 @@ export default function EventForm({
         placeholder="Event Location"
         value={values.location}
         onChange={(e) => handleChange("location", e.target.value)}
+        required
       />
 
       <div className="grid grid-cols-2 gap-3">
@@ -91,6 +118,7 @@ export default function EventForm({
           type="date"
           value={values.date}
           onChange={(e) => handleChange("date", e.target.value)}
+          required
         />
         <FormField
           label="Time"
@@ -115,29 +143,36 @@ export default function EventForm({
         </div>
 
         {values.tickets.map((ticket, index) => (
-          <div key={index} className="grid grid-cols-2 gap-3 items-end">
+          <div key={index} className="grid grid-cols-3 gap-3 items-end">
             <FormField
-              label="Type"
-              placeholder="Ticket Type"
-              value={ticket.type}
+              label="Name"
+              placeholder="Ticket Name"
+              value={ticket.name}
               onChange={(e) =>
-                handleTicketChange(index, "type", e.target.value)
+                handleTicketChange(index, "name", e.target.value)
               }
-              as="select"
-              options={[
-                { value: "Regular", label: "Regular" },
-                { value: "VIP", label: "VIP" },
-                { value: "VVIP", label: "VVIP" },
-              ]}
+              required
             />
             <FormField
-              label="Amount"
-              placeholder="Price"
+              label="Quantity"
+              placeholder="Quantity"
               type="number"
-              value={ticket.amount}
+              min={1}
+              value={ticket.quantity}
               onChange={(e) =>
-                handleTicketChange(index, "amount", Number(e.target.value))
+                handleTicketChange(index, "quantity", Number(e.target.value))
               }
+              required
+            />
+            <FormField
+              label="Price"
+              placeholder="Price"
+              type="text"
+              value={ticket.price}
+              onChange={(e) =>
+                handleTicketChange(index, "price", e.target.value)
+              }
+              required
             />
             <Button
               type="button"
@@ -148,6 +183,41 @@ export default function EventForm({
             </Button>
           </div>
         ))}
+      </div>
+
+      <div className="space-y-2">
+        <div className="text-lg font-bold">Event Images</div>
+        <input
+          type="file"
+          multiple
+          accept="image/*"
+          onChange={handleImagesChange}
+        />
+        <div className="flex flex-wrap gap-2 mt-2">
+          {values.eventImages.map((file, index) => {
+            const url =
+              typeof file === "string"
+                ? file
+                : URL.createObjectURL(file as File);
+            return (
+              <div key={index} className="relative w-24 h-24">
+                <Image
+                  src={url}
+                  alt={`Event ${index}`}
+                  fill
+                  className="object-cover rounded"
+                  sizes="96px"
+                />
+                <button
+                  type="button"
+                  onClick={() => removeImage(index)}
+                  className="absolute top-1 right-1 bg-red-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
+                  &times;
+                </button>
+              </div>
+            );
+          })}
+        </div>
       </div>
 
       <Button type="submit" isLoading={isLoading}>

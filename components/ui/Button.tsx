@@ -54,15 +54,12 @@ export default function Button({
         className
       )}
       {...props}>
-      {isLoading ? (
+      {isLoading && (
         <AiOutlineLoading3Quarters className="animate-spin text-xl" />
-      ) : (
-        <>
-          {icon && iconPosition === "left" && icon}
-          {children}
-          {icon && iconPosition === "right" && icon}
-        </>
       )}
+      {icon && iconPosition === "left" && !isLoading && icon}
+      {children}
+      {icon && iconPosition === "right" && !isLoading && icon}
     </button>
   );
 }

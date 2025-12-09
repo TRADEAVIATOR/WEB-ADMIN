@@ -1,10 +1,12 @@
 "use client";
 
 import DetailItem from "@/components/shared/DetailItem";
+import Badge from "@/components/ui/Badge";
+import { Customer } from "@/types/models";
 import { FaCheckCircle } from "react-icons/fa";
 
 interface PersonalDetailsTabProps {
-  customer: any;
+  customer: Customer;
 }
 
 export default function PersonalDetailsTab({
@@ -23,12 +25,20 @@ export default function PersonalDetailsTab({
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-b border-gray-100 pb-4">
-        <DetailItem label="Tier" value={customer.tier} />
+        <DetailItem
+          label="Account Status"
+          value={
+            customer.isActive ? (
+              <Badge text="Active" color="green" />
+            ) : (
+              <Badge text="Inactive" color="red" />
+            )
+          }
+        />
         <DetailItem label="Referral Code" value={customer.referralCode} />
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <DetailItem label="Date of Birth" value={customer.dateOfBirth} />
         <DetailItem
           label="Date Joined"
           value={new Date(customer.createdAt).toLocaleDateString()}

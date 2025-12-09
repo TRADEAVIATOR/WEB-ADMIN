@@ -7,6 +7,8 @@ import Image from "next/image";
 import { Event } from "@/types/models";
 
 export default function EventDetails({ event }: { event: Event }) {
+  console.log(event);
+
   const router = useRouter();
 
   const createdAt = new Date(event.createdAt).toLocaleString();

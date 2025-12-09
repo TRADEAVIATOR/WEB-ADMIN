@@ -4,14 +4,17 @@ import EventForm from "@/components/forms/EventForm";
 import { createEvent } from "@/lib/api/events";
 import { EventFormValues } from "@/types/forms";
 import { ChevronLeft } from "lucide-react";
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 
 export default function AddEventClient() {
   const router = useRouter();
+  const { data: session } = useSession();
+  const token = session?.accessToken ?? "";
 
   const handleAddEvent = async (values: EventFormValues) => {
-    const res = await createEvent(values);
+    const res = await createEvent(values, token);
     if (res?.error) {
       toast.error("Failed to create event");
       return;
