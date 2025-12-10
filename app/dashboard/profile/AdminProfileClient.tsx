@@ -5,14 +5,71 @@ import { useRouter } from "next/navigation";
 import { ChevronLeft, MoreVertical } from "lucide-react";
 import AvatarImg from "@/assets/icons/avatar.svg";
 import Image from "next/image";
+import { useState } from "react";
+import FormField from "@/components/ui/FormField";
+import { changeAdminPasswordClient } from "@/lib/api/auth";
+import Button from "@/components/ui/Button";
+import { toast } from "react-hot-toast";
+import { useSession } from "next-auth/react";
 
-interface AdminProfileClientProps {
-  admin: AdminProfile;
-}
-
-export default function AdminProfileClient({ admin }: AdminProfileClientProps) {
+export default function AdminProfileClient({ admin }: { admin: AdminProfile }) {
   const router = useRouter();
   const isActive = admin.status === "Active";
+  const { data: session } = useSession();
+  const token = session?.accessToken;
+
+  const [passwordForm, setPasswordForm] = useState({
+    currentPassword: "",
+    newPassword: "",
+    confirmNewPassword: "",
+  });
+  const [loading, setLoading] = useState(false);
+
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setPasswordForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handlePasswordSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!token) {
+      toast.error("Authentication error. Please log in again.");
+      return;
+    }
+
+    if (
+      !passwordForm.currentPassword ||
+      !passwordForm.newPassword ||
+      !passwordForm.confirmNewPassword
+    ) {
+      toast.error("Please fill in all password fields.");
+      return;
+    }
+
+    if (passwordForm.newPassword !== passwordForm.confirmNewPassword) {
+      toast.error("New password and confirmation do not match.");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      await changeAdminPasswordClient(passwordForm, token);
+      toast.success("Password changed successfully!");
+      setPasswordForm({
+        currentPassword: "",
+        newPassword: "",
+        confirmNewPassword: "",
+      });
+    } catch (error: any) {
+      toast.error(
+        error?.response?.data?.message || "Failed to change password"
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="bg-white rounded-2xl p-6 w-full">
@@ -120,7 +177,7 @@ export default function AdminProfileClient({ admin }: AdminProfileClientProps) {
           </div>
         </div>
 
-        {admin.permissions && admin.permissions?.length > 0 && (
+        {admin.permissions && admin.permissions.length > 0 && (
           <div className="border border-gray-200 rounded-xl p-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-6">
               Permissions
@@ -139,6 +196,41 @@ export default function AdminProfileClient({ admin }: AdminProfileClientProps) {
             </div>
           </div>
         )}
+
+        <div className="border border-gray-200 rounded-xl p-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-6">
+            Change Password
+          </h3>
+          <form onSubmit={handlePasswordSubmit} className="space-y-4">
+            <FormField
+              label="Current Password"
+              name="currentPassword"
+              type="password"
+              value={passwordForm.currentPassword}
+              onChange={handlePasswordChange}
+              placeholder="Enter current password"
+            />
+            <FormField
+              label="New Password"
+              name="newPassword"
+              type="password"
+              value={passwordForm.newPassword}
+              onChange={handlePasswordChange}
+              placeholder="Enter new password"
+            />
+            <FormField
+              label="Confirm New Password"
+              name="confirmNewPassword"
+              type="password"
+              value={passwordForm.confirmNewPassword}
+              onChange={handlePasswordChange}
+              placeholder="Confirm new password"
+            />
+            <Button type="submit" className="ml-auto block" disabled={loading}>
+              {loading ? "Updating..." : "Update Password"}
+            </Button>
+          </form>
+        </div>
       </div>
     </div>
   );

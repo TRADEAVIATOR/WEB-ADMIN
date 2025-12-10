@@ -29,7 +29,7 @@ export default function Button({
     <button
       disabled={disabled || isLoading}
       className={clsx(
-        "flex items-center justify-center gap-2 font-semibold transition-all duration-200 focus:outline-none cursor-pointer",
+        "flex items-center justify-center whitespace-nowrap gap-2 font-semibold transition-all duration-200 focus:outline-none cursor-pointer",
         {
           "bg-primary text-white hover:bg-opacity-90 disabled:bg-opacity-60":
             variant === "primary",

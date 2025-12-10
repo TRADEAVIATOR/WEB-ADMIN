@@ -62,12 +62,13 @@ export default function DataTableClient({
   const menuItems: MenuItem<RowData>[] = [
     {
       label: "View",
-      onClick: (row) => router.push(`/dashboard/giftcards/buy/sales/${row.id}`),
+      onClick: (row) =>
+        router.push(`/dashboard/giftcards/sell/sales/${row.id}`),
     },
   ];
 
   const handlePageChange = (page: number) => {
-    router.push(`/dashboard/giftcards/buy/sales?page=${page}`);
+    router.push(`/dashboard/giftcards/sell/sales?page=${page}`);
   };
 
   return (

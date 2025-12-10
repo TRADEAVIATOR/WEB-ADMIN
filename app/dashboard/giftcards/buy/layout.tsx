@@ -5,10 +5,10 @@ export default function layout({ children }: { children: React.ReactNode }) {
     <>
       <Tabs
         tabs={[
-          { label: "Overview", href: "/dashboard/giftcards/buy/sales" },
+          { label: "Overview", href: "/dashboard/giftcards/buy/orders" },
           {
             label: "Available Giftcards",
-            href: "/dashboard/giftcards/buy/accepted",
+            href: "/dashboard/giftcards/buy/available",
           },
         ]}
       />

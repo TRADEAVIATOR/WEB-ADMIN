@@ -28,11 +28,6 @@ export const sidebarLinks: SidebarLink[] = [
     icon: DashboardIcon,
   },
   {
-    label: "Analytics",
-    href: "/dashboard/analytics",
-    icon: AnalyticsIcon,
-  },
-  {
     label: "User Management",
     icon: UsersIcon,
     children: [
@@ -105,12 +100,12 @@ export const sidebarLinks: SidebarLink[] = [
     children: [
       {
         label: "Buy",
-        href: "/dashboard/giftcards/buy/sales",
+        href: "/dashboard/giftcards/buy/orders",
         icon: GiftcardIcon,
       },
       {
         label: "Sell",
-        href: "/dashboard/giftcards/sell/orders",
+        href: "/dashboard/giftcards/sell/sales",
         icon: GiftcardIcon,
       },
     ],

@@ -72,7 +72,14 @@ export default function DataTableClient({
         });
       }
     } catch (error: any) {
-      toast.error(error?.message || "An error occurred.", { id: toastId });
+      toast.error(
+        error?.response?.data?.message ||
+          error?.message ||
+          "An error occurred.",
+        {
+          id: toastId,
+        }
+      );
     }
   };
 

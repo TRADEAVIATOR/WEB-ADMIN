@@ -4,15 +4,81 @@ import { useRouter } from "next/navigation";
 import DetailItem from "@/components/shared/DetailItem";
 import { GiftCardOrder } from "@/types/models";
 import { ChevronLeft } from "lucide-react";
+import { formatNaira } from "@/lib/utils/format";
+import { useSession } from "next-auth/react";
+import { useState } from "react";
+import toast from "react-hot-toast";
+import {
+  refundGiftcardOrderClient,
+  retryGiftcardOrderClient,
+} from "@/lib/api/giftcards";
+import FormField from "@/components/ui/FormField";
+import Button from "@/components/ui/Button";
 
 export default function OrderDetails({ order }: { order: GiftCardOrder }) {
   const router = useRouter();
+  const [refundReason, setRefundReason] = useState("");
+  const [loading, setLoading] = useState(false);
+  const { data: session } = useSession();
+
+  const token = session?.accessToken;
 
   const createdAt = new Date(order.createdAt).toLocaleString();
   const updatedAt = new Date(order.updatedAt).toLocaleString();
 
   const user = order.user ?? { fullname: "-", email: "-", phone: "-" };
   const codes = order.codes ?? [];
+
+  const handleRetry = async () => {
+    if (!token) return toast.error("Authentication error");
+
+    const toastId = toast.loading("Retrying giftcard order...");
+    try {
+      const res = await retryGiftcardOrderClient(order.id, token);
+      if (!res.error) {
+        toast.success("Giftcard order retried successfully!", { id: toastId });
+      } else {
+        toast.error(res.message || "Failed to retry order", { id: toastId });
+      }
+    } catch (error: any) {
+      toast.error(
+        error?.response?.data?.message ||
+          error?.message ||
+          "An error occurred.",
+        { id: toastId }
+      );
+    }
+  };
+
+  const handleRefund = async () => {
+    if (!token) return toast.error("Authentication error");
+    if (!refundReason) return toast.error("Please provide a reason for refund");
+
+    const toastId = toast.loading("Processing refund...");
+    setLoading(true);
+    try {
+      const res = await refundGiftcardOrderClient(
+        order.id,
+        token,
+        refundReason
+      );
+      if (!res.error) {
+        toast.success("Giftcard order refunded successfully!", { id: toastId });
+        setRefundReason("");
+      } else {
+        toast.error(res.message || "Failed to refund order", { id: toastId });
+      }
+    } catch (error: any) {
+      toast.error(
+        error?.response?.data?.message ||
+          error?.message ||
+          "An error occurred.",
+        { id: toastId }
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="bg-white rounded-2xl p-6 w-full">
@@ -49,18 +115,15 @@ export default function OrderDetails({ order }: { order: GiftCardOrder }) {
             <DetailItem label="Rate" value={order.rate} />
             <DetailItem
               label="Card Total"
-              value={`₦${Number(order.cardTotal).toLocaleString()}`}
+              value={formatNaira(order.cardTotal)}
             />
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-b border-gray-100 pb-4">
-            <DetailItem
-              label="Fee"
-              value={`₦${Number(order.fee).toLocaleString()}`}
-            />
+            <DetailItem label="Fee" value={formatNaira(order.fee)} />
             <DetailItem
               label="Naira Value"
-              value={`₦${Number(order.nairaValue).toLocaleString()}`}
+              value={formatNaira(order.nairaValue)}
             />
           </div>
 
@@ -80,7 +143,7 @@ export default function OrderDetails({ order }: { order: GiftCardOrder }) {
               <DetailItem label="Transaction ID" value={order.transaction.id} />
               <DetailItem
                 label="Transaction Amount"
-                value={`₦${Number(order.transaction.amount).toLocaleString()}`}
+                value={formatNaira(order.transaction.amount)}
               />
             </div>
           )}
@@ -108,17 +171,40 @@ export default function OrderDetails({ order }: { order: GiftCardOrder }) {
             </div>
           )}
 
-          {/* FAILURE REASON */}
           {order.failureReason && (
             <div className="grid grid-cols-1 gap-4 border-b border-gray-100 pb-4">
               <DetailItem label="Failure Reason" value={order.failureReason} />
             </div>
           )}
 
-          {/* DATES */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pb-4">
             <DetailItem label="Created At" value={createdAt} />
             <DetailItem label="Updated At" value={updatedAt} />
+          </div>
+        </div>
+
+        <div className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
+          <Button
+            onClick={handleRetry}
+            disabled={loading}
+            className="sm:col-span-1 w-full">
+            Retry Order
+          </Button>
+
+          <div className="sm:col-span-2 flex flex-col sm:flex-row gap-2 items-end">
+            <FormField
+              label="Refund Reason"
+              placeholder="Enter reason for refund"
+              value={refundReason}
+              onChange={(e) => setRefundReason(e.target.value)}
+              className="flex-1"
+            />
+            <Button
+              onClick={handleRefund}
+              disabled={loading}
+              className="sm:w-auto w-full">
+              {loading ? "Processing..." : "Refund Order"}
+            </Button>
           </div>
         </div>
       </div>

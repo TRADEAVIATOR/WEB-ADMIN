@@ -18,10 +18,9 @@ export default function AddAdministratorModal({
   const { openModal } = useModal();
 
   const [formData, setFormData] = useState({
-    fullName: "",
-    username: "",
+    name: "",
     email: "",
-    role: "",
+    password: "",
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -31,7 +30,6 @@ export default function AddAdministratorModal({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Admin data:", formData);
     onClose();
   };
 
@@ -44,18 +42,12 @@ export default function AddAdministratorModal({
       <form onSubmit={handleSubmit} className="space-y-4">
         <FormField
           label="Full Name"
-          name="fullName"
-          value={formData.fullName}
+          name="name"
+          value={formData.name}
           onChange={handleChange}
           placeholder="Enter full name"
         />
-        <FormField
-          label="Username"
-          name="username"
-          value={formData.username}
-          onChange={handleChange}
-          placeholder="Enter username"
-        />
+
         <FormField
           label="Email Address"
           name="email"
@@ -64,18 +56,20 @@ export default function AddAdministratorModal({
           onChange={handleChange}
           placeholder="Enter email address"
         />
+
         <FormField
-          label="Role"
-          name="role"
-          value={formData.role}
+          label="Password"
+          name="password"
+          type="password"
+          value={formData.password}
           onChange={handleChange}
-          placeholder="Enter role (e.g., Admin, Manager)"
+          placeholder="Enter password"
         />
 
         <Button
           type="submit"
           className="ml-auto block"
-          onClick={() => openModal("confirm-new-administrator")}>
+          onClick={() => openModal("confirm-new-administrator", formData)}>
           Proceed
         </Button>
       </form>

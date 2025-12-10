@@ -88,7 +88,7 @@ export default function DataTableClient({
   }));
 
   const handlePageChange = (page: number) => {
-    router.push(`/dashboard/giftcards/sell/available?page=${page}`);
+    router.push(`/dashboard/giftcards/buy/available?page=${page}`);
   };
 
   const handleSyncGiftCards = async () => {
@@ -104,7 +104,12 @@ export default function DataTableClient({
         });
       }
     } catch (error: any) {
-      toast.error(error?.message || "An error occurred.", { id: toastId });
+      toast.error(
+        error?.response?.data?.message ||
+          error?.message ||
+          "An error occurred.",
+        { id: toastId }
+      );
     }
   };
 

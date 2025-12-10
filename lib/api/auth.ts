@@ -12,7 +12,50 @@ export const getAdminProfile = async () => {
   return tryServer(api.get("/admin/auth/profile").then((res) => res.data));
 };
 
-export const logoutAdmin = async () => {
-  const api = await authApi();
-  return tryServer(api.post("/admin/auth/logout"));
+export const logoutAdmin = async (token: string) => {
+  return tryServer(
+    api.post(
+      "/admin/auth/logout",
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    )
+  );
+};
+
+export const changeAdminPasswordClient = async (
+  payload: {
+    currentPassword: string;
+    newPassword: string;
+    confirmNewPassword: string;
+  },
+  token: string
+) => {
+  const res = await api.post("/admin/auth/change-password", payload, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  return res.data;
+};
+
+export const createAdminUserClient = async (
+  payload: {
+    name: string;
+    email: string;
+    password: string;
+  },
+  token: string
+) => {
+  const res = await api.post("/admin/auth/create", payload, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  return res.data;
 };

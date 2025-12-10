@@ -398,3 +398,25 @@ export interface AcceptedGiftCard {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface AcceptedGiftcard {
+  id: string;
+  cardName: string;
+  cardType: string;
+  country: string;
+  countryCode: string;
+  currency: string;
+  brand: string;
+  availableRanges: string[];
+  receiptTypes: string[];
+  minValue: number;
+  maxValue: number;
+  imageUrl: string;
+  instructions: string;
+  isActive: boolean;
+  rates: {
+    [range: string]: number | { rate: number; cashReceipt: number };
+  };
+  createdAt: string;
+  updatedAt: string;
+}

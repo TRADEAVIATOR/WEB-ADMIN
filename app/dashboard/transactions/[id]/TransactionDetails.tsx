@@ -7,13 +7,11 @@ import { Transaction } from "@/types/models";
 import { ChevronLeft, Copy } from "lucide-react";
 import { toast } from "react-hot-toast";
 
-interface TransactionDetailsProps {
-  transaction: Transaction;
-}
-
 export default function TransactionDetails({
   transaction,
-}: TransactionDetailsProps) {
+}: {
+  transaction: Transaction;
+}) {
   const router = useRouter();
 
   const amountNumber = Number(transaction.amount) || 0;
@@ -56,29 +54,8 @@ export default function TransactionDetails({
     }
   };
 
-  const getCategoryColor = (category: string) => {
-    const categoryMap: Record<string, string> = {
-      DEPOSIT: "blue",
-      OUTWARDS: "yellow",
-      WITHDRAWAL: "purple",
-      TRANSFER: "indigo",
-      REVERSAL: "pink",
-      GIFTCARDS: "orange",
-      CRYPTO: "teal",
-      DATA: "cyan",
-      AIRTIME: "emerald",
-      CABLE: "rose",
-      SPORTS: "fuchsia",
-      ELECTRICITY: "lime",
-      EVENTS: "amber",
-      EDUCATION: "violet",
-      CASHBACK: "green",
-      REFERRAL_BONUS: "sky",
-      CARD_CREATION: "stone",
-      VOUCHER: "gray",
-      CARD_FUNDING: "brown",
-    };
-    return categoryMap[category] || "gray";
+  const getCategoryColor = () => {
+    return "blue";
   };
 
   return (
@@ -91,7 +68,6 @@ export default function TransactionDetails({
       </button>
 
       <div className="max-w-4xl mx-auto space-y-8">
-        {/* Main Transaction Info */}
         <div className="space-y-5">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-b border-gray-100 pb-4">
             <DetailItem
@@ -137,10 +113,7 @@ export default function TransactionDetails({
             <DetailItem
               label="Category"
               value={
-                <Badge
-                  text={transaction.category}
-                  color={getCategoryColor(transaction.category)}
-                />
+                <Badge text={transaction.category} color={getCategoryColor()} />
               }
             />
             <DetailItem label="User Name" value={user.fullname || "-"} />

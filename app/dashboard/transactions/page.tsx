@@ -6,12 +6,14 @@ import { TransactionsResponse } from "@/types/api";
 export default async function TransactionsPage({
   searchParams,
 }: {
-  searchParams?: Promise<{ page?: string }>;
+  searchParams?: Promise<{ page?: string; limit?: string; status?: string }>;
 }) {
   const params = await searchParams;
   const page = params?.page ? Number(params.page) : 1;
+  const limit = params?.limit ? Number(params.limit) : 10;
+  const status = params?.status || "";
 
-  const res = await getTransactions(page);
+  const res = await getTransactions(page, limit, status);
 
   if (!res || res.error) {
     return <ResultState type="error" message="Unable to fetch transactions." />;

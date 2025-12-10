@@ -2,7 +2,7 @@
 
 import Modal from "@/components/ui/Modal";
 import Button from "@/components/ui/Button";
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import { logoutAdmin } from "@/lib/api/auth";
 import { toast } from "react-hot-toast";
 import { useState } from "react";
@@ -15,10 +15,14 @@ interface LogoutModalProps {
 export default function LogoutModal({ isOpen, onClose }: LogoutModalProps) {
   const [isLoading, setIsLoading] = useState(false);
 
+  const { data: session } = useSession();
+  const token = session?.accessToken ?? "";
+
   const handleLogout = async () => {
     try {
       setIsLoading(true);
       onClose();
+      await logoutAdmin(token);
       await signOut({ callbackUrl: "/" });
       toast.success("Logged out successfully");
     } catch (error) {

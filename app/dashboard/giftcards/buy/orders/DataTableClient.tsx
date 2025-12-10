@@ -16,12 +16,18 @@ import {
   Wallet,
   XCircle,
 } from "lucide-react";
+import toast from "react-hot-toast";
+import { retryGiftcardOrderClient } from "@/lib/api/giftcards";
+import { useSession } from "next-auth/react";
 
 export default function DataTableClient({
   initialData = [],
   initialPage = 1,
   totalPages = 1,
 }: DataTableClientProps<GiftCardOrder>) {
+  const { data: session } = useSession();
+  const token = session?.accessToken ?? "";
+
   const router = useRouter();
   const currentPage = initialPage;
 
@@ -86,16 +92,50 @@ export default function DataTableClient({
     };
   });
 
+  const handleRetryGiftcardOrder = async (orderId: string) => {
+    const toastId = toast.loading("Retrying giftcard order...");
+
+    try {
+      const res = await retryGiftcardOrderClient(orderId, token);
+
+      if (!res.error) {
+        toast.success("Giftcard order retried successfully!", { id: toastId });
+      } else {
+        toast.error(res.message || "Failed to retry giftcard order.", {
+          id: toastId,
+        });
+      }
+    } catch (error: any) {
+      toast.error(
+        error?.response?.data?.message ||
+          error?.message ||
+          "An error occurred.",
+        {
+          id: toastId,
+        }
+      );
+    }
+  };
+
   const menuItems: MenuItem<RowData>[] = [
     {
       label: "View",
       onClick: (row) =>
-        router.push(`/dashboard/giftcards/sell/orders/${row.id}`),
+        router.push(`/dashboard/giftcards/buy/orders/${row.id}`),
+    },
+    {
+      label: "Retry",
+      onClick: (row) => handleRetryGiftcardOrder(row.id as string),
+    },
+    {
+      label: "Refund",
+      onClick: (row) =>
+        router.push(`/dashboard/giftcards/buy/orders/${row.id}`),
     },
   ];
 
   const handlePageChange = (page: number) => {
-    router.push(`/dashboard/giftcards/sell/orders?page=${page}`);
+    router.push(`/dashboard/giftcards/buy/orders?page=${page}`);
   };
 
   return (

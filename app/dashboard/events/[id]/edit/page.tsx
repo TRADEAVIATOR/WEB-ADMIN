@@ -25,6 +25,7 @@ export default async function EditEventPage({
     title: event.title,
     description: event.description || "",
     location: event.location,
+    eventImages: event.eventImages,
     date: event.date.split("T")[0],
     time: event.date.split("T")[1]?.slice(0, 5) || "",
     tickets: event.ticketTiers.map((t: any) => ({

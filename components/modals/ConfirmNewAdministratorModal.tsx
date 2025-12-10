@@ -3,6 +3,10 @@
 import Modal from "@/components/ui/Modal";
 import Button from "@/components/ui/Button";
 import { useModal } from "@/context/ModalContext";
+import { createAdminUserClient } from "@/lib/api/auth";
+import { useSession } from "next-auth/react";
+import toast from "react-hot-toast";
+import { useState } from "react";
 
 interface ConfirmNewAdministratorModalProps {
   isOpen: boolean;
@@ -13,18 +17,55 @@ export default function ConfirmNewAdministratorModal({
   isOpen,
   onClose,
 }: ConfirmNewAdministratorModalProps) {
-  const { openModal } = useModal();
+  const { openModal, modalData } = useModal();
+  const { data: session } = useSession();
+  const [loading, setLoading] = useState(false);
+  const token = session?.accessToken;
+
+  const data = modalData as {
+    name: string;
+    email: string;
+    password: string;
+  };
+
+  if (!data || !data.name || !data.email || !data.password) {
+    toast.error("Missing administrator details. Please fill the form again.");
+    openModal("add-new-administrator");
+    return null;
+  }
 
   const handleChange = (field: string) => {
     console.log(`Change ${field} clicked`);
     openModal("add-new-administrator");
   };
 
-  const administrator = {
-    name: "John Doe",
-    username: "john_doe",
-    email: "john.doe@example.com",
-    role: "Super Admin",
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!token) {
+      toast.error("Authentication error. Please log in again.");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      await createAdminUserClient(
+        {
+          name: data.name,
+          email: data.email,
+          password: data.password,
+        },
+        token
+      );
+
+      toast.success("Administrator created successfully!");
+      onClose();
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message || "Failed to create admin");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -38,7 +79,7 @@ export default function ConfirmNewAdministratorModal({
         <div className="flex justify-between items-center border border-gray-100 rounded-lg p-3 bg-gray-50">
           <div>
             <p className="text-sm text-gray-500">Administrator Name</p>
-            <p className="font-medium text-gray-800">{administrator.name}</p>
+            <p className="font-medium text-gray-800">{data.name}</p>
           </div>
           <button
             onClick={() => handleChange("name")}
@@ -49,22 +90,8 @@ export default function ConfirmNewAdministratorModal({
 
         <div className="flex justify-between items-center border border-gray-100 rounded-lg p-3 bg-gray-50">
           <div>
-            <p className="text-sm text-gray-500">Administrator Username</p>
-            <p className="font-medium text-gray-800">
-              {administrator.username}
-            </p>
-          </div>
-          <button
-            onClick={() => handleChange("username")}
-            className="text-primary text-sm font-medium hover:underline">
-            Change
-          </button>
-        </div>
-
-        <div className="flex justify-between items-center border border-gray-100 rounded-lg p-3 bg-gray-50">
-          <div>
             <p className="text-sm text-gray-500">Administrator Email</p>
-            <p className="font-medium text-gray-800">{administrator.email}</p>
+            <p className="font-medium text-gray-800">{data.email}</p>
           </div>
           <button
             onClick={() => handleChange("email")}
@@ -75,11 +102,11 @@ export default function ConfirmNewAdministratorModal({
 
         <div className="flex justify-between items-center border border-gray-100 rounded-lg p-3 bg-gray-50">
           <div>
-            <p className="text-sm text-gray-500">Administrator Role</p>
-            <p className="font-medium text-gray-800">{administrator.role}</p>
+            <p className="text-sm text-gray-500">Administrator Password</p>
+            <p className="font-medium text-gray-800">{data.password}</p>
           </div>
           <button
-            onClick={() => handleChange("role")}
+            onClick={() => handleChange("password")}
             className="text-primary text-sm font-medium hover:underline">
             Change
           </button>
@@ -92,7 +119,9 @@ export default function ConfirmNewAdministratorModal({
           onClick={() => openModal("add-new-administrator")}>
           Back
         </Button>
-        <Button variant="primary">Add Administrator</Button>
+        <Button variant="primary" disabled={loading} onClick={handleSubmit}>
+          {loading ? "Creating..." : "Create Administrator"}
+        </Button>
       </div>
     </Modal>
   );

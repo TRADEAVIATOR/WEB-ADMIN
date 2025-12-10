@@ -5,6 +5,7 @@ import { getAcceptedGiftCards } from "@/lib/api/giftcards";
 import SuccessRateIcon from "@/assets/icons/success-rate.svg";
 import OrdersIcon from "@/assets/icons/orders.svg";
 import Image from "next/image";
+import { FiPlus } from "react-icons/fi";
 
 export const dynamic = "force-dynamic";
 
@@ -73,7 +74,11 @@ export default async function AcceptedGiftCardsPage({
         ))}
       </div>
 
-      <PageHeader />
+      <PageHeader
+        buttonIcon={<FiPlus size={16} />}
+        buttonText="Add New Accepted Giftcard"
+        buttonHref="/dashboard/giftcards/sell/accepted/add"
+      />
 
       <DataTableClient
         initialData={payload.data}

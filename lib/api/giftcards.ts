@@ -1,4 +1,5 @@
 import { tryServer } from "../utils/tryServer";
+import { AcceptedGiftcardFormValues } from "@/components/forms/AcceptedGiftcardForm";
 import { api, authApi } from "../axios";
 
 export const getGiftCards = async (page = 1, limit = 10) => {
@@ -71,4 +72,66 @@ export const getAcceptedGiftCardById = async (cardId: string) => {
       .get(`/admin/giftcards/accepted-cards/${cardId}`)
       .then((res) => res.data)
   );
+};
+
+export const retryGiftcardOrderClient = async (
+  orderId: string,
+  token: string
+) => {
+  const res = await api.post(
+    `/admin/giftcards/orders/${orderId}/retry`,
+    {},
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  return res.data;
+};
+
+export const refundGiftcardOrderClient = async (
+  orderId: string,
+  token: string,
+  reason: string
+) => {
+  const res = await api.post(
+    `/admin/giftcards/orders/${orderId}/refund`,
+    { reason },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  return res.data;
+};
+
+export const createAcceptedGiftcard = async (
+  payload: AcceptedGiftcardFormValues,
+  token: string
+) => {
+  const res = await api.post("/admin/giftcards/accepted", payload, {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return res.data;
+};
+
+export const updateAcceptedGiftcard = async (
+  id: string,
+  payload: AcceptedGiftcardFormValues,
+  token: string
+) => {
+  const res = await api.put(`/admin/giftcards/accepted/${id}`, payload, {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return res.data;
 };

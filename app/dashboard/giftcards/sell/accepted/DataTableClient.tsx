@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import DataTable from "@/components/ui/Table";
 import Pagination from "@/components/ui/Pagination";
-import { RowData } from "@/types/common";
+import { MenuItem, RowData } from "@/types/common";
 import { DataTableClientProps } from "@/types/props";
 import { AcceptedGiftCard } from "@/types/models";
 import Badge from "@/components/ui/Badge";
@@ -56,13 +56,26 @@ export default function AcceptedGiftCardsTable({
     }),
   }));
 
+  const menuItems: MenuItem<RowData>[] = [
+    {
+      label: "View",
+      onClick: (row) =>
+        router.push(`/dashboard/giftcards/sell/accepted/${row.id}`),
+    },
+    {
+      label: "Edit",
+      onClick: (row) =>
+        router.push(`/dashboard/giftcards/sell/accepted/${row.id}/edit`),
+    },
+  ];
+
   const handlePageChange = (page: number) => {
     router.push(`/dashboard/giftcards/sell/accepted?page=${page}`);
   };
 
   return (
     <>
-      <DataTable columns={columns} data={rows} />
+      <DataTable columns={columns} data={rows} menuItems={menuItems} />
       <Pagination
         currentPage={currentPage}
         totalPages={totalPages}
