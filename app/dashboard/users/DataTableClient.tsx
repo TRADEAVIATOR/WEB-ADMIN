@@ -7,7 +7,7 @@ import Pagination from "@/components/ui/Pagination";
 import { toggleCustomerStatusClient } from "@/lib/api/customers";
 import { RowData, MenuItem } from "@/types/common";
 import { DataTableClientProps } from "@/types/props";
-import { formatNaira } from "@/lib/utils/format";
+import { formatCurrency } from "@/lib/utils/format";
 import { Customer } from "@/types/models";
 import Badge from "@/components/ui/Badge";
 import { useSession } from "next-auth/react";
@@ -41,7 +41,7 @@ export default function DataTableClient({
     username: customer.username,
     phone: customer.phone,
     email: customer.email,
-    depositBalance: formatNaira(customer.wallets[0]?.depositBalance) || "0",
+    depositBalance: formatCurrency(customer.wallets[0]?.depositBalance) || "0",
     isVerified: customer.isVerified ? (
       <Badge text="Verified" color="green" icon={<HiCheckCircle size={14} />} />
     ) : (

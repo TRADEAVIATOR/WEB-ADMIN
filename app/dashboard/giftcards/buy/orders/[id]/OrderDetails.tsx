@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import DetailItem from "@/components/shared/DetailItem";
 import { GiftCardOrder } from "@/types/models";
 import { ChevronLeft } from "lucide-react";
-import { formatNaira } from "@/lib/utils/format";
+import { formatCurrency } from "@/lib/utils/format";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
 import toast from "react-hot-toast";
@@ -115,15 +115,15 @@ export default function OrderDetails({ order }: { order: GiftCardOrder }) {
             <DetailItem label="Rate" value={order.rate} />
             <DetailItem
               label="Card Total"
-              value={formatNaira(order.cardTotal)}
+              value={formatCurrency(order.cardTotal)}
             />
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-b border-gray-100 pb-4">
-            <DetailItem label="Fee" value={formatNaira(order.fee)} />
+            <DetailItem label="Fee" value={formatCurrency(order.fee)} />
             <DetailItem
               label="Naira Value"
-              value={formatNaira(order.nairaValue)}
+              value={formatCurrency(order.nairaValue)}
             />
           </div>
 
@@ -143,7 +143,7 @@ export default function OrderDetails({ order }: { order: GiftCardOrder }) {
               <DetailItem label="Transaction ID" value={order.transaction.id} />
               <DetailItem
                 label="Transaction Amount"
-                value={formatNaira(order.transaction.amount)}
+                value={formatCurrency(order.transaction.amount)}
               />
             </div>
           )}

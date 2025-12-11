@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import DetailItem from "@/components/shared/DetailItem";
 import { GiftCardSale } from "@/types/models";
 import { ChevronLeft } from "lucide-react";
-import { formatNaira } from "@/lib/utils/format";
+import { formatCurrency } from "@/lib/utils/format";
 import Image from "next/image";
 
 export default function SalesDetails({ sale }: { sale: GiftCardSale }) {
@@ -84,7 +84,7 @@ export default function SalesDetails({ sale }: { sale: GiftCardSale }) {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-b border-gray-100 pb-4">
           <DetailItem
             label="Payout Amount"
-            value={formatNaira(sale.payoutAmount)}
+            value={formatCurrency(sale.payoutAmount)}
           />
           <DetailItem
             label="Promo Discount"

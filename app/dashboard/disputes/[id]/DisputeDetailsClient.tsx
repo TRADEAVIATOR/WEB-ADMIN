@@ -4,7 +4,7 @@ import { Dispute } from "@/types/models";
 import DetailItem from "@/components/shared/DetailItem";
 import { ChevronLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { formatNaira } from "@/lib/utils/format";
+import { formatCurrency } from "@/lib/utils/format";
 
 export default function DisputeDetailsClient({
   dispute,
@@ -48,7 +48,7 @@ export default function DisputeDetailsClient({
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-b border-gray-100 pb-4">
-            <DetailItem label="Amount" value={formatNaira(amountNumber)} />
+            <DetailItem label="Amount" value={formatCurrency(amountNumber)} />
             <DetailItem label="Type" value={dispute.type || "-"} />
           </div>
 

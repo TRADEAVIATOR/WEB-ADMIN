@@ -5,7 +5,7 @@ import DataTable from "@/components/ui/Table";
 import Pagination from "@/components/ui/Pagination";
 import { MenuItem, RowData } from "@/types/common";
 import { DataTableClientProps } from "@/types/props";
-import { formatNaira } from "@/lib/utils/format";
+import { formatCurrency } from "@/lib/utils/format";
 import PageHeader from "@/components/ui/PageHeader";
 import { Transaction } from "@/types/models";
 import Badge from "@/components/ui/Badge";
@@ -28,8 +28,6 @@ export default function DataTableClient({
     { key: "amount", label: "Amount" },
     { key: "currency", label: "Currency" },
     { key: "recipient", label: "Recipient" },
-    { key: "accountNo", label: "Account Number" },
-    { key: "meterNo", label: "Meter No." },
     { key: "createdAt", label: "Date" },
   ];
 
@@ -64,7 +62,7 @@ export default function DataTableClient({
     category: (
       <Badge
         text={tx.category}
-        color={categoryColorMap[tx.category as TransactionCategory] || "gray"} // default gray
+        color={categoryColorMap[tx.category as TransactionCategory] || "gray"}
       />
     ),
     type: (
@@ -82,11 +80,12 @@ export default function DataTableClient({
         }
       />
     ),
-    amount: formatNaira(tx.amount),
+    amount:
+      tx.category?.toUpperCase() === "CRYPTO"
+        ? formatCurrency(tx.amount, { currency: "USD", locale: "en-US" })
+        : formatCurrency(tx.amount, { currency: tx.currency }),
     currency: tx.currency.toUpperCase(),
     recipient: tx.recipient || "-",
-    accountNo: tx.accountNo || "-",
-    meterNo: tx.meterNo || "-",
     createdAt: new Date(tx.createdAt).toLocaleString("en-US", {
       day: "numeric",
       month: "short",

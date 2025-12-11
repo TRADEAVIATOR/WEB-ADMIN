@@ -8,7 +8,7 @@ import LeaderboardCard from "./components/LeaderboardCard";
 import PieChartCard from "./components/PieChartCard";
 import ActionRequiredCard from "./components/ActionRequiredCard";
 import { DashboardGrowth, DashboardMetrics } from "@/types/models";
-import { formatNaira } from "@/lib/utils/format";
+import { formatCurrency } from "@/lib/utils/format";
 
 export const dynamic = "force-dynamic";
 
@@ -34,13 +34,13 @@ export default async function DashboardPage() {
     },
     {
       label: "User Balance",
-      value: formatNaira(metrics.overview.normalWalletBalance),
+      value: formatCurrency(metrics.overview.normalWalletBalance),
       change: calculateChange(growth.charts.cryptoVolumeByMonth, "balance"),
       data: extractSparklineData(growth.charts.cryptoVolumeByMonth),
     },
     {
       label: "Total Crypto Volume",
-      value: formatNaira(metrics.overview.totalCryptoVolume),
+      value: formatCurrency(metrics.overview.totalCryptoVolume),
       change: calculateChange(growth.charts.cryptoDistribution, "crypto"),
       data: extractSparklineData(growth.charts.cryptoDistribution),
     },

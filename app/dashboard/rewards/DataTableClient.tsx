@@ -11,7 +11,7 @@ import DataTable from "@/components/ui/Table";
 import Pagination from "@/components/ui/Pagination";
 import { RowData } from "@/types/common";
 import { DataTableClientProps } from "@/types/props";
-import { formatNaira } from "@/lib/utils/format";
+import { formatCurrency } from "@/lib/utils/format";
 import { Reward } from "@/types/models";
 import Badge from "@/components/ui/Badge";
 import { FaBan } from "react-icons/fa";
@@ -112,7 +112,7 @@ export default function DataTableClient({
         <Badge text={reward.rewardType} color={rewardTypeMeta.color} />
       ),
 
-      amount: formatNaira(reward.amount) || "₦0",
+      amount: formatCurrency(reward.amount) || "₦0",
       narration: reward.narration || "-",
 
       createdAt: new Date(reward.createdAt).toLocaleString("en-US", {

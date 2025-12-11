@@ -7,7 +7,7 @@ import { DataTableClientProps } from "@/types/props";
 import { MenuItem, RowData } from "@/types/common";
 import { GiftCardOrder } from "@/types/models";
 import Badge from "@/components/ui/Badge";
-import { formatNaira } from "@/lib/utils/format";
+import { formatCurrency } from "@/lib/utils/format";
 import {
   Banknote,
   CheckCircle,
@@ -74,7 +74,7 @@ export default function DataTableClient({
       cardType: order.cardType,
       country: order.country,
       denomination: order.denomination,
-      cardTotal: formatNaira(order.cardTotal),
+      cardTotal: formatCurrency(order.cardTotal),
 
       status: (
         <Badge text={order.status} color={statusColor} icon={statusIcon} />

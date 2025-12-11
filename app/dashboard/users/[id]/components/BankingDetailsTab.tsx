@@ -1,7 +1,7 @@
 "use client";
 
 import DetailItem from "@/components/shared/DetailItem";
-import { formatNaira } from "@/lib/utils/format";
+import { formatCurrency } from "@/lib/utils/format";
 import { Customer } from "@/types/models";
 
 interface BankingDetailsTabProps {
@@ -30,7 +30,7 @@ export default function BankingDetailsTab({
             />
             <DetailItem
               label="Account Balance"
-              value={formatNaira(account.balance)}
+              value={formatCurrency(account.balance)}
             />
           </div>
         ))
@@ -46,15 +46,15 @@ export default function BankingDetailsTab({
             className="grid grid-cols-1 sm:grid-cols-3 gap-4 border-t border-gray-100 pt-4 pb-4">
             <DetailItem
               label="Deposit Balance"
-              value={formatNaira(wallet.depositBalance)}
+              value={formatCurrency(wallet.depositBalance)}
             />
             <DetailItem
               label="Referral Balance"
-              value={formatNaira(wallet.referralBalance)}
+              value={formatCurrency(wallet.referralBalance)}
             />
             <DetailItem
               label="Cashback Balance"
-              value={formatNaira(wallet.cashBackBalance)}
+              value={formatCurrency(wallet.cashBackBalance)}
             />
           </div>
         ))

@@ -28,6 +28,11 @@ export const sidebarLinks: SidebarLink[] = [
     icon: DashboardIcon,
   },
   {
+    label: "Analytics",
+    href: "/dashboard/analytics",
+    icon: AnalyticsIcon,
+  },
+  {
     label: "User Management",
     icon: UsersIcon,
     children: [
