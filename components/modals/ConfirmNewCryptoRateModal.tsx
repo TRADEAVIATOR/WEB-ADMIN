@@ -108,7 +108,11 @@ export default function ConfirmNewCryptoRateModal({
         <Button variant="outline" onClick={() => openModal("add-crypto-rate")}>
           Back
         </Button>
-        <Button variant="primary" onClick={handleSubmit} disabled={loading}>
+        <Button
+          variant="primary"
+          isLoading={loading}
+          onClick={handleSubmit}
+          disabled={loading}>
           {loading ? "Saving..." : "Save Rate"}
         </Button>
       </div>

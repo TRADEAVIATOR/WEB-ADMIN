@@ -135,3 +135,8 @@ export const updateAcceptedGiftcard = async (
   });
   return res.data;
 };
+
+export const getAllCryptoPairRates = async () => {
+  const client = await authApi();
+  return tryServer(client.get("/admin/crypto").then((res) => res.data));
+};

@@ -10,6 +10,9 @@ export type ModalType =
   | "logout"
   | "approve-giftcard"
   | "reject-giftcard"
+  | "edit-homepage-tagline"
+  | "view-activity-details"
+  | "view-transaction-details"
   | "generic-filter"
   | null;
 

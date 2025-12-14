@@ -2,28 +2,38 @@ import ResultState from "@/components/ui/ResultState";
 import StatCard from "./components/StatCard";
 import ChartCard from "./components/ChartCard";
 import ActivityTable from "./components/ActivityTable";
-import { getDashboardMetrics, getDashboardGrowth } from "@/lib/api/dashboard";
+import {
+  getDashboardMetrics,
+  getDashboardGrowth,
+  getDashboardTagline,
+} from "@/lib/api/dashboard";
 import { calculateChange, extractSparklineData } from "@/lib/utils/dashboard";
 import LeaderboardCard from "./components/LeaderboardCard";
 import PieChartCard from "./components/PieChartCard";
 import ActionRequiredCard from "./components/ActionRequiredCard";
-import { DashboardGrowth, DashboardMetrics } from "@/types/models";
+import { Activity, DashboardGrowth, DashboardMetrics } from "@/types/models";
 import { formatCurrency } from "@/lib/utils/format";
+import EditTaglineButton from "./components/EditTaglineButton";
+import { getSessionUser } from "@/lib/auth/session";
 
 export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
-  const [metricsRes, growthRes] = await Promise.all([
+  const [metricsRes, growthRes, taglineRes] = await Promise.all([
     getDashboardMetrics(),
     getDashboardGrowth(),
+    getDashboardTagline(),
   ]);
 
-  if (metricsRes.error || growthRes.error) {
+  if (metricsRes.error || growthRes.error || taglineRes.error) {
     return <ResultState type="error" message="Unable to load dashboard." />;
   }
 
   const metrics: DashboardMetrics = metricsRes.data.data;
   const growth: DashboardGrowth = growthRes.data.data;
+  const tagline = taglineRes.data?.data.tagline;
+
+  const session = await getSessionUser();
 
   const statCards = [
     {
@@ -48,14 +58,18 @@ export default async function DashboardPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-2">
-        <h1 className="text-2xl md:text-3xl font-semibold text-secondary">
-          Welcome back, <span className="text-primary">Big Brain</span>
-        </h1>
-        <p className="text-gray-500 text-sm md:text-base">
-          Here’s what’s happening today on{" "}
-          <span className="font-medium text-secondary">TradeAviator</span>
-        </p>
+      <div className="flex items-start justify-between gap-4">
+        <div className="flex flex-col gap-2">
+          <h1 className="text-2xl md:text-3xl font-semibold text-secondary">
+            Welcome back,{" "}
+            <span className="text-primary">{session?.user.name}</span>
+          </h1>
+          <p className="text-gray-500 text-sm md:text-base">{tagline}</p>
+        </div>
+
+        <div className="shrink-0">
+          <EditTaglineButton currentTagline={tagline} />
+        </div>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -76,12 +90,7 @@ export default async function DashboardPage() {
         />
         <ActivityTable
           title="Recent Activities"
-          data={metrics.recentActivities.slice(0, 7).map((act, index) => ({
-            id: index,
-            description: act.description,
-            details: act.type,
-            time: new Date(act.createdAt).toLocaleString(),
-          }))}
+          data={metrics.recentActivities.slice(0, 7) as Activity[]}
           className="lg:col-span-4"
         />
       </div>

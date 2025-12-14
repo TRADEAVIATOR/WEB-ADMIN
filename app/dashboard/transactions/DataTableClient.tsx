@@ -122,7 +122,12 @@ export default function DataTableClient({
           },
         ]}
       />
-      <DataTable columns={columns} data={rows} menuItems={menuItems} />
+      <DataTable
+        columns={columns}
+        data={rows}
+        menuItems={menuItems}
+        modalKey={"view-transaction-details"}
+      />
       <Pagination
         currentPage={currentPage}
         totalPages={totalPages}

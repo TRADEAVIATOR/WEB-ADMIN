@@ -1,10 +1,9 @@
 "use client";
 
-import Image from "next/image";
-
 import GiftIcon from "@/assets/icons/gift.svg";
 import SupportTicketIcon from "@/assets/icons/support-ticket.svg";
 import ArrowGoIcon from "@/assets/icons/arrow-go.svg";
+import Image from "next/image";
 
 export default function ActionRequiredCard({
   giftcards,

@@ -1,14 +1,18 @@
 "use client";
 
+import { Activity, Transaction } from "@/types/models";
+import ActivityDetailsModal from "../modals/ActivityDetailsModal";
 import AddAdministratorModal from "../modals/AddAdministratorModal";
 import AddCryptoRateModal from "../modals/AddCryptoRateModal";
 import AddGiftcardRateModal from "../modals/AddGiftcardRateModal";
 import ConfirmNewAdministratorModal from "../modals/ConfirmNewAdministratorModal";
 import ConfirmNewCryptoRateModal from "../modals/ConfirmNewCryptoRateModal";
 import ConfirmNewGiftcardRateModal from "../modals/ConfirmNewGiftcardRateModal";
+import EditTaglineModal from "../modals/EditTaglineModal";
 import GenericFilterModal from "../modals/GenericFilterModal";
 import GiftcardApprovalModal from "../modals/GiftcardApprovalModal";
 import GiftcardRejectionModal from "../modals/GiftcardRejectionModal";
+import TransactionDetailsModal from "../modals/TransactionDetailsModal";
 import LogoutModal from "../modals/LogoutModal";
 import { ModalManagerProps } from "@/types/props";
 
@@ -44,6 +48,33 @@ export default function ModalManager({
 
     case "reject-giftcard":
       return <GiftcardRejectionModal isOpen={true} onClose={onClose} />;
+
+    case "view-activity-details":
+      return (
+        <ActivityDetailsModal
+          isOpen={true}
+          onClose={onClose}
+          activity={modalData as Activity}
+        />
+      );
+
+    case "view-transaction-details":
+      return (
+        <TransactionDetailsModal
+          isOpen={true}
+          onClose={onClose}
+          transaction={modalData as Transaction}
+        />
+      );
+
+    case "edit-homepage-tagline":
+      return (
+        <EditTaglineModal
+          isOpen={true}
+          onClose={onClose}
+          initialTagline={modalData as string}
+        />
+      );
 
     case "generic-filter":
       return (

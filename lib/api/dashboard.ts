@@ -1,5 +1,5 @@
 import { tryServer } from "../utils/tryServer";
-import { authApi } from "../axios";
+import { api, authApi } from "../axios";
 
 export const getDashboardMetrics = async () => {
   const client = await authApi();
@@ -9,4 +9,27 @@ export const getDashboardMetrics = async () => {
 export const getDashboardGrowth = async () => {
   const client = await authApi();
   return tryServer(client.get("/admin/dashboard/growth").then((r) => r.data));
+};
+
+export const getDashboardTagline = async () => {
+  const client = await authApi();
+  return tryServer(
+    client.get("/admin/dashboard/tagline").then((res) => res.data)
+  );
+};
+
+export const updateDashboardTaglineClient = async (
+  tagline: string,
+  token: string
+) => {
+  const res = await api.put(
+    "/admin/dashboard/tagline",
+    { tagline },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  return res.data;
 };

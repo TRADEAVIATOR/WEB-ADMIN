@@ -119,7 +119,11 @@ export default function ConfirmNewAdministratorModal({
           onClick={() => openModal("add-new-administrator")}>
           Back
         </Button>
-        <Button variant="primary" disabled={loading} onClick={handleSubmit}>
+        <Button
+          variant="primary"
+          disabled={loading}
+          isLoading={loading}
+          onClick={handleSubmit}>
           {loading ? "Creating..." : "Create Administrator"}
         </Button>
       </div>

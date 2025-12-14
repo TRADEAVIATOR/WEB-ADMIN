@@ -44,11 +44,13 @@ export interface Transaction {
   createdAt: string;
   updatedAt?: string | null;
   channel?: string | null;
+  fee: string | null;
+  internalRef?: string | null;
   user?: {
     id: string;
     fullname: string;
-    email: string;
-    phone: string;
+    phone?: string;
+    email?: string;
   } | null;
   meta?: {
     code: string;
@@ -106,8 +108,8 @@ export interface DashboardMetrics {
 
   recentActivities: Array<{
     description: string;
-    createdAt: string;
     type: string;
+    timeAgo: string;
   }>;
 }
 
@@ -161,10 +163,20 @@ export interface CardDistribution {
 }
 
 export interface Activity {
-  id: number;
+  id: string;
+  type: string;
+  amount: number;
+  currency: string;
+  status: string;
   description: string;
-  details: string;
-  time: string;
+  user: {
+    id: string;
+    name: string;
+    username: string;
+    email: string;
+  };
+  createdAt: string;
+  timeAgo: string;
 }
 
 export interface LeaderboardItem {
