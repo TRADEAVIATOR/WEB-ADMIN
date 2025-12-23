@@ -10,8 +10,3 @@ export const getDashboardGrowth = async () => {
   const api = await getServerApi();
   return tryServer(api.get("/admin/dashboard/growth").then((r) => r.data));
 };
-
-export const getDashboardTagline = async () => {
-  const api = await getServerApi();
-  return tryServer(api.get("/admin/dashboard/tagline").then((res) => res.data));
-};

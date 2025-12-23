@@ -90,7 +90,7 @@ export const sidebarLinks: SidebarLink[] = [
       },
       {
         label: "Giftcard Rates",
-        href: "/dashboard/rate-management/giftcard",
+        href: "/dashboard/giftcards/sell/accepted",
         icon: RateIcon,
       },
     ],

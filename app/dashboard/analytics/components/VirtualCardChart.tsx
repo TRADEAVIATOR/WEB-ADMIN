@@ -5,13 +5,20 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-export default function VirtualCardChart() {
+interface VirtualCardChartProps {
+  cardsData?: Array<{ count: number; percentage: string }>;
+}
+
+export default function VirtualCardChart({ cardsData }: VirtualCardChartProps) {
+  const totalCards = cardsData?.[0]?.count || 0;
+  const totalAmount = totalCards * 84000;
+
   const data = {
     labels: ["Mastercard", "Visa"],
     datasets: [
       {
-        label: "",
-        data: [75, 25],
+        label: "Cards",
+        data: [Math.floor(totalCards * 0.75), Math.ceil(totalCards * 0.25)],
         backgroundColor: ["#FE7F32", "#532000"],
         borderWidth: 0,
       },
@@ -29,6 +36,21 @@ export default function VirtualCardChart() {
           font: { size: 12 },
         },
       },
+      tooltip: {
+        callbacks: {
+          label: function (context: any) {
+            const label = context.label || "";
+            const value = context.parsed || 0;
+            const total = context.dataset.data.reduce(
+              (a: number, b: number) => a + b,
+              0
+            );
+            const percentage =
+              total > 0 ? ((value / total) * 100).toFixed(1) : "0";
+            return `${label}: ${value} cards (${percentage}%)`;
+          },
+        },
+      },
     },
     maintainAspectRatio: false,
   };
@@ -37,11 +59,22 @@ export default function VirtualCardChart() {
     <>
       <h2 className="font-semibold text-gray-700 mb-4">Virtual Card</h2>
       <div className="mb-6">
-        <p className="text-sm text-gray-500 mb-1">Total card payment</p>
-        <p className="text-2xl font-bold text-gray-800">₦1,000,000,000</p>
+        <p className="text-sm text-gray-500 mb-1">Total cards created</p>
+        <p className="text-2xl font-bold text-gray-800">
+          {totalCards.toLocaleString()}
+        </p>
+        <p className="text-xs text-gray-400 mt-1">
+          Est. value: ₦{totalAmount.toLocaleString()}
+        </p>
       </div>
       <div className="h-72 flex items-center justify-center">
-        <Pie data={data} options={options} />
+        {totalCards > 0 ? (
+          <Pie data={data} options={options} />
+        ) : (
+          <div className="text-center text-gray-400">
+            <p className="text-sm">No card data available</p>
+          </div>
+        )}
       </div>
     </>
   );
