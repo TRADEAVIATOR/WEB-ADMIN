@@ -35,15 +35,15 @@ export default function DataTableClient({
   const rows: RowData[] = initialData.map((n: any) => ({
     id: n.id,
     user: (
-      <div>
+      <div className="break-words">
         <p className="font-medium">{n.user?.fullname}</p>
         <p className="text-xs text-gray-500">{n.user?.email}</p>
       </div>
     ),
     title: (
-      <div>
+      <div className="break-words max-w-[200px] sm:max-w-xs">
         <p className="font-medium">{n.title}</p>
-        <p className="text-xs text-gray-500 truncate max-w-xs">{n.message}</p>
+        <p className="text-xs text-gray-500">{n.message}</p>
       </div>
     ),
     type: <Badge text={n.type} color="blue" />,

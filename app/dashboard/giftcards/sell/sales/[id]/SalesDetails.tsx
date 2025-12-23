@@ -6,6 +6,7 @@ import { GiftCardSale } from "@/types/models";
 import { ChevronLeft } from "lucide-react";
 import { formatCurrency } from "@/lib/utils/format";
 import Image from "next/image";
+import GiftCardActions from "./GiftCardActions";
 
 export default function SalesDetails({ sale }: { sale: GiftCardSale }) {
   const router = useRouter();
@@ -133,6 +134,7 @@ export default function SalesDetails({ sale }: { sale: GiftCardSale }) {
             value={new Date(sale.updatedAt).toLocaleString()}
           />
         </div>
+        <GiftCardActions saleId={sale.id} />
       </div>
     </div>
   );

@@ -30,20 +30,20 @@ export default function DataTable<T extends RowData>({
   const { openModal } = useModal();
 
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
+    const handleClickOutside = (event: MouseEvent | TouchEvent) => {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
         setOpenMenuIndex(null);
       }
     };
 
     if (openMenuIndex !== null) {
-      setTimeout(() => {
-        document.addEventListener("mousedown", handleClickOutside);
-      }, 0);
+      document.addEventListener("mousedown", handleClickOutside);
+      document.addEventListener("touchstart", handleClickOutside);
     }
 
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("touchstart", handleClickOutside);
     };
   }, [openMenuIndex]);
 
@@ -52,7 +52,12 @@ export default function DataTable<T extends RowData>({
     else setSelectedRows([]);
   };
 
-  const handleSelectRow = (index: number, checked: boolean) => {
+  const handleSelectRow = (
+    index: number,
+    checked: boolean,
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    e.stopPropagation();
     setSelectedRows((prev) =>
       checked
         ? [...prev, index.toString()]
@@ -63,14 +68,20 @@ export default function DataTable<T extends RowData>({
   const isRowSelected = (index: number) =>
     selectedRows.includes(index.toString());
 
-  const toggleMenu = (index: number) =>
+  const toggleMenu = (
+    index: number,
+    e: React.MouseEvent | React.TouchEvent
+  ) => {
+    e.preventDefault();
+    e.stopPropagation();
     setOpenMenuIndex((prev) => (prev === index ? null : index));
+  };
 
   const handleRowClick = (row: T) => {
-    if (!modalKey) return;
+    if (!modalKey || openMenuIndex !== null) return;
     openModal(modalKey, row);
   };
-  
+
   return (
     <div className="w-full max-w-full">
       <div className="block lg:hidden">
@@ -83,8 +94,7 @@ export default function DataTable<T extends RowData>({
             {data.map((row, idx) => (
               <div
                 key={idx}
-                onClick={() => handleRowClick(row)}
-                className={`border border-gray-200 rounded-lg p-4 cursor-pointer ${
+                className={`border border-gray-200 rounded-lg p-4 ${
                   isRowSelected(idx)
                     ? "bg-[#FFF5EE] border-[#FE7F32]"
                     : "bg-white"
@@ -93,64 +103,82 @@ export default function DataTable<T extends RowData>({
                   <input
                     type="checkbox"
                     checked={isRowSelected(idx)}
-                    onChange={(e) => {
-                      e.stopPropagation();
-                      handleSelectRow(idx, e.target.checked);
-                    }}
+                    onChange={(e) => handleSelectRow(idx, e.target.checked, e)}
+                    onClick={(e) => e.stopPropagation()}
                     className="accent-[#FE7F32] cursor-pointer mt-1"
                   />
 
                   {menuItems.length > 0 && (
                     <div
-                      className="relative"
-                      ref={openMenuIndex === idx ? menuRef : null}
-                      onClick={(e) => e.stopPropagation()}>
+                      className="relative z-50"
+                      ref={openMenuIndex === idx ? menuRef : null}>
                       <button
-                        className="p-1 text-gray-500 hover:text-[#FE7F32]"
-                        onClick={() => toggleMenu(idx)}>
-                        <MoreVertical size={18} />
+                        type="button"
+                        className="p-2 text-gray-500 hover:text-[#FE7F32] active:text-[#FE7F32] touch-manipulation"
+                        onClick={(e) => toggleMenu(idx, e)}
+                        onTouchEnd={(e) => toggleMenu(idx, e)}>
+                        <MoreVertical size={20} />
                       </button>
 
                       {openMenuIndex === idx && (
-                        <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded-lg shadow-lg z-20 animate-fadeIn">
-                          <ul className="py-2 text-sm text-gray-700">
-                            {menuItems.map((item, i) => {
-                              const baseClasses = `block px-4 py-2 hover:bg-gray-50 cursor-pointer ${
-                                item.color || "text-gray-700"
-                              }`;
+                        <div
+                          className="fixed inset-0 z-[9999]"
+                          onClick={() => setOpenMenuIndex(null)}>
+                          <div
+                            className="absolute right-4 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-2xl animate-fadeIn"
+                            style={{
+                              top: `${(idx + 1) * 160}px`,
+                              maxHeight: "80vh",
+                              overflowY: "auto",
+                            }}
+                            onClick={(e) => e.stopPropagation()}>
+                            <ul className="py-2 text-sm text-gray-700">
+                              {menuItems.map((item, i) => {
+                                const baseClasses = `block px-5 py-3 hover:bg-gray-50 active:bg-gray-100 cursor-pointer transition-colors touch-manipulation ${
+                                  item.color || "text-gray-700"
+                                }`;
 
-                              if (item.href)
+                                if (item.href) {
+                                  return (
+                                    <li key={i}>
+                                      <Link
+                                        href={item.href}
+                                        className={baseClasses}
+                                        onClick={() => setOpenMenuIndex(null)}>
+                                        {item.label}
+                                      </Link>
+                                    </li>
+                                  );
+                                }
+
                                 return (
                                   <li key={i}>
-                                    <Link
-                                      href={item.href}
-                                      className={baseClasses}
-                                      onClick={() => setOpenMenuIndex(null)}>
+                                    <div
+                                      onClick={() => {
+                                        item.onClick?.(row);
+                                        setOpenMenuIndex(null);
+                                      }}
+                                      onTouchEnd={() => {
+                                        item.onClick?.(row);
+                                        setOpenMenuIndex(null);
+                                      }}
+                                      className={baseClasses}>
                                       {item.label}
-                                    </Link>
+                                    </div>
                                   </li>
                                 );
-
-                              return (
-                                <li
-                                  key={i}
-                                  onClick={() => {
-                                    item.onClick?.(row);
-                                    setOpenMenuIndex(null);
-                                  }}
-                                  className={baseClasses}>
-                                  {item.label}
-                                </li>
-                              );
-                            })}
-                          </ul>
+                              })}
+                            </ul>
+                          </div>
                         </div>
                       )}
                     </div>
                   )}
                 </div>
 
-                <div className="space-y-2">
+                <div
+                  onClick={() => handleRowClick(row)}
+                  className="space-y-2 cursor-pointer">
                   {columns.map((col) => (
                     <div
                       key={col.key}
@@ -212,7 +240,9 @@ export default function DataTable<T extends RowData>({
                     <input
                       type="checkbox"
                       checked={isRowSelected(idx)}
-                      onChange={(e) => handleSelectRow(idx, e.target.checked)}
+                      onChange={(e) =>
+                        handleSelectRow(idx, e.target.checked, e)
+                      }
                       className="accent-[#FE7F32] cursor-pointer"
                     />
                   </td>
@@ -233,20 +263,21 @@ export default function DataTable<T extends RowData>({
                         className="relative inline-block"
                         ref={openMenuIndex === idx ? menuRef : null}>
                         <button
+                          type="button"
                           className="p-1 text-gray-500 hover:text-[#FE7F32]"
-                          onClick={() => toggleMenu(idx)}>
+                          onClick={(e) => toggleMenu(idx, e)}>
                           <MoreVertical size={18} />
                         </button>
 
                         {openMenuIndex === idx && (
-                          <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-100 rounded-lg shadow-lg z-20 animate-fadeIn">
+                          <div className="absolute right-0 mt-2 w-44 bg-white border border-gray-100 rounded-lg shadow-lg z-50 animate-fadeIn">
                             <ul className="py-2 text-sm text-gray-700">
                               {menuItems.map((item, i) => {
-                                const baseClasses = `block px-4 py-2 hover:bg-gray-50 cursor-pointer ${
+                                const baseClasses = `block px-4 py-2 hover:bg-gray-50 cursor-pointer transition-colors ${
                                   item.color || "text-gray-700"
                                 }`;
 
-                                if (item.href)
+                                if (item.href) {
                                   return (
                                     <li key={i}>
                                       <Link
@@ -257,16 +288,18 @@ export default function DataTable<T extends RowData>({
                                       </Link>
                                     </li>
                                   );
+                                }
 
                                 return (
-                                  <li
-                                    key={i}
-                                    onClick={() => {
-                                      item.onClick?.(row);
-                                      setOpenMenuIndex(null);
-                                    }}
-                                    className={baseClasses}>
-                                    {item.label}
+                                  <li key={i}>
+                                    <div
+                                      onClick={() => {
+                                        item.onClick?.(row);
+                                        setOpenMenuIndex(null);
+                                      }}
+                                      className={baseClasses}>
+                                      {item.label}
+                                    </div>
                                   </li>
                                 );
                               })}

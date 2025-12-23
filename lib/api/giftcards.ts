@@ -95,3 +95,26 @@ export const getAllCryptoPairRates = async () => {
   const api = await getServerApi();
   return tryServer(api.get("/admin/crypto").then((res) => res.data));
 };
+
+export const reviewGiftCardSale = async (saleId: string) => {
+  const res = await clientApi.post(`/admin/giftcards/sales/${saleId}/review`);
+  return res.data;
+};
+
+export const processGiftCardPayout = async (saleIds: string[]) => {
+  const res = await clientApi.post(`/admin/giftcards/sales/process-payout`, {
+    saleIds,
+  });
+  return res.data;
+};
+
+export const rejectGiftCardSales = async (
+  saleIds: string[],
+  reason: string
+) => {
+  const res = await clientApi.post(`/admin/giftcards/sales/reject`, {
+    saleIds,
+    reason,
+  });
+  return res.data;
+};

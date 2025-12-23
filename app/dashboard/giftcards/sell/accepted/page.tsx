@@ -45,7 +45,7 @@ export default async function AcceptedGiftCardsPage({
 
   const stats = [
     {
-      label: "Total Orders",
+      label: "Total Sales",
       value: payload.pagination.totalItems,
       icon: OrdersIcon,
     },
