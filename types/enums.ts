@@ -1,5 +1,6 @@
 export enum TransactionCategory {
   DEPOSIT = "DEPOSIT",
+  P2P = "P2P",
   OUTWARDS = "OUTWARDS",
   WITHDRAWAL = "WITHDRAWAL",
   TRANSFER = "TRANSFER",
