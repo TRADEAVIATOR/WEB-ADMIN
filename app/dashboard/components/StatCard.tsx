@@ -15,7 +15,18 @@ export default function StatCard({
   const sparklineData = data.length > 0 ? data : [0, 0, 0, 0, 0];
   const hasValidData = data.length > 0 && data.some((val) => val > 0);
 
-  const isPositive = change.startsWith("+");
+  const numericChange =
+    typeof change === "number"
+      ? change
+      : Number(change.replace(/[^0-9.-]/g, ""));
+
+  const isPositive = numericChange >= 0;
+
+  const formattedChange =
+    typeof change === "string"
+      ? change
+      : `${isPositive ? "+" : ""}${numericChange}`;
+
   const changeColor = bgColor
     ? "text-white/70"
     : isPositive
@@ -33,11 +44,10 @@ export default function StatCard({
           }`}>
           {label}
         </span>
+
         {selectOptions && (
           <FormField
             as="select"
-            label="Select Option"
-            required
             options={selectOptions.map((opt: string) => ({
               label: opt,
               value: opt,
@@ -54,8 +64,11 @@ export default function StatCard({
           }`}>
           {value}
         </span>
+
         <div className="flex items-center gap-2">
-          <span className={`text-sm font-medium ${changeColor}`}>{change}</span>
+          <span className={`text-sm font-medium ${changeColor}`}>
+            {formattedChange}
+          </span>
           <span
             className={`text-xs ${
               bgColor ? "text-white/60" : "text-gray-400"

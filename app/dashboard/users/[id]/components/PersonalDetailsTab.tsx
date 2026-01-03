@@ -1,17 +1,15 @@
 "use client";
 
-import DetailItem from "@/components/shared/DetailItem";
 import Badge from "@/components/ui/Badge";
+import DetailItem from "@/components/shared/DetailItem";
 import { Customer } from "@/types/models";
 import { FaCheckCircle } from "react-icons/fa";
 
-interface PersonalDetailsTabProps {
-  customer: Customer;
-}
-
 export default function PersonalDetailsTab({
   customer,
-}: PersonalDetailsTabProps) {
+}: {
+  customer: Customer;
+}) {
   return (
     <div className="space-y-5">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-b border-gray-100 pb-4">

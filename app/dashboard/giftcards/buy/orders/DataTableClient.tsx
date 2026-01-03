@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import toast from "react-hot-toast";
 import { retryGiftcardOrderClient } from "@/lib/api/giftcards";
+import { handleApiError } from "@/lib/utils/errorHandler";
 
 export default function DataTableClient({
   initialData = [],
@@ -28,13 +29,13 @@ export default function DataTableClient({
   const currentPage = initialPage;
 
   const columns = [
-    { key: "orderReference", label: "Reference" },
-    { key: "cardType", label: "Gift Card" },
+    { key: "reference", label: "Reference" },
+    { key: "giftCardType", label: "Gift Card" },
     { key: "country", label: "Country" },
-    { key: "denomination", label: "Amount" },
-    { key: "cardTotal", label: "Total Price" },
+    { key: "giftCardValue", label: "Value (USD)" },
+    { key: "amount", label: "Amount (NGN)" },
     { key: "status", label: "Status" },
-    { key: "paymentMethod", label: "Payment Method" },
+    { key: "channel", label: "Payment Method" },
     { key: "createdAt", label: "Date" },
   ];
 
@@ -56,9 +57,9 @@ export default function DataTableClient({
         : "red";
 
     const paymentIcon =
-      order.paymentMethod === "WALLET" ? (
+      order.channel === "WALLET" ? (
         <Wallet size={14} />
-      ) : order.paymentMethod === "CARD" ? (
+      ) : order.channel === "CARD" ? (
         <CreditCard size={14} />
       ) : (
         <Banknote size={14} />
@@ -66,31 +67,29 @@ export default function DataTableClient({
 
     return {
       id: order.id,
-      orderReference: order.orderReference,
-      cardType: order.cardType,
-      country: order.country,
-      denomination: order.denomination,
-      cardTotal: formatCurrency(order.cardTotal),
-
+      reference: order.reference,
+      giftCardType: order.giftCardType,
+      country: order.user?.country,
+      giftCardValue: order.giftCardValue,
+      amount: formatCurrency(order.amount, { currency: order.currency }),
       status: (
         <Badge text={order.status} color={statusColor} icon={statusIcon} />
       ),
-
-      paymentMethod: (
-        <Badge text={order.paymentMethod} color="blue" icon={paymentIcon} />
+      channel: (
+        <Badge text={order.channel ?? ""} color="blue" icon={paymentIcon} />
       ),
-
       createdAt: new Date(order.createdAt).toLocaleDateString("en-US", {
         day: "numeric",
         month: "short",
         year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
       }),
     };
   });
 
   const handleRetryGiftcardOrder = async (orderId: string) => {
     const toastId = toast.loading("Retrying giftcard order...");
-
     try {
       const res = await retryGiftcardOrderClient(orderId);
 
@@ -102,14 +101,7 @@ export default function DataTableClient({
         });
       }
     } catch (error: any) {
-      toast.error(
-        error?.response?.data?.message ||
-          error?.message ||
-          "An error occurred.",
-        {
-          id: toastId,
-        }
-      );
+      handleApiError(error);
     }
   };
 

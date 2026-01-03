@@ -20,12 +20,15 @@ export default function GiftCardActions({
   saleId,
   onActionComplete,
 }: GiftCardActionsProps) {
-  const [loading, setLoading] = useState(false);
+  const [reviewLoading, setReviewLoading] = useState(false);
+  const [payoutLoading, setPayoutLoading] = useState(false);
+  const [rejectLoading, setRejectLoading] = useState(false);
+
   const [showRejectInput, setShowRejectInput] = useState(false);
   const [rejectionReason, setRejectionReason] = useState("");
 
   const handleReview = async () => {
-    setLoading(true);
+    setReviewLoading(true);
     try {
       const res = await reviewGiftCardSale(saleId);
       toast.success(res.message || "Sale reviewed successfully");
@@ -33,12 +36,12 @@ export default function GiftCardActions({
     } catch (err: any) {
       handleApiError(err);
     } finally {
-      setLoading(false);
+      setReviewLoading(false);
     }
   };
 
   const handlePayout = async () => {
-    setLoading(true);
+    setPayoutLoading(true);
     try {
       const res = await processGiftCardPayout([saleId]);
       toast.success(res.message || "Payout processed successfully");
@@ -46,7 +49,7 @@ export default function GiftCardActions({
     } catch (err: any) {
       handleApiError(err);
     } finally {
-      setLoading(false);
+      setPayoutLoading(false);
     }
   };
 
@@ -56,7 +59,7 @@ export default function GiftCardActions({
       return;
     }
 
-    setLoading(true);
+    setRejectLoading(true);
     try {
       const res = await rejectGiftCardSales([saleId], rejectionReason);
       toast.success(res.message || "Sale rejected successfully");
@@ -66,24 +69,30 @@ export default function GiftCardActions({
     } catch (err: any) {
       handleApiError(err);
     } finally {
-      setLoading(false);
+      setRejectLoading(false);
     }
   };
 
   return (
     <div className="flex flex-col gap-4 mt-4">
       <div className="flex flex-col sm:flex-row gap-2 flex-wrap">
-        <Button variant="primary" isLoading={loading} onClick={handleReview}>
+        <Button
+          variant="primary"
+          isLoading={reviewLoading}
+          onClick={handleReview}>
           Review
         </Button>
 
-        <Button variant="secondary" isLoading={loading} onClick={handlePayout}>
+        <Button
+          variant="secondary"
+          isLoading={payoutLoading}
+          onClick={handlePayout}>
           Process Payout
         </Button>
 
         <Button
           variant="danger"
-          isLoading={loading}
+          isLoading={rejectLoading}
           onClick={() => setShowRejectInput(true)}>
           Reject
         </Button>
@@ -98,14 +107,16 @@ export default function GiftCardActions({
             onChange={(e) => setRejectionReason(e.target.value)}
             className="w-full sm:flex-1"
           />
+
           <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
             <Button
               variant="danger"
               size="sm"
-              isLoading={loading}
+              isLoading={rejectLoading}
               onClick={handleReject}>
               Submit
             </Button>
+
             <Button
               variant="outline"
               size="sm"

@@ -48,7 +48,7 @@ export default async function UserDetailsPage({
     {
       key: "transactions",
       label: "Transactions",
-      content: <TransactionsTab customerId={customer.id} />,
+      content: <TransactionsTab customer={customer} />,
     },
     {
       key: "statistics",
@@ -63,6 +63,7 @@ export default async function UserDetailsPage({
         <UserDetailsHeader
           userId={customer.id}
           kycStatus={customer.isKycVerified ? "Successful" : "Pending"}
+          profilePicture={customer.profilePicture}
           name={customer.fullname}
         />
       }

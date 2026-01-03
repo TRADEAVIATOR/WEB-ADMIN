@@ -13,6 +13,16 @@ const nextConfig: NextConfig = {
         hostname: "cdn.reloadly.com",
         pathname: "**",
       },
+      {
+        protocol: "https",
+        hostname: "www.giftcardpartners.com",
+        pathname: "**",
+      },
+      {
+        protocol: "https",
+        hostname: "www.mygiftcardsupply.com",
+        pathname: "**",
+      },
     ],
   },
 };

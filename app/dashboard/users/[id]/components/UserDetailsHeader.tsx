@@ -9,6 +9,7 @@ interface UserDetailsHeaderProps {
   userId: string;
   name: string;
   kycStatus: "Successful" | "Pending" | "Failed";
+  profilePicture?: string | null;
   onMenuClick?: () => void;
 }
 
@@ -16,6 +17,7 @@ export default function UserDetailsHeader({
   userId,
   name,
   kycStatus,
+  profilePicture,
   onMenuClick,
 }: UserDetailsHeaderProps) {
   const statusStyles = {
@@ -41,7 +43,7 @@ export default function UserDetailsHeader({
       <div className="flex items-center gap-4 sm:gap-6 w-full sm:w-auto">
         <div className="relative flex-shrink-0">
           <Image
-            src={AvatarImg}
+            src={profilePicture || AvatarImg}
             alt={`${name} Avatar`}
             width={80}
             height={80}

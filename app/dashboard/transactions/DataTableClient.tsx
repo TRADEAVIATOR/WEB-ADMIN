@@ -54,6 +54,7 @@ export default function DataTableClient({
     CARD_CREATION: "blue",
     VOUCHER: "blue",
     CARD_FUNDING: "green",
+    P2P: "blue",
   };
 
   const rows: RowData[] = initialData.map((tx) => ({

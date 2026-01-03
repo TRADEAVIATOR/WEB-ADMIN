@@ -53,7 +53,7 @@ export default function LineChartCard({
     "Nov",
     "Dec",
   ];
-  const currentMonth = 9; // October index
+  const currentMonth = 9;
   const labels = Array.from({ length: 12 }, (_, i) => {
     const idx = (currentMonth - 11 + i + 12) % 12;
     return months[idx];

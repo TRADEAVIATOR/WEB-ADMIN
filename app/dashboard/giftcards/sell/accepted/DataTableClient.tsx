@@ -24,37 +24,45 @@ export default function AcceptedGiftCardsTable({
     { key: "country", label: "Country" },
     { key: "currency", label: "Currency" },
     { key: "range", label: "Value Range" },
+    { key: "rate", label: "Rate" },
     { key: "status", label: "Status" },
     { key: "createdAt", label: "Created" },
   ];
 
-  const rows: RowData[] = initialData.map((item) => ({
-    id: item.id,
-    image: (
-      <Image
-        src={item.imageUrl}
-        alt={item.cardName}
-        width={40}
-        height={40}
-        className="rounded object-cover"
-      />
-    ),
-    cardName: item.cardName,
-    cardType: item.cardType,
-    country: `${item.country} (${item.countryCode})`,
-    currency: item.currency,
-    range: `${item.minValue} - ${item.maxValue}`,
-    status: item.isActive ? (
-      <Badge text="Active" color="green" />
-    ) : (
-      <Badge text="Inactive" color="red" />
-    ),
-    createdAt: new Date(item.createdAt).toLocaleDateString("en-US", {
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-    }),
-  }));
+  const rows: RowData[] = initialData.map((item) => {
+    const range =
+      item.availableRanges.length > 0 ? item.availableRanges[0] : "-";
+    const rate = item.rates[range] ?? "-";
+
+    return {
+      id: item.id,
+      image: (
+        <Image
+          src={item.imageUrl}
+          alt={item.cardName}
+          width={40}
+          height={40}
+          className="rounded object-cover"
+        />
+      ),
+      cardName: item.cardName,
+      cardType: item.cardType,
+      country: `${item.country}`,
+      currency: item.currency,
+      range,
+      rate: typeof rate === "number" ? `$${rate.toLocaleString()}` : rate,
+      status: item.isActive ? (
+        <Badge text="Active" color="green" />
+      ) : (
+        <Badge text="Inactive" color="red" />
+      ),
+      createdAt: new Date(item.createdAt).toLocaleDateString("en-US", {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+      }),
+    };
+  });
 
   const menuItems: MenuItem<RowData>[] = [
     {

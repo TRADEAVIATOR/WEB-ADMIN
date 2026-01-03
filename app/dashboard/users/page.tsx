@@ -13,7 +13,7 @@ export default async function UsersPage({
 }) {
   const params = await searchParams;
   const page = params?.page ? Number(params.page) : 1;
-  const res = await getCustomers(page);
+  const res = await getCustomers(page, 50);
 
   if (!res || res.error) {
     return <ResultState type="error" message="Unable to fetch customers." />;

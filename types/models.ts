@@ -27,6 +27,7 @@ export interface Customer {
   isActive: boolean;
   wallets: Wallet[];
   virtualAccounts: VirtualAccount[];
+  transactions?: Transaction[];
 }
 
 export interface Transaction {
@@ -89,6 +90,7 @@ export interface Reward {
 export interface DashboardMetrics {
   overview: {
     totalUsers: number;
+    totalUsersToday: number;
     activeUsers: number;
     totalBalance: number;
     normalWalletBalance: number;
@@ -298,42 +300,43 @@ export interface GiftCardProduct {
 export interface GiftCardOrder {
   id: string;
   orderReference: string;
-  status: string;
+  reference?: string;
+  status: "SUCCESS" | "FAILED" | "PENDING" | string;
 
   cardType: string;
+  giftCardType?: string;
   country: string;
   denomination: string;
   quantity: number;
+  giftCardValue?: string | number;
 
-  rate: string;
-  cardTotal: string;
-  fee: string;
-  promoDiscount: string;
-  nairaValue: string;
+  rate: string | number | null;
+  cardTotal: string | number;
+  fee: string | number;
+  promoDiscount?: string | number | null;
+  nairaValue: string | number;
 
-  paymentMethod: string;
-  transactionId: string;
+  amount?: string | number;
+  currency?: string;
+  channel?: string;
 
-  failureReason: string | null;
-
+  paymentMethod: "WALLET" | "CARD" | "BANK" | string;
+  transactionId?: string;
+  failureReason?: string | null;
   createdAt: string;
   updatedAt: string;
 
   user?: {
+    id?: string;
     fullname: string;
     email: string;
     phone?: string | null;
-  };
-
-  product?: {
-    cardName: string;
-    imageUrl: string;
-    currency: string;
+    country?: string;
   };
 
   codes?: Array<{
     code: string;
-    serial?: string;
+    serial?: string | null;
   }>;
 
   transaction?: {
@@ -341,6 +344,32 @@ export interface GiftCardOrder {
     amount: string | number;
     status: string;
   };
+
+  giftCardQuantity?: number;
+  giftCardReceipt?: string;
+  internalRef?: string;
+  walletId?: string;
+  provider?: string;
+  narration?: string;
+  sessionId?: string;
+  externalRef?: string | null;
+  metertoken?: string | null;
+  sender?: string | null;
+  virtualAccountId?: string | null;
+  providerRef?: string | null;
+  waecCards?: string | null;
+  waecTokens?: any[];
+  jambPin?: string | null;
+  txHash?: string | null;
+  rewardId?: string | null;
+  idempotencyKey?: string | null;
+  eventId?: string | null;
+  transactionValue?: string | number | null;
+  dataPlan?: string | null;
+  institutionBank?: string | null;
+  institutionAccountNo?: string | null;
+  giftcardSaleId?: string | null;
+  cablePlan?: string | null;
 }
 
 export interface GiftCardSale {
@@ -403,14 +432,14 @@ export interface AcceptedGiftCard {
   country: string;
   countryCode: string;
   currency: string;
-  brand: string;
-  minValue: string;
-  maxValue: string;
+  availableRanges: string[];
+  rates: Record<string, number>;
   imageUrl: string;
-  instructions: string;
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
+  brand?: string;
+  instructions?: string;
 }
 
 export interface AcceptedGiftcard {

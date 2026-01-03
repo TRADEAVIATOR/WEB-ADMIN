@@ -15,17 +15,13 @@ export interface AcceptedGiftcardFormValues {
   country: string;
   countryCode: string;
   currency: string;
-  brand: string;
   availableRanges: string[];
   receiptTypes: string[];
-  minValue: number;
-  maxValue: number;
   rates: Record<
     string,
     { rate: number; noReceipt?: number; cashReceipt?: number }
   >;
   image?: File | null;
-  instructions?: string;
   isActive: boolean;
 }
 
@@ -53,19 +49,14 @@ export default function AcceptedGiftcardForm({
     country: initialValues?.country || "",
     countryCode: initialValues?.countryCode || "",
     currency: initialValues?.currency || "",
-    brand: initialValues?.brand || "",
     availableRanges: initialValues?.availableRanges || [""],
     receiptTypes: initialValues?.receiptTypes || [],
-    minValue: initialValues?.minValue || 0,
-    maxValue: initialValues?.maxValue || 0,
     rates: initialValues?.rates || {},
     image: null,
-    instructions: initialValues?.instructions || "",
     isActive: initialValues?.isActive ?? true,
   });
 
   const countries = Country.getAllCountries();
-
   const countryOptions = countries.map((c) => ({
     label: c.name,
     value: c.name,
@@ -123,29 +114,20 @@ export default function AcceptedGiftcardForm({
     }
 
     const formData = new FormData();
-
     formData.append("cardName", values.cardName);
     formData.append("cardType", values.cardType);
     formData.append("country", values.country);
     formData.append("countryCode", values.countryCode);
     formData.append("currency", values.currency);
-    formData.append("brand", values.brand);
-    formData.append("minValue", String(values.minValue));
-    formData.append("maxValue", String(values.maxValue));
     formData.append("isActive", String(values.isActive));
 
-    values.availableRanges.forEach((range) => {
-      formData.append("availableRanges[]", range);
-    });
-
-    values.receiptTypes.forEach((type) => {
-      formData.append("receiptTypes[]", type);
-    });
-
+    values.availableRanges.forEach((range) =>
+      formData.append("availableRanges[]", range)
+    );
+    values.receiptTypes.forEach((type) =>
+      formData.append("receiptTypes[]", type)
+    );
     formData.append("rates", JSON.stringify(values.rates || {}));
-
-    if (values.instructions?.trim())
-      formData.append("instructions", values.instructions);
     if (values.image) formData.append("image", values.image);
 
     onSubmit(formData);
@@ -165,13 +147,6 @@ export default function AcceptedGiftcardForm({
         required
         value={values.cardType}
         onChange={(e) => handleChange("cardType", e.target.value)}
-      />
-
-      <FormField
-        label="Brand"
-        required
-        value={values.brand}
-        onChange={(e) => handleChange("brand", e.target.value)}
       />
 
       <div className="grid grid-cols-2 gap-4">
@@ -233,30 +208,6 @@ export default function AcceptedGiftcardForm({
         required
       />
 
-      <FormField
-        label="Instructions"
-        as="textarea"
-        rows={4}
-        value={values.instructions}
-        onChange={(e) => handleChange("instructions", e.target.value)}
-      />
-
-      <FormField
-        label="Minimum Value"
-        type="number"
-        required
-        value={values.minValue}
-        onChange={(e) => handleChange("minValue", Number(e.target.value))}
-      />
-
-      <FormField
-        label="Maximum Value"
-        type="number"
-        required
-        value={values.maxValue}
-        onChange={(e) => handleChange("maxValue", Number(e.target.value))}
-      />
-
       <div className="space-y-2">
         <div className="flex justify-between">
           <span className="font-semibold">Available Ranges *</span>
@@ -303,10 +254,6 @@ export default function AcceptedGiftcardForm({
 
       <div className="space-y-2">
         <h3 className="font-semibold">Rates by Range *</h3>
-        <p className="text-sm text-gray-500">
-          Add rates for each available range
-        </p>
-
         {values.availableRanges
           .filter((range) => range.trim())
           .map((range, i) => {

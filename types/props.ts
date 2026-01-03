@@ -1,5 +1,4 @@
-import { ReactNode } from "react";
-import { FilterField, ModalType } from "./common";
+import { ModalType } from "./common";
 import {
   Activity,
   CardDistribution,
@@ -29,7 +28,7 @@ export interface PieChartCardProps {
 export interface StatCardProps {
   label: string;
   value: string;
-  change: string;
+  change: string | number;
   data?: number[];
   bgColor?: string;
   selectOptions?: string[];

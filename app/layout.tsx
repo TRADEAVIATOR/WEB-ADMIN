@@ -3,8 +3,6 @@ import AuthProvider from "@/app/providers/AuthProvider";
 import { Toaster } from "react-hot-toast";
 import ReactQueryProvider from "./providers/ReactQueryProvider";
 import { ModalProvider } from "@/context/ModalContext";
-import Loader from "@/components/layout/Loader";
-import { Suspense } from "react";
 import "@/app/globals.css";
 
 export const metadata: Metadata = {
@@ -23,9 +21,8 @@ export default function RootLayout({
         <ReactQueryProvider>
           <AuthProvider>
             <ModalProvider>
-              <Suspense fallback={<Loader />}>{children}</Suspense>
-
-              <Toaster position="top-right" toastOptions={{ duration: 3000 }} />
+              {children}
+              <Toaster />
             </ModalProvider>
           </AuthProvider>
         </ReactQueryProvider>

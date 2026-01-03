@@ -209,6 +209,7 @@ export default function AdminProfileClient({ admin }: { admin: AdminProfile }) {
               value={passwordForm.currentPassword}
               onChange={handlePasswordChange}
               placeholder="Enter current password"
+              required
             />
             <FormField
               label="New Password"
@@ -217,6 +218,7 @@ export default function AdminProfileClient({ admin }: { admin: AdminProfile }) {
               value={passwordForm.newPassword}
               onChange={handlePasswordChange}
               placeholder="Enter new password"
+              required
             />
             <FormField
               label="Confirm New Password"
@@ -225,6 +227,7 @@ export default function AdminProfileClient({ admin }: { admin: AdminProfile }) {
               value={passwordForm.confirmNewPassword}
               onChange={handlePasswordChange}
               placeholder="Confirm new password"
+              required
             />
             <Button type="submit" className="ml-auto block" disabled={loading}>
               {loading ? "Updating..." : "Update Password"}

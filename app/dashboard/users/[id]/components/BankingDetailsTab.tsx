@@ -1,16 +1,14 @@
 "use client";
 
-import DetailItem from "@/components/shared/DetailItem";
 import { formatCurrency } from "@/lib/utils/format";
+import DetailItem from "@/components/shared/DetailItem";
 import { Customer } from "@/types/models";
-
-interface BankingDetailsTabProps {
-  customer: Customer;
-}
 
 export default function BankingDetailsTab({
   customer,
-}: BankingDetailsTabProps) {
+}: {
+  customer: Customer;
+}) {
   return (
     <div className="space-y-6">
       <h3 className="text-md font-semibold text-gray-700">Virtual Accounts</h3>

@@ -8,6 +8,18 @@ import { formatCurrency } from "@/lib/utils/format";
 import Image from "next/image";
 import GiftCardActions from "./GiftCardActions";
 
+const downloadImage = async (url: string, filename: string) => {
+  const res = await fetch(url);
+  const blob = await res.blob();
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  URL.revokeObjectURL(link.href);
+  document.body.removeChild(link);
+};
+
 export default function SalesDetails({ sale }: { sale: GiftCardSale }) {
   const router = useRouter();
 
@@ -54,20 +66,39 @@ export default function SalesDetails({ sale }: { sale: GiftCardSale }) {
 
         {sale.cardImages && sale.cardImages.length > 0 && (
           <div className="border-b border-gray-100 pb-4">
-            <p className="text-sm font-medium text-gray-600 mb-2">
-              Card Images:
-            </p>
+            <div className="flex items-center justify-between mb-2">
+              <p className="text-sm font-medium text-gray-600">Card Images</p>
+              <button
+                onClick={() =>
+                  Promise.all(
+                    sale.cardImages.map((img, i) =>
+                      downloadImage(img, `card-${sale.id}-${i + 1}.jpg`)
+                    )
+                  )
+                }
+                className="text-xs text-primary hover:underline">
+                Download all
+              </button>
+            </div>
+
             <div className="flex gap-4 flex-wrap">
               {sale.cardImages.map((img, i) => (
                 <div
                   key={i}
-                  className="w-28 h-28 relative rounded-md border overflow-hidden">
+                  className="relative group w-28 h-28 rounded-md border overflow-hidden">
                   <Image
                     src={img}
                     alt="Card Image"
                     fill
                     className="object-cover"
                   />
+                  <button
+                    onClick={() =>
+                      downloadImage(img, `card-${sale.id}-${i + 1}.jpg`)
+                    }
+                    className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 text-white text-xs font-medium flex items-center justify-center transition">
+                    Download
+                  </button>
                 </div>
               ))}
             </div>
@@ -134,6 +165,7 @@ export default function SalesDetails({ sale }: { sale: GiftCardSale }) {
             value={new Date(sale.updatedAt).toLocaleString()}
           />
         </div>
+
         <GiftCardActions saleId={sale.id} />
       </div>
     </div>
