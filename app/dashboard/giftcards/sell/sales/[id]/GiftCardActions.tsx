@@ -8,13 +8,21 @@ import {
 import { useState } from "react";
 import toast from "react-hot-toast";
 import Button from "@/components/ui/Button";
-import FormField from "@/components/ui/FormField";
+import SelectField, { SelectOption } from "@/components/ui/SelectField";
 import { handleApiError } from "@/lib/utils/errorHandler";
 
 type GiftCardActionsProps = {
   saleId: string;
   onActionComplete?: () => void;
 };
+
+const rejectionOptions: SelectOption[] = [
+  { label: "Gift card already used", value: "GIFT_CARD_USED" },
+  {
+    label: "No offer available at the moment",
+    value: "NO_OFFER_AVAILABLE",
+  },
+];
 
 export default function GiftCardActions({
   saleId,
@@ -25,7 +33,9 @@ export default function GiftCardActions({
   const [rejectLoading, setRejectLoading] = useState(false);
 
   const [showRejectInput, setShowRejectInput] = useState(false);
-  const [rejectionReason, setRejectionReason] = useState("");
+  const [rejectionReason, setRejectionReason] = useState<SelectOption | null>(
+    null
+  );
 
   const handleReview = async () => {
     setReviewLoading(true);
@@ -54,16 +64,16 @@ export default function GiftCardActions({
   };
 
   const handleReject = async () => {
-    if (!rejectionReason.trim()) {
-      toast.error("Please enter a rejection reason");
+    if (!rejectionReason) {
+      toast.error("Please select a rejection reason");
       return;
     }
 
     setRejectLoading(true);
     try {
-      const res = await rejectGiftCardSales([saleId], rejectionReason);
+      const res = await rejectGiftCardSales([saleId], rejectionReason.label);
       toast.success(res.message || "Sale rejected successfully");
-      setRejectionReason("");
+      setRejectionReason(null);
       setShowRejectInput(false);
       onActionComplete?.();
     } catch (err: any) {
@@ -75,7 +85,7 @@ export default function GiftCardActions({
 
   return (
     <div className="flex flex-col gap-4 mt-4">
-      <div className="flex flex-col sm:flex-row gap-2 flex-wrap">
+      <div className="flex flex-wrap justify-between gap-2">
         <Button
           variant="primary"
           isLoading={reviewLoading}
@@ -84,7 +94,7 @@ export default function GiftCardActions({
         </Button>
 
         <Button
-          variant="secondary"
+          variant="success"
           isLoading={payoutLoading}
           onClick={handlePayout}>
           Process Payout
@@ -99,16 +109,18 @@ export default function GiftCardActions({
       </div>
 
       {showRejectInput && (
-        <div className="flex flex-col sm:flex-row gap-2 items-start sm:items-end mt-2 w-full">
-          <FormField
+        <div className="flex flex-col sm:flex-row gap-3 items-end w-full">
+          <SelectField
+            id="rejectionReason"
             label="Rejection Reason"
             required
+            options={rejectionOptions}
             value={rejectionReason}
-            onChange={(e) => setRejectionReason(e.target.value)}
+            onChange={(val) => setRejectionReason(val as SelectOption)}
             className="w-full sm:flex-1"
           />
 
-          <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+          <div className="flex gap-2">
             <Button
               variant="danger"
               size="sm"
@@ -122,7 +134,7 @@ export default function GiftCardActions({
               size="sm"
               onClick={() => {
                 setShowRejectInput(false);
-                setRejectionReason("");
+                setRejectionReason(null);
               }}>
               Cancel
             </Button>

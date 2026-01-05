@@ -5,7 +5,13 @@ import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import clsx from "clsx";
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: "primary" | "secondary" | "outline" | "danger" | "ghost";
+  variant?:
+    | "primary"
+    | "secondary"
+    | "outline"
+    | "danger"
+    | "ghost"
+    | "success";
   size?: "sm" | "md" | "lg";
   rounded?: "none" | "md" | "lg" | "full";
   isLoading?: boolean;
@@ -31,13 +37,14 @@ export default function Button({
     <button
       disabled={isDisabled}
       className={clsx(
-        "flex items-center cursor-pointer justify-center gap-2 font-semibold transition-all duration-200 focus:outline-none",
-        "disabled:cursor-not-allowed",
+        "flex items-center cursor-pointer justify-center gap-2 font-semibold transition-all duration-200 focus:outline-none disabled:cursor-not-allowed",
         {
           "bg-primary text-white hover:bg-opacity-90 disabled:bg-opacity-60":
             variant === "primary",
           "bg-secondary text-white hover:bg-opacity-90 disabled:bg-opacity-60":
             variant === "secondary",
+          "bg-green-500 text-white hover:bg-green-600 disabled:opacity-60":
+            variant === "success",
           "border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-60":
             variant === "outline",
           "bg-red-500 text-white hover:bg-red-600 disabled:opacity-60":

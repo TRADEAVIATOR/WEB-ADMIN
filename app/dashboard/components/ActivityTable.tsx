@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useModal } from "@/context/ModalContext";
 import { RecentActivitiesProps } from "@/types/props";
 import clsx from "clsx";
 
@@ -9,7 +9,7 @@ export default function RecentActivities({
   data,
   className,
 }: RecentActivitiesProps) {
-  const [showAll, setShowAll] = useState(false);
+  const { openModal } = useModal();
 
   const truncate = (text: string, maxLength = 25) =>
     text.length > maxLength ? text.slice(0, maxLength) + "…" : text;
@@ -21,30 +21,20 @@ export default function RecentActivities({
     return new Date(`${year}-${month}-${day}T${timePart}`);
   };
 
-  const visibleActivities = showAll ? data : data.slice(0, 5);
-
   return (
     <div
       className={clsx(
         "bg-white rounded-2xl p-6 flex flex-col gap-4 border border-gray-100",
         className
       )}>
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-semibold text-secondary">{title}</h2>
-        {data.length > 5 && (
-          <button
-            onClick={() => setShowAll((prev) => !prev)}
-            className="text-sm text-primary hover:underline">
-            {showAll ? "Show less" : "See all"}
-          </button>
-        )}
-      </div>
+      <h2 className="text-lg font-semibold text-secondary mb-4">{title}</h2>
 
       <div className="flex flex-col divide-y divide-gray-200">
-        {visibleActivities.map((activity) => (
-          <div
+        {data.slice(0, 8).map((activity) => (
+          <button
             key={activity.id}
-            className="w-full flex flex-col sm:flex-row sm:items-center sm:justify-between py-3 rounded-lg px-2 hover:bg-gray-50 transition">
+            onClick={() => openModal("view-activity-details", activity)}
+            className="text-left w-full flex flex-col sm:flex-row sm:items-center sm:justify-between py-3 hover:bg-gray-50 transition rounded-lg px-2">
             <div className="flex flex-col gap-0.5">
               <p className="text-sm font-medium text-gray-800">
                 {truncate(activity.description)}
@@ -71,7 +61,7 @@ export default function RecentActivities({
                 })}
               </p>
             </div>
-          </div>
+          </button>
         ))}
       </div>
     </div>

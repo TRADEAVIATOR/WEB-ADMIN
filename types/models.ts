@@ -487,3 +487,44 @@ export type ScheduledNotification = {
   scheduledFor: string;
   createdAt: string;
 };
+
+export type ConversationStatus = "OPEN" | "CLOSED";
+export type ConversationPriority = "LOW" | "MEDIUM" | "HIGH";
+export type SenderType = "USER" | "ADMIN";
+
+export interface SupportUser {
+  id: string;
+  fullname: string;
+  email: string;
+  phone?: string | null;
+  profilePicture?: string | null;
+}
+
+export interface SupportMessage {
+  id: string;
+  conversationId: string;
+  senderId: string;
+  senderType: SenderType;
+  message: string;
+  attachments: string[];
+  isRead: boolean;
+  createdAt: string;
+}
+
+export interface SupportConversation {
+  id: string;
+  userId: string;
+  subject: string;
+  status: ConversationStatus;
+  priority: ConversationPriority;
+  assignedTo: string | null;
+  category: string;
+  lastMessageAt: string;
+  closedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+
+  user: SupportUser;
+  admin: any | null;
+  messages: SupportMessage[];
+}
