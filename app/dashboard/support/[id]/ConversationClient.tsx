@@ -4,7 +4,8 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import Image from "next/image";
 import Button from "@/components/ui/Button";
-import FormField from "@/components/ui/FormField";
+import EmojiPicker from "emoji-picker-react";
+import { Paperclip, Smile, X } from "lucide-react";
 import {
   getConversationMessages,
   sendAdminReply,
@@ -12,16 +13,54 @@ import {
 } from "@/lib/api/support";
 import { SupportConversation, SupportMessage } from "@/types/models";
 
+type ReplyAttachment = {
+  url: string;
+  fileName: string;
+  fileType: string;
+  fileSize: number;
+};
+
+type ConversationClientProps = {
+  conversation: SupportConversation;
+};
+
+const MAX_FILES = 10;
+const MAX_SIZE = 25 * 1024 * 1024;
+const ALLOWED_TYPES = [
+  "image/jpeg",
+  "image/png",
+  "image/gif",
+  "image/webp",
+  "image/svg+xml",
+  "application/pdf",
+  "application/msword",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  "application/vnd.ms-excel",
+  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  "application/vnd.ms-powerpoint",
+  "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+  "text/plain",
+  "text/csv",
+  "application/zip",
+  "application/vnd.rar",
+  "video/mp4",
+  "video/webm",
+  "video/quicktime",
+  "audio/mpeg",
+  "audio/wav",
+  "audio/ogg",
+];
+
 export default function ConversationClient({
   conversation,
-}: {
-  conversation: SupportConversation;
-}) {
+}: ConversationClientProps) {
   const [messages, setMessages] = useState<SupportMessage[]>(
     conversation.messages
   );
   const [reply, setReply] = useState("");
   const [sending, setSending] = useState(false);
+  const [showEmoji, setShowEmoji] = useState(false);
+  const [attachments, setAttachments] = useState<ReplyAttachment[]>([]);
 
   const refreshMessages = async () => {
     const res = await getConversationMessages(conversation.id);
@@ -29,12 +68,14 @@ export default function ConversationClient({
   };
 
   const handleSend = async () => {
-    if (!reply.trim()) return;
+    if (!reply.trim() && attachments.length === 0) return;
 
     setSending(true);
     try {
       await sendAdminReply(conversation.id, reply);
+
       setReply("");
+      setAttachments([]);
       await refreshMessages();
       toast.success("Reply sent");
     } catch {
@@ -45,8 +86,49 @@ export default function ConversationClient({
   };
 
   const handleStatusChange = async (value: string) => {
-    await updateConversation(conversation.id, { status: value });
-    toast.success("Status updated");
+    try {
+      await updateConversation(conversation.id, { status: value });
+      toast.success("Status updated");
+    } catch {
+      toast.error("Failed to update status");
+    }
+  };
+
+  const handleEmojiClick = (emoji: any) => {
+    setReply((prev) => prev + emoji.emoji);
+  };
+
+  const handleFiles = async (files: FileList | null) => {
+    if (!files) return;
+
+    if (files.length + attachments.length > MAX_FILES) {
+      return toast.error("Maximum of 10 files allowed");
+    }
+
+    const valid: ReplyAttachment[] = [];
+
+    for (const file of Array.from(files)) {
+      if (!ALLOWED_TYPES.includes(file.type)) {
+        toast.error(`Unsupported file type: ${file.name}`);
+        continue;
+      }
+
+      if (file.size > MAX_SIZE) {
+        toast.error(`${file.name} exceeds 25MB`);
+        continue;
+      }
+
+      const uploadedUrl = await uploadFile(file);
+
+      valid.push({
+        url: uploadedUrl,
+        fileName: file.name,
+        fileType: file.type,
+        fileSize: file.size,
+      });
+    }
+
+    setAttachments((prev) => [...prev, ...valid]);
   };
 
   return (
@@ -115,17 +197,83 @@ export default function ConversationClient({
         ))}
       </div>
 
-      <div className="flex gap-2">
-        <FormField
-          value={reply}
-          placeholder="Type your reply…"
-          onChange={(e) => setReply(e.target.value)}
-          className="flex-1"
-        />
-        <Button variant="success" isLoading={sending} onClick={handleSend}>
-          Send
-        </Button>
+      <div className="border border-gray-200 rounded-xl p-3 sm:p-4 flex flex-col gap-3 bg-gray-50">
+        {attachments.length > 0 && (
+          <div className="flex flex-wrap gap-2">
+            {attachments.map((file, i) => (
+              <div
+                key={i}
+                className="flex items-center gap-2 bg-gray-100 rounded-lg px-3 py-1 text-xs">
+                <span className="truncate max-w-[120px]">{file.fileName}</span>
+                <button
+                  onClick={() =>
+                    setAttachments((prev) => prev.filter((_, idx) => idx !== i))
+                  }>
+                  <X size={14} />
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+        <div className="flex items-end gap-2">
+          <div className="flex-1 relative">
+            <textarea
+              value={reply}
+              rows={3}
+              placeholder="Type your reply..."
+              onChange={(e) => setReply(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  handleSend();
+                }
+              }}
+              className="w-full resize-none rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+            />
+
+            {showEmoji && (
+              <div className="absolute bottom-12 left-0 z-10">
+                <EmojiPicker onEmojiClick={handleEmojiClick} />
+              </div>
+            )}
+          </div>
+
+          <div className="flex items-center gap-1">
+            <button
+              type="button"
+              onClick={() => setShowEmoji((p) => !p)}
+              className="p-2 rounded-lg hover:bg-gray-100">
+              <Smile size={18} />
+            </button>
+
+            <label className="p-2 rounded-lg hover:bg-gray-100 cursor-pointer">
+              <Paperclip size={18} />
+              <input
+                type="file"
+                multiple
+                hidden
+                onChange={(e) => handleFiles(e.target.files)}
+              />
+            </label>
+
+            <Button
+              variant="success"
+              isLoading={sending}
+              disabled={(!reply.trim() && attachments.length === 0) || sending}
+              onClick={handleSend}
+              className="whitespace-nowrap">
+              {sending ? "Sending..." : "Send Reply"}
+            </Button>
+          </div>
+        </div>
+        <p className="text-[11px] text-gray-400 px-1">
+          Press Enter to send, Shift+Enter for new line
+        </p>
       </div>
     </div>
   );
+}
+
+async function uploadFile(file: File): Promise<string> {
+  return Promise.resolve("https://via.placeholder.com/150");
 }
