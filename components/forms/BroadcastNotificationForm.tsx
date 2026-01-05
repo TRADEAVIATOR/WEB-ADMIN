@@ -1,10 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import FormField from "@/components/ui/FormField";
 import { NotificationPriority, NotificationType } from "@/types/enums";
 import Button from "@/components/ui/Button";
 import SelectField from "../ui/SelectField";
+import EmojiPicker from "emoji-picker-react";
+import { Smile } from "lucide-react";
 
 interface BroadcastNotificationFormData {
   notificationType: string;
@@ -48,6 +50,70 @@ export default function BroadcastNotificationForm({
     },
   });
   const [isLoading, setIsLoading] = useState(false);
+  const [showEmojiPicker, setShowEmojiPicker] = useState<
+    "title" | "message" | null
+  >(null);
+  const emojiPickerRef = useRef<HTMLDivElement>(null);
+  const titleInputRef = useRef<HTMLInputElement>(null);
+  const messageInputRef = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        emojiPickerRef.current &&
+        !emojiPickerRef.current.contains(event.target as Node)
+      ) {
+        setShowEmojiPicker(null);
+      }
+    };
+
+    if (showEmojiPicker) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showEmojiPicker]);
+
+  const handleEmojiClick = (emoji: any) => {
+    if (showEmojiPicker === "title") {
+      const input = titleInputRef.current;
+      if (input) {
+        const cursorPos = input.selectionStart || formData.title.length;
+        const newTitle =
+          formData.title.slice(0, cursorPos) +
+          emoji.emoji +
+          formData.title.slice(cursorPos);
+        setFormData({ ...formData, title: newTitle });
+        setTimeout(() => {
+          input.focus();
+          input.setSelectionRange(
+            cursorPos + emoji.emoji.length,
+            cursorPos + emoji.emoji.length
+          );
+        }, 0);
+      }
+    } else if (showEmojiPicker === "message") {
+      const textarea = messageInputRef.current;
+      if (textarea) {
+        const cursorPos = textarea.selectionStart || formData.message.length;
+        const newMessage =
+          formData.message.slice(0, cursorPos) +
+          emoji.emoji +
+          formData.message.slice(cursorPos);
+        setFormData({ ...formData, message: newMessage });
+        setTimeout(() => {
+          textarea.focus();
+          textarea.setSelectionRange(
+            cursorPos + emoji.emoji.length,
+            cursorPos + emoji.emoji.length
+          );
+        }, 0);
+      }
+    }
+    setShowEmojiPicker(null);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -124,25 +190,70 @@ export default function BroadcastNotificationForm({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <FormField
-        label="Title"
-        name="title"
-        value={formData.title}
-        onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-        placeholder="Enter broadcast title"
-        className="rounded-full bg-[#F5F5F5] py-3 px-4 text-base"
-        required
-      />
+      <div className="relative">
+        <FormField
+          label="Title"
+          name="title"
+          value={formData.title}
+          ref={titleInputRef}
+          onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+          placeholder="Enter broadcast title"
+          className="rounded-full bg-[#F5F5F5] py-3 px-4 pr-12 text-base"
+          required
+        />
+        <button
+          type="button"
+          onClick={() =>
+            setShowEmojiPicker(showEmojiPicker === "title" ? null : "title")
+          }
+          className="absolute right-4 top-9 p-1.5 rounded-lg hover:bg-gray-200 transition-colors text-gray-500 hover:text-gray-700">
+          <Smile size={18} />
+        </button>
+        {showEmojiPicker === "title" && (
+          <div
+            ref={emojiPickerRef}
+            className="absolute right-0 top-full mt-2 z-50 shadow-xl">
+            <EmojiPicker onEmojiClick={handleEmojiClick} />
+          </div>
+        )}
+      </div>
 
-      <FormField
-        label="Message"
-        name="message"
-        value={formData.message}
-        onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-        placeholder="Enter broadcast message"
-        className="rounded-full bg-[#F5F5F5] py-3 px-4 text-base"
-        required
-      />
+      <div className="relative">
+        <label className="block text-sm font-medium text-gray-700 mb-1.5">
+          Message <span className="text-red-500">*</span>
+        </label>
+        <div className="relative">
+          <textarea
+            ref={messageInputRef}
+            name="message"
+            value={formData.message}
+            onChange={(e) =>
+              setFormData({ ...formData, message: e.target.value })
+            }
+            placeholder="Enter broadcast message"
+            className="w-full rounded-2xl bg-[#F5F5F5] py-3 px-4 pr-12 text-base focus:outline-none focus:ring-2 focus:ring-primary resize-none"
+            rows={4}
+            required
+          />
+          <button
+            type="button"
+            onClick={() =>
+              setShowEmojiPicker(
+                showEmojiPicker === "message" ? null : "message"
+              )
+            }
+            className="absolute right-4 top-3 p-1.5 rounded-lg hover:bg-gray-200 transition-colors text-gray-500 hover:text-gray-700">
+            <Smile size={18} />
+          </button>
+        </div>
+        {showEmojiPicker === "message" && (
+          <div
+            ref={emojiPickerRef}
+            className="absolute right-0 top-full mt-2 z-50 shadow-xl">
+            <EmojiPicker onEmojiClick={handleEmojiClick} />
+          </div>
+        )}
+      </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <SelectField

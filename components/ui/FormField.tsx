@@ -5,6 +5,7 @@ import {
   TextareaHTMLAttributes,
   SelectHTMLAttributes,
   ReactNode,
+  forwardRef,
 } from "react";
 import clsx from "clsx";
 
@@ -27,7 +28,10 @@ type SelectFieldProps = BaseProps &
 
 type FormFieldProps = InputFieldProps | TextareaFieldProps | SelectFieldProps;
 
-export default function FormField(props: FormFieldProps) {
+const FormField = forwardRef<
+  HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement,
+  FormFieldProps
+>((props, ref) => {
   const { label, error, icon, className, as, required, ...rest } = props as any;
 
   const baseClasses = clsx(
@@ -58,6 +62,7 @@ export default function FormField(props: FormFieldProps) {
         <div className={clsx(baseClasses, "rounded-lg py-2 px-3")}>
           {icon && <span className="text-gray-400 text-lg">{icon}</span>}
           <textarea
+            ref={ref as React.Ref<HTMLTextAreaElement>}
             {...(rest as TextareaHTMLAttributes<HTMLTextAreaElement>)}
             className={clsx(
               "w-full outline-none bg-transparent text-base text-gray-800 placeholder-gray-400 resize-none",
@@ -70,6 +75,7 @@ export default function FormField(props: FormFieldProps) {
         <div className={baseClasses}>
           {icon && <span className="text-gray-400 text-lg">{icon}</span>}
           <select
+            ref={ref as React.Ref<HTMLSelectElement>}
             {...(rest as SelectHTMLAttributes<HTMLSelectElement>)}
             className={clsx(
               "w-full outline-none bg-transparent text-base text-gray-800 placeholder-gray-400 cursor-pointer",
@@ -87,6 +93,7 @@ export default function FormField(props: FormFieldProps) {
         <div className={baseClasses}>
           {icon && <span className="text-gray-400 text-lg">{icon}</span>}
           <input
+            ref={ref as React.Ref<HTMLInputElement>}
             {...(rest as InputHTMLAttributes<HTMLInputElement>)}
             className={clsx(
               "w-full outline-none bg-transparent text-base text-gray-800 placeholder-gray-400",
@@ -100,4 +107,8 @@ export default function FormField(props: FormFieldProps) {
       {error && <p className="text-xs text-red-500">{error}</p>}
     </div>
   );
-}
+});
+
+FormField.displayName = "FormField";
+
+export default FormField;
