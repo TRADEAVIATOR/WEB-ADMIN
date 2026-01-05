@@ -9,28 +9,32 @@ import { getDashboardGrowth } from "@/lib/api/dashboard";
 export default async function AnalyticsPage() {
   const dashboardData = await getDashboardGrowth();
 
-  const { overview, volumes, charts } = dashboardData?.data || {};
+  const { overview, volumes, charts } = dashboardData?.data.data || {};
 
   const cryptoMonthlyData = charts?.cryptoVolumeByMonth || [];
   const cryptoValues = cryptoMonthlyData.map((item: any) =>
     parseFloat(item.value || 0)
   );
-  const cryptoChange =
-    cryptoValues.length >= 2
-      ? (
-          ((cryptoValues[cryptoValues.length - 1] -
-            cryptoValues[cryptoValues.length - 2]) /
-            cryptoValues[cryptoValues.length - 2]) *
-          100
-        ).toFixed(1)
-      : "0";
+
+  let cryptoChange = "0";
+  if (cryptoValues.length >= 2) {
+    const lastValue = cryptoValues[cryptoValues.length - 1];
+    const previousValue = cryptoValues[cryptoValues.length - 2];
+    if (previousValue !== 0) {
+      cryptoChange = (
+        ((lastValue - previousValue) / previousValue) *
+        100
+      ).toFixed(1);
+    }
+  }
 
   const billsTransactions =
     charts?.transactionsByType
-      ?.filter((t: any) =>
-        ["DATA", "ELECTRICITY", "CABLE", "AIRTIME"].includes(t.type)
+      ?.filter(
+        (t: any) =>
+          t.type && ["DATA", "ELECTRICITY", "CABLE", "AIRTIME"].includes(t.type)
       )
-      .reduce((acc: number, curr: any) => acc + curr.count, 0) || 0;
+      .reduce((acc: number, curr: any) => acc + (curr.count || 0), 0) || 0;
 
   const miniCards = [
     {
@@ -38,41 +42,50 @@ export default async function AnalyticsPage() {
       value: `₦${parseFloat(
         overview?.totalCryptoBalance || "0"
       ).toLocaleString()}`,
-      subChange: `${cryptoMonthlyData.length} months data`,
+      subChange:
+        cryptoMonthlyData.length > 0
+          ? `${cryptoMonthlyData.length} months data`
+          : "No data",
       change: `${parseFloat(cryptoChange) >= 0 ? "+" : ""}${cryptoChange}%`,
-      data: cryptoValues.length > 0 ? cryptoValues : [0, 0, 0, 0, 0],
+      data: cryptoValues.length > 0 ? cryptoValues : [],
       color: "#00A3FF",
       icon: CryptoVolumeIcon,
+      hasData: cryptoValues.length > 0,
     },
     {
       label: "Overall Bills Payment",
       value: `₦${parseFloat(volumes?.bills || "0").toLocaleString()}`,
-      subChange: `${billsTransactions} Transactions`,
-      change: "+5%",
-      data: [10, 18, 14, 25, 20, 28, 22, 30, 27],
+      subChange:
+        billsTransactions > 0
+          ? `${billsTransactions} Transactions`
+          : "No transactions",
+      change: billsTransactions > 0 ? "+5%" : "0%",
+      data: [],
       color: "#8B5CF6",
       icon: BillsPaymentIcon,
+      hasData: false,
     },
     {
       label: "Giftcards",
       value: `₦${parseFloat(volumes?.giftcards || "0").toLocaleString()}`,
       subChange: `${overview?.totalUsers || 0} Users`,
-      change: "+15%",
-      data: [8, 15, 12, 20, 17, 25, 22, 18, 24],
+      change: parseFloat(volumes?.giftcards || "0") > 0 ? "+15%" : "0%",
+      data: [],
       color: "#22C55E",
       icon: GiftcardsIcon,
+      hasData: false,
     },
   ];
 
   return (
     <div className="space-y-8">
-      <PerformanceCard data={dashboardData?.data} />
+      <PerformanceCard data={dashboardData?.data.data} />
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {miniCards.map((stat, i) => (
           <StatCard key={i} {...stat} />
         ))}
       </div>
-      <TrendCharts data={dashboardData?.data} />
+      <TrendCharts data={dashboardData?.data.data} />
     </div>
   );
 }

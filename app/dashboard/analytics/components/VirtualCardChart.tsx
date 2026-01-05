@@ -10,7 +10,9 @@ interface VirtualCardChartProps {
 }
 
 export default function VirtualCardChart({ cardsData }: VirtualCardChartProps) {
-  const totalCards = cardsData?.[0]?.count || 0;
+  const hasCardData =
+    cardsData && cardsData.length > 0 && cardsData[0]?.count > 0;
+  const totalCards = hasCardData ? cardsData[0].count : 0;
   const totalAmount = totalCards * 84000;
 
   const data = {
@@ -63,12 +65,14 @@ export default function VirtualCardChart({ cardsData }: VirtualCardChartProps) {
         <p className="text-2xl font-bold text-gray-800">
           {totalCards.toLocaleString()}
         </p>
-        <p className="text-xs text-gray-400 mt-1">
-          Est. value: ₦{totalAmount.toLocaleString()}
-        </p>
+        {totalCards > 0 && (
+          <p className="text-xs text-gray-400 mt-1">
+            Est. value: ₦{totalAmount.toLocaleString()}
+          </p>
+        )}
       </div>
       <div className="h-72 flex items-center justify-center">
-        {totalCards > 0 ? (
+        {hasCardData ? (
           <Pie data={data} options={options} />
         ) : (
           <div className="text-center text-gray-400">

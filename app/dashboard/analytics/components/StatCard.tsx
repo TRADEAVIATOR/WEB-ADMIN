@@ -13,6 +13,7 @@ interface Props {
   data: number[];
   subChange: string;
   icon: string;
+  hasData?: boolean;
 }
 
 export default function StatCard({
@@ -23,7 +24,10 @@ export default function StatCard({
   data,
   subChange,
   icon,
+  hasData = true,
 }: Props) {
+  const showChart = hasData && data.length > 0;
+
   return (
     <div className="bg-white rounded-2xl p-6 space-y-4">
       <div className="flex justify-between items-center">
@@ -49,15 +53,21 @@ export default function StatCard({
       </div>
 
       <div className="h-16">
-        <Sparklines data={data}>
-          <SparklinesLine
-            color={color}
-            style={{
-              fill: color,
-              fillOpacity: 0.065,
-            }}
-          />
-        </Sparklines>
+        {showChart ? (
+          <Sparklines data={data}>
+            <SparklinesLine
+              color={color}
+              style={{
+                fill: color,
+                fillOpacity: 0.065,
+              }}
+            />
+          </Sparklines>
+        ) : (
+          <div className="h-full flex items-center justify-center bg-gray-50 rounded">
+            <p className="text-xs text-gray-400">No chart data available</p>
+          </div>
+        )}
       </div>
     </div>
   );

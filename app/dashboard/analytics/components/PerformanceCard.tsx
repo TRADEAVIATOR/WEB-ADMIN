@@ -29,28 +29,13 @@ export default function PerformanceCard({ data }: PerformanceCardProps) {
   const { overview, volumes, charts } = data || {};
 
   const cryptoMonthlyData = charts?.cryptoVolumeByMonth || [];
-  const sparklineData =
-    cryptoMonthlyData.length > 0
-      ? cryptoMonthlyData.map((item) => parseFloat(item.value || "0"))
-      : [50, 70, 65, 90, 75, 100, 80, 110, 95, 105, 120, 100];
+  const sparklineData = cryptoMonthlyData.map((item) =>
+    parseFloat(item.value || "0")
+  );
+  const monthLabels = cryptoMonthlyData.map((item) => item.month);
 
-  const monthLabels =
-    cryptoMonthlyData.length > 0
-      ? cryptoMonthlyData.map((item) => item.month)
-      : [
-          "Jan",
-          "Feb",
-          "Mar",
-          "Apr",
-          "May",
-          "Jun",
-          "Jul",
-          "Aug",
-          "Sep",
-          "Oct",
-          "Nov",
-          "Dec",
-        ];
+  const hasSparklineData =
+    sparklineData.length > 0 && sparklineData.some((val) => val > 0);
 
   return (
     <div className="bg-white rounded-2xl p-6">
@@ -127,24 +112,32 @@ export default function PerformanceCard({ data }: PerformanceCardProps) {
             </div>
           </div>
 
-          <div className="w-full h-24">
-            <Sparklines data={sparklineData}>
-              <SparklinesLine
-                color="#FE7F32"
-                style={{
-                  fill: "none",
-                  strokeWidth: 1.8,
-                  strokeLinejoin: "round",
-                  strokeLinecap: "round",
-                }}
-              />
-            </Sparklines>
-            <div className="flex justify-between text-xs text-gray-400 mt-2 px-1">
-              {monthLabels.map((month, index) => (
-                <span key={index}>{month}</span>
-              ))}
+          {hasSparklineData ? (
+            <div className="w-full h-24">
+              <Sparklines data={sparklineData}>
+                <SparklinesLine
+                  color="#FE7F32"
+                  style={{
+                    fill: "none",
+                    strokeWidth: 1.8,
+                    strokeLinejoin: "round",
+                    strokeLinecap: "round",
+                  }}
+                />
+              </Sparklines>
+              <div className="flex justify-between text-xs text-gray-400 mt-2 px-1">
+                {monthLabels.map((month, index) => (
+                  <span key={index}>{month}</span>
+                ))}
+              </div>
             </div>
-          </div>
+          ) : (
+            <div className="w-full h-24 flex items-center justify-center bg-gray-50 rounded">
+              <p className="text-sm text-gray-400">
+                No crypto volume data available
+              </p>
+            </div>
+          )}
         </div>
 
         <div className="lg:pl-8">
