@@ -101,20 +101,17 @@ export const reviewGiftCardSale = async (saleId: string) => {
   return res.data;
 };
 
-export const processGiftCardPayout = async (saleIds: string[]) => {
-  const res = await clientApi.post(`/admin/giftcards/sales/process-payout`, {
-    saleIds,
+export const rejectGiftCardSales = async (saleId: string, reason: string) => {
+  const res = await clientApi.post(`/admin/giftcards/sales/reject`, {
+    saleId: saleId,
+    rejectionReason: reason,
   });
   return res.data;
 };
 
-export const rejectGiftCardSales = async (
-  saleIds: string[],
-  reason: string
-) => {
-  const res = await clientApi.post(`/admin/giftcards/sales/reject`, {
-    saleIds,
-    reason,
+export const processGiftCardPayout = async (saleId: string) => {
+  const res = await clientApi.post(`/admin/giftcards/sales/process-payout`, {
+    saleId: saleId,
   });
   return res.data;
 };

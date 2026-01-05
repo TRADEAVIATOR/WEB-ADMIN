@@ -18,10 +18,7 @@ type GiftCardActionsProps = {
 
 const rejectionOptions: SelectOption[] = [
   { label: "Gift card already used", value: "GIFT_CARD_USED" },
-  {
-    label: "No offer available at the moment",
-    value: "NO_OFFER_AVAILABLE",
-  },
+  { label: "No offer available at the moment", value: "NO_OFFER_AVAILABLE" },
 ];
 
 export default function GiftCardActions({
@@ -53,7 +50,7 @@ export default function GiftCardActions({
   const handlePayout = async () => {
     setPayoutLoading(true);
     try {
-      const res = await processGiftCardPayout([saleId]);
+      const res = await processGiftCardPayout(saleId);
       toast.success(res.message || "Payout processed successfully");
       onActionComplete?.();
     } catch (err: any) {
@@ -71,7 +68,7 @@ export default function GiftCardActions({
 
     setRejectLoading(true);
     try {
-      const res = await rejectGiftCardSales([saleId], rejectionReason.label);
+      const res = await rejectGiftCardSales(saleId, rejectionReason.label);
       toast.success(res.message || "Sale rejected successfully");
       setRejectionReason(null);
       setShowRejectInput(false);
