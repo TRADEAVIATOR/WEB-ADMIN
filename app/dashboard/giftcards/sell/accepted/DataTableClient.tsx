@@ -8,6 +8,7 @@ import { MenuItem, RowData } from "@/types/common";
 import { DataTableClientProps } from "@/types/props";
 import { AcceptedGiftCard } from "@/types/models";
 import Badge from "@/components/ui/Badge";
+import { formatCurrency } from "@/lib/utils/format";
 
 export default function AcceptedGiftCardsTable({
   initialData = [],
@@ -31,8 +32,16 @@ export default function AcceptedGiftCardsTable({
 
   const rows: RowData[] = initialData.map((item) => {
     const range =
-      item.availableRanges.length > 0 ? item.availableRanges[0] : "-";
-    const rate = item.rates[range] ?? "-";
+      item.availableRanges?.length > 0 ? item.availableRanges[0] : "-";
+
+    const rateObject = range !== "-" ? item.rates?.[range] : null;
+
+    const receiptType = item.receiptTypes?.[0];
+
+    const rateValue =
+      rateObject && receiptType && typeof rateObject[receiptType] === "number"
+        ? rateObject[receiptType]
+        : null;
 
     return {
       id: item.id,
@@ -47,10 +56,13 @@ export default function AcceptedGiftCardsTable({
       ),
       cardName: item.cardName,
       cardType: item.cardType,
-      country: `${item.country}`,
+      country: item.country,
       currency: item.currency,
       range,
-      rate: typeof rate === "number" ? `$${rate.toLocaleString()}` : rate,
+      rate: formatCurrency(rateValue, {
+        currency: item.currency,
+        locale: "en-US",
+      }),
       status: item.isActive ? (
         <Badge text="Active" color="green" />
       ) : (

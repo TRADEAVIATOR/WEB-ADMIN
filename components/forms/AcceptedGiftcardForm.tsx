@@ -36,6 +36,7 @@ const RECEIPT_TYPE_OPTIONS = [
   { label: "Debit Receipt", value: "DEBIT_RECEIPT" },
   { label: "No Receipt", value: "NO_RECEIPT" },
   { label: "E-Code", value: "E_CODE" },
+  { label: "Physical Receipt", value: "PHYSICAL" },
 ];
 
 export default function AcceptedGiftcardForm({

@@ -431,6 +431,7 @@ export interface AcceptedGiftCard {
   cardType: string;
   country: string;
   countryCode: string;
+  receiptTypes: string[];
   currency: string;
   availableRanges: string[];
   rates: Record<string, number>;

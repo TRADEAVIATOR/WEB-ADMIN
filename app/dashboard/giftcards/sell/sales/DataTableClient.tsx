@@ -7,6 +7,7 @@ import Pagination from "@/components/ui/Pagination";
 import { DataTableClientProps } from "@/types/props";
 import { MenuItem, RowData } from "@/types/common";
 import { GiftCardSale } from "@/types/models";
+import { formatCurrency } from "@/lib/utils/format";
 
 export default function DataTableClient({
   initialData = [],
@@ -44,12 +45,12 @@ export default function DataTableClient({
       "N/A"
     ),
     cardType: sale.cardType,
-    country: `${sale.country} (${sale.countryCode})`,
+    country: `${sale.country}`,
     cardRange: sale.cardRange,
     cardValue: `${sale.cardCurrency} ${sale.cardValue}`,
     quantity: sale.quantity,
     totalCardValue: `${sale.cardCurrency} ${sale.totalCardValue}`,
-    payoutAmount: `${sale.cardCurrency} ${sale.payoutAmount}`,
+    payoutAmount: `${formatCurrency(sale.payoutAmount)}`,
     status: sale.status,
     paymentMethod: sale.paymentMethod,
     createdAt: new Date(sale.createdAt).toLocaleDateString("en-US", {

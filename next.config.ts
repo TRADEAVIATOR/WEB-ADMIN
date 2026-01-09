@@ -23,6 +23,11 @@ const nextConfig: NextConfig = {
         hostname: "www.mygiftcardsupply.com",
         pathname: "**",
       },
+      {
+        protocol: "https",
+        hostname: "example.com",
+        pathname: "**",
+      },
     ],
   },
 };

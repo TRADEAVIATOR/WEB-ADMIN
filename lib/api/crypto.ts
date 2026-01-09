@@ -1,4 +1,5 @@
-import { clientApi } from "./config/client";
+import { tryServer } from "../utils/errorHandler";
+import { clientApi, getServerApi } from "./config/client";
 
 export const setCryptoRateClient = async (payload: {
   valueNGN: number;
@@ -13,4 +14,8 @@ export const deleteCryptoRateClient = async (baseAsset: string) => {
   const res = await clientApi.delete(`/admin/crypto/${baseAsset}`);
 
   return res.data;
+};
+
+export const getCryptoAssets = async () => {
+  return clientApi.get("/admin/crypto/assets").then((r) => r.data);
 };
