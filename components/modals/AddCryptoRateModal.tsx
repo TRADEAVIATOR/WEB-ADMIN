@@ -36,6 +36,7 @@ export default function AddCryptoRateModal({
     "USDC",
     "BNB",
     "TRX",
+    "BCH",
     "DOGE",
     "LTC",
     "POL",
@@ -63,22 +64,22 @@ export default function AddCryptoRateModal({
           throw new Error("Invalid crypto assets response");
         }
 
-       const options = res
-         .filter((asset) => asset?.isActive)
-         .sort((a, b) => {
-           const aIndex = CRYPTO_ORDER.indexOf(a.code);
-           const bIndex = CRYPTO_ORDER.indexOf(b.code);
+        const options = res
+          .filter((asset) => asset?.isActive)
+          .sort((a, b) => {
+            const aIndex = CRYPTO_ORDER.indexOf(a.code);
+            const bIndex = CRYPTO_ORDER.indexOf(b.code);
 
-           // push unknown coins to the bottom
-           if (aIndex === -1) return 1;
-           if (bIndex === -1) return -1;
+            // push unknown coins to the bottom
+            if (aIndex === -1) return 1;
+            if (bIndex === -1) return -1;
 
-           return aIndex - bIndex;
-         })
-         .map((asset) => ({
-           value: asset.code,
-           label: `${asset.code} — ${asset.name}`,
-         }));
+            return aIndex - bIndex;
+          })
+          .map((asset) => ({
+            value: asset.code,
+            label: `${asset.code} — ${asset.name}`,
+          }));
 
         if (isMounted) {
           setCryptoOptions(options);
