@@ -5,9 +5,7 @@ import DataTable from "@/components/ui/Table";
 import Pagination from "@/components/ui/Pagination";
 import { DataTableClientProps } from "@/types/props";
 import { MenuItem, RowData } from "@/types/common";
-import { GiftCardOrder } from "@/types/models";
 import Badge from "@/components/ui/Badge";
-import { formatCurrency } from "@/lib/utils/format";
 import {
   Banknote,
   CheckCircle,
@@ -24,16 +22,16 @@ export default function DataTableClient({
   initialData = [],
   initialPage = 1,
   totalPages = 1,
-}: DataTableClientProps<GiftCardOrder>) {
+}: DataTableClientProps<any>) {
   const router = useRouter();
   const currentPage = initialPage;
 
   const columns = [
-    { key: "reference", label: "Reference" },
-    { key: "giftCardType", label: "Gift Card" },
-    { key: "country", label: "Country" },
-    { key: "giftCardValue", label: "Value (USD)" },
-    { key: "amount", label: "Amount (NGN)" },
+    { key: "id", label: "ID" },
+    { key: "cardType", label: "Gift Card" },
+    { key: "cardValue", label: "Value (USD)" },
+    { key: "quantity", label: "Qty" },
+    { key: "totalAmount", label: "Total Amount" },
     { key: "status", label: "Status" },
     { key: "channel", label: "Payment Method" },
     { key: "createdAt", label: "Date" },
@@ -67,17 +65,14 @@ export default function DataTableClient({
 
     return {
       id: order.id,
-      reference: order.reference,
-      giftCardType: order.giftCardType,
-      country: order.user?.country,
-      giftCardValue: order.giftCardValue,
-      amount: formatCurrency(order.amount, { currency: order.currency }),
+      cardType: order.cardType,
+      cardValue: `$${order.cardValue}`,
+      quantity: order.quantity,
+      totalAmount: order.totalAmount ?? "—",
       status: (
         <Badge text={order.status} color={statusColor} icon={statusIcon} />
       ),
-      channel: (
-        <Badge text={order.channel ?? ""} color="blue" icon={paymentIcon} />
-      ),
+      channel: <Badge text={order.channel} color="blue" icon={paymentIcon} />,
       createdAt: new Date(order.createdAt).toLocaleDateString("en-US", {
         day: "numeric",
         month: "short",

@@ -29,6 +29,20 @@ export default function AddCryptoRateModal({
     valueNGN: "",
   });
 
+  const CRYPTO_ORDER = [
+    "BTC",
+    "ETH",
+    "USDT",
+    "USDC",
+    "BNB",
+    "TRX",
+    "DOGE",
+    "LTC",
+    "POL",
+    "SHIB",
+    "SOL",
+  ];
+
   const { openModal } = useModal();
 
   useEffect(() => {
@@ -43,19 +57,28 @@ export default function AddCryptoRateModal({
       try {
         const res = await getCryptoAssets();
 
-console.log(res);
- 
+        console.log(res);
 
         if (!Array.isArray(res)) {
           throw new Error("Invalid crypto assets response");
         }
 
-        const options = res
-          .filter((asset) => asset?.isActive)
-          .map((asset) => ({
-            value: asset.code,
-            label: `${asset.code} — ${asset.name}`,
-          }));
+       const options = res
+         .filter((asset) => asset?.isActive)
+         .sort((a, b) => {
+           const aIndex = CRYPTO_ORDER.indexOf(a.code);
+           const bIndex = CRYPTO_ORDER.indexOf(b.code);
+
+           // push unknown coins to the bottom
+           if (aIndex === -1) return 1;
+           if (bIndex === -1) return -1;
+
+           return aIndex - bIndex;
+         })
+         .map((asset) => ({
+           value: asset.code,
+           label: `${asset.code} — ${asset.name}`,
+         }));
 
         if (isMounted) {
           setCryptoOptions(options);
