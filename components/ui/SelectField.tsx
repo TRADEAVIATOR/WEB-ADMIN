@@ -71,7 +71,7 @@ export default function SelectField({
 
       <div
         className={clsx(
-          "flex items-center gap-2 border rounded-full bg-[#F5F5F5] px-5 py-3 transition-all duration-200 focus-within:ring-2 focus-within:ring-primary focus-within:border-transparent",
+          "flex items-center gap-2 border rounded-full px-5 py-3 bg-[#F5F5F5] transition-all duration-200 focus-within:ring-2 focus-within:ring-primary focus-within:border-transparent",
           { "border-gray-200": !error, "border-red-500": error },
           className
         )}>
@@ -85,6 +85,8 @@ export default function SelectField({
           defaultValue={defaultValue}
           isMulti={isMulti}
           placeholder={placeholder}
+          menuPlacement="auto"
+          menuPosition="fixed"
           onChange={(val, meta) => {
             if (!onChange) return;
             if (isMulti) {
@@ -93,17 +95,27 @@ export default function SelectField({
               onChange(val as SingleValue<SelectOption>, meta);
             }
           }}
-          className="w-full text-gray-800 bg-transparent"
+          className="flex-1 text-gray-800 bg-transparent"
           classNamePrefix="react-select"
           styles={{
             control: (provided) => ({
               ...provided,
-              boxShadow: "none",
+              minHeight: "auto",
+              height: "auto",
               border: "none",
+              boxShadow: "none",
               background: "transparent",
             }),
-            placeholder: (provided) => ({ ...provided, color: "#9CA3AF" }),
-            singleValue: (provided) => ({ ...provided, color: "#111827" }),
+            placeholder: (provided) => ({
+              ...provided,
+              color: "#9CA3AF",
+              fontSize: "1rem",
+            }),
+            singleValue: (provided) => ({
+              ...provided,
+              color: "#111827",
+              fontSize: "1rem",
+            }),
             multiValue: (provided) => ({
               ...provided,
               backgroundColor: "#E0F2FE",
@@ -118,6 +130,19 @@ export default function SelectField({
                 ? "#0284C7"
                 : "#FFF",
               color: state.isSelected ? "#FFF" : "#111827",
+              fontSize: "1rem",
+            }),
+            indicatorsContainer: (provided) => ({
+              ...provided,
+              height: "auto",
+            }),
+            valueContainer: (provided) => ({
+              ...provided,
+              padding: 0,
+            }),
+            dropdownIndicator: (provided) => ({
+              ...provided,
+              padding: 4,
             }),
             indicatorSeparator: () => ({ display: "none" }),
           }}

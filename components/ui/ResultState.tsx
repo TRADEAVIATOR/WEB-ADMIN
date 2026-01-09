@@ -1,7 +1,13 @@
 "use client";
 
 import { ReactNode } from "react";
-import { AlertTriangle, Inbox, Info, CheckCircle } from "lucide-react";
+import {
+  AlertTriangle,
+  Inbox,
+  Info,
+  CheckCircle,
+  RefreshCw,
+} from "lucide-react";
 import Button from "./Button";
 
 interface ResultStateProps {
@@ -11,6 +17,7 @@ interface ResultStateProps {
   onRetry?: () => void;
   retryLabel?: string;
   icon?: ReactNode;
+  showRefresh?: boolean;
   children?: ReactNode;
 }
 
@@ -21,6 +28,7 @@ export default function ResultState({
   onRetry,
   retryLabel = "Retry",
   icon,
+  showRefresh,
   children,
 }: ResultStateProps) {
   const icons = {
@@ -42,16 +50,24 @@ export default function ResultState({
 
       {children}
 
-      {onRetry && (
-        <Button
-          variant="primary"
-          size="md"
-          rounded="lg"
-          onClick={onRetry}
-          className="mt-2">
-          {retryLabel}
-        </Button>
-      )}
+      <div className="flex gap-3 mt-2">
+        {onRetry && (
+          <Button variant="primary" size="md" rounded="lg" onClick={onRetry}>
+            {retryLabel}
+          </Button>
+        )}
+
+        {showRefresh && (
+          <Button
+            variant="outline"
+            size="md"
+            rounded="lg"
+            onClick={() => window.location.reload()}
+            icon={<RefreshCw className="w-4 h-4" />}>
+            Refresh page
+          </Button>
+        )}
+      </div>
     </div>
   );
 }

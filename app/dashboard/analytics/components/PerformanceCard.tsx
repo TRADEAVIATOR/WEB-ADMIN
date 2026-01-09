@@ -39,7 +39,7 @@ export default function PerformanceCard({ data }: PerformanceCardProps) {
 
   return (
     <div className="bg-white rounded-2xl p-6">
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex items-center justify-between mb-4 gap-4">
         <p className="text-sm font-medium text-gray-600">Performance</p>
         <FormField
           as="select"

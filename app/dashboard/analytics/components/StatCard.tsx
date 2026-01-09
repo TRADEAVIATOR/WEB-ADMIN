@@ -30,16 +30,18 @@ export default function StatCard({
 
   return (
     <div className="bg-white rounded-2xl p-6 space-y-4">
-      <div className="flex justify-between items-center">
+      <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <Image src={icon} alt={label} width={18} height={18} />
           <p className="text-sm font-medium text-gray-600">{label}</p>
         </div>
-        <FormField
-          as="select"
-          options={[{ label: "All time", value: "All time" }]}
-          className="w-40"
-        />
+
+        <div className="flex-shrink-0 w-40">
+          <FormField
+            as="select"
+            options={[{ label: "All time", value: "All time" }]}
+          />
+        </div>
       </div>
 
       <div>
