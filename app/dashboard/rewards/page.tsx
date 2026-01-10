@@ -17,7 +17,13 @@ export default async function RewardsPage({
   const res = await getRewards(page);
 
   if (!res || res.error) {
-    return <ResultState type="error" message="Unable to fetch rewards." />;
+    return (
+      <ResultState
+        type="error"
+        message="Unable to fetch rewards."
+        showRefresh
+      />
+    );
   }
 
   const payload = res.data as RewardsResponse | undefined;

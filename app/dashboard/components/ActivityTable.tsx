@@ -29,7 +29,7 @@ export default function RecentActivities({
       )}>
       <h2 className="text-lg font-semibold text-secondary">{title}</h2>
 
-      <div className="flex flex-col divide-y divide-gray-200 mt-6">
+      <div className="flex flex-col divide-y divide-gray-200">
         {data.slice(0, 8).map((activity) => (
           <button
             key={activity.id}

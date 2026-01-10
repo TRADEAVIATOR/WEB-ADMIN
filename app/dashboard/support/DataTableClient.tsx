@@ -6,6 +6,7 @@ import Pagination from "@/components/ui/Pagination";
 import Badge from "@/components/ui/Badge";
 import { SupportConversation } from "@/types/models";
 import { MenuItem, RowData } from "@/types/common";
+import { formatDateTime } from "@/lib/utils/format";
 
 type Props = {
   initialData: SupportConversation[];
@@ -53,17 +54,9 @@ export default function DataTableClient({
         color={conv.status === "OPEN" ? "blue" : "green"}
       />
     ),
-    lastMessage: new Date(conv.lastMessageAt).toLocaleString("en-US", {
-      hour: "2-digit",
-      minute: "2-digit",
-      day: "numeric",
-      month: "short",
-    }),
-    createdAt: new Date(conv.createdAt).toLocaleDateString("en-US", {
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-    }),
+    lastMessage: formatDateTime(conv.lastMessageAt),
+
+    createdAt: formatDateTime(conv.createdAt),
   }));
 
   const handlePageChange = (page: number) => {

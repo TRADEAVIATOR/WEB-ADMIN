@@ -12,6 +12,7 @@ export default async function AdminProfilePage() {
       <ResultState
         type="error"
         message="Unable to fetch admin profile. Please try again later."
+        showRefresh
       />
     );
   }

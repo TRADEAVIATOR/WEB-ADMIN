@@ -2,11 +2,11 @@
 
 import { useRouter } from "next/navigation";
 import DetailItem from "@/components/shared/DetailItem";
-import { GiftCardSale } from "@/types/models";
 import { ChevronLeft } from "lucide-react";
-import { formatCurrency } from "@/lib/utils/format";
+import { formatCurrency, formatDateTime } from "@/lib/utils/format";
 import Image from "next/image";
 import GiftCardActions from "./GiftCardActions";
+import Badge from "@/components/ui/Badge";
 
 const downloadImage = async (url: string, filename: string) => {
   const res = await fetch(url);
@@ -20,8 +20,23 @@ const downloadImage = async (url: string, filename: string) => {
   document.body.removeChild(link);
 };
 
-export default function SalesDetails({ sale }: { sale: GiftCardSale }) {
+export default function SalesDetails({ sale }: { sale: any }) {
   const router = useRouter();
+
+  const getStatusColor = (status: string) => {
+    switch (status.toUpperCase()) {
+      case "SUCCESS":
+        return "green";
+      case "FAILED":
+        return "red";
+      case "PENDING":
+        return "yellow";
+      case "ACTIVE":
+        return "blue";
+      default:
+        return "gray";
+    }
+  };
 
   return (
     <div className="bg-white rounded-2xl p-6 w-full">
@@ -39,39 +54,42 @@ export default function SalesDetails({ sale }: { sale: GiftCardSale }) {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-b border-gray-100 pb-4">
-          <DetailItem label="Status" value={sale.status} />
-          <DetailItem label="Payment Method" value={sale.paymentMethod} />
+          <DetailItem
+            label="Status"
+            value={
+              <Badge text={sale.status} color={getStatusColor(sale.status)} />
+            }
+          />
+          <DetailItem label="Quantity" value={String(sale.quantity)} />
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-b border-gray-100 pb-4">
           <DetailItem label="Card Type" value={sale.cardType} />
-          <DetailItem
-            label="Country"
-            value={`${sale.country} (${sale.countryCode})`}
-          />
+          <DetailItem label="Card Range" value={sale.cardRange} />
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-b border-gray-100 pb-4">
-          <DetailItem label="Card Range" value={sale.cardRange} />
           <DetailItem
             label="Card Value"
-            value={`${sale.cardValue} ${sale.cardCurrency}`}
+            value={formatCurrency(Number(sale.cardValue), {
+              currency: "USD",
+              locale: "en-US",
+            })}
+          />
+          <DetailItem
+            label="Payout Amount"
+            value={formatCurrency(Number(sale.payoutAmount))}
           />
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-b border-gray-100 pb-4">
-          <DetailItem label="Quantity" value={String(sale.quantity)} />
-          <DetailItem label="Receipt Type" value={sale.receiptType} />
-        </div>
-
-        {sale.cardImages && sale.cardImages.length > 0 && (
+        {sale.images && sale.images.length > 0 && (
           <div className="border-b border-gray-100 pb-4">
             <div className="flex items-center justify-between mb-2">
               <p className="text-sm font-medium text-gray-600">Card Images</p>
               <button
                 onClick={() =>
                   Promise.all(
-                    sale.cardImages.map((img, i) =>
+                    sale.images.map((img, i) =>
                       downloadImage(img, `card-${sale.id}-${i + 1}.jpg`)
                     )
                   )
@@ -82,7 +100,7 @@ export default function SalesDetails({ sale }: { sale: GiftCardSale }) {
             </div>
 
             <div className="flex gap-4 flex-wrap">
-              {sale.cardImages.map((img, i) => (
+              {sale.images.map((img, i) => (
                 <div
                   key={i}
                   className="relative group w-28 h-28 rounded-md border overflow-hidden">
@@ -105,67 +123,16 @@ export default function SalesDetails({ sale }: { sale: GiftCardSale }) {
           </div>
         )}
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-b border-gray-100 pb-4">
-          <DetailItem label="Buying Rate" value={`₦${sale.buyingRate}`} />
-          <DetailItem
-            label="Total Card Value"
-            value={`${sale.totalCardValue} ${sale.cardCurrency}`}
-          />
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-b border-gray-100 pb-4">
-          <DetailItem
-            label="Payout Amount"
-            value={formatCurrency(sale.payoutAmount)}
-          />
-          <DetailItem
-            label="Promo Discount"
-            value={sale.promoDiscount ?? "0"}
-          />
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-b border-gray-100 pb-4">
-          <DetailItem label="Promo Code" value={sale.promoCode ?? "-"} />
-          <DetailItem label="User Notes" value={sale.userNotes ?? "-"} />
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-b border-gray-100 pb-4">
-          <DetailItem label="Reviewed By" value={sale.reviewedBy ?? "-"} />
-          <DetailItem label="Reviewed At" value={sale.reviewedAt ?? "-"} />
-        </div>
-
-        <div className="grid grid-cols-1 gap-4 border-b border-gray-100 pb-4">
-          <DetailItem label="Review Notes" value={sale.reviewNotes ?? "-"} />
-          <DetailItem
-            label="Rejection Reason"
-            value={sale.rejectionReason ?? "-"}
-          />
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-b border-gray-100 pb-4">
-          <DetailItem
-            label="Transaction ID"
-            value={sale.transactionId ?? "-"}
-          />
-          <DetailItem label="Paid At" value={sale.paidAt ?? "-"} />
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-b border-gray-100 pb-4">
-          <DetailItem label="Card Code" value={sale.cardCode ?? "-"} />
-          <DetailItem label="Card PIN" value={sale.cardPin ?? "-"} />
-        </div>
-
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <DetailItem
             label="Created At"
-            value={new Date(sale.createdAt).toLocaleString()}
+            value={formatDateTime(sale.createdAt)}
           />
           <DetailItem
             label="Updated At"
-            value={new Date(sale.updatedAt).toLocaleString()}
+            value={formatDateTime(sale.updatedAt)}
           />
         </div>
-
         <GiftCardActions saleId={sale.id} />
       </div>
     </div>

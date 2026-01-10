@@ -15,7 +15,13 @@ export default async function SalesDetailsPage({
   const res = await getGiftCardSaleById(id);
 
   if (!res || res.error) {
-    return <ResultState type="error" message="Unable to fetch sale details." />;
+    return (
+      <ResultState
+        type="error"
+        message="Unable to fetch sale details."
+        showRefresh
+      />
+    );
   }
 
   const sale = res.data?.data as GiftCardSale | undefined;

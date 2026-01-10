@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import DetailItem from "@/components/shared/DetailItem";
 import { GiftCardOrder } from "@/types/models";
 import { ChevronLeft } from "lucide-react";
-import { formatCurrency } from "@/lib/utils/format";
+import { formatCurrency, formatDateTime } from "@/lib/utils/format";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import {
@@ -24,18 +24,26 @@ export default function OrderDetails({ order }: { order: GiftCardOrder }) {
   const updatedAt = new Date(order.updatedAt).toLocaleString();
 
   const user = order.user ?? { fullname: "-", email: "-", phone: "-" };
-  const codes = order.codes ?? [];
 
   const handleRetry = async () => {
     const toastId = toast.loading("Retrying giftcard order...");
     try {
       const res = await retryGiftcardOrderClient(order.id);
+
       if (!res.error) {
         toast.success("Giftcard order retried successfully!", { id: toastId });
       } else {
-        toast.error(res.message || "Failed to retry order", { id: toastId });
+        toast.error(res.message || "Failed to retry giftcard order", {
+          id: toastId,
+        });
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
+      toast.error(
+        (error as any)?.message ||
+          "An unexpected error occurred while retrying",
+        { id: toastId }
+      );
+
       handleApiError(error);
     }
   };
@@ -128,29 +136,6 @@ export default function OrderDetails({ order }: { order: GiftCardOrder }) {
             </div>
           )}
 
-          {codes.length > 0 && (
-            <div className="border-b border-gray-100 pb-4">
-              <p className="text-sm font-medium text-gray-600 mb-2">Codes</p>
-
-              <div className="flex flex-col gap-2">
-                {codes.map((c, index) => (
-                  <div
-                    key={index}
-                    className="p-3 bg-gray-50 rounded-md border-b border-gray-100 text-sm text-gray-800">
-                    <p>
-                      <span className="font-medium">Code:</span> {c.code}
-                    </p>
-                    {c.serial && (
-                      <p>
-                        <span className="font-medium">Serial:</span> {c.serial}
-                      </p>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
           {order.failureReason && (
             <div className="grid grid-cols-1 gap-4 border-b border-gray-100 pb-4">
               <DetailItem label="Failure Reason" value={order.failureReason} />
@@ -158,8 +143,8 @@ export default function OrderDetails({ order }: { order: GiftCardOrder }) {
           )}
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pb-4">
-            <DetailItem label="Created At" value={createdAt} />
-            <DetailItem label="Updated At" value={updatedAt} />
+            <DetailItem label="Created At" value={formatDateTime(createdAt)} />
+            <DetailItem label="Updated At" value={formatDateTime(updatedAt)} />
           </div>
         </div>
 

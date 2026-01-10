@@ -28,6 +28,11 @@ const nextConfig: NextConfig = {
         hostname: "example.com",
         pathname: "**",
       },
+      {
+        protocol: "https",
+        hostname: "assets.coingecko.com",
+        pathname: "**",
+      },
     ],
   },
 };

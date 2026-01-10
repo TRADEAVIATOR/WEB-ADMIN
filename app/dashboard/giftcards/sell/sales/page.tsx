@@ -23,6 +23,7 @@ export default async function GiftCardSalesPage({
       <ResultState
         type="error"
         message="Unable to fetch gift card sales. Please try again."
+        showRefresh
       />
     );
   }
@@ -38,7 +39,7 @@ export default async function GiftCardSalesPage({
     );
   }
 
-  if (!payload.results || payload.results.length === 0) {
+  if (!payload.data || payload.data.length === 0) {
     return <ResultState type="empty" message="No gift card sales found." />;
   }
 
@@ -79,7 +80,7 @@ export default async function GiftCardSalesPage({
       />
 
       <DataTableClient
-        initialData={payload.results}
+        initialData={payload.data}
         initialPage={payload.pagination.currentPage}
         totalPages={payload.pagination.totalPages}
       />

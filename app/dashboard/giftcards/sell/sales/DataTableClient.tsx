@@ -6,14 +6,14 @@ import DataTable from "@/components/ui/Table";
 import Pagination from "@/components/ui/Pagination";
 import { DataTableClientProps } from "@/types/props";
 import { MenuItem, RowData } from "@/types/common";
-import { GiftCardSale } from "@/types/models";
 import { formatCurrency } from "@/lib/utils/format";
+import Badge from "@/components/ui/Badge";
 
 export default function DataTableClient({
   initialData = [],
   initialPage = 1,
   totalPages = 1,
-}: DataTableClientProps<GiftCardSale>) {
+}: DataTableClientProps<any>) {
   const router = useRouter();
   const currentPage = initialPage;
 
@@ -27,15 +27,29 @@ export default function DataTableClient({
     { key: "totalCardValue", label: "Total Value" },
     { key: "payoutAmount", label: "Payout" },
     { key: "status", label: "Status" },
-    { key: "paymentMethod", label: "Payment" },
     { key: "createdAt", label: "Date" },
   ];
 
+  const getStatusColor = (status: string) => {
+    switch (status.toUpperCase()) {
+      case "SUCCESS":
+        return "green";
+      case "FAILED":
+        return "red";
+      case "PENDING":
+        return "yellow";
+      case "ACTIVE":
+        return "blue";
+      default:
+        return "gray";
+    }
+  };
+
   const rows: RowData[] = initialData.map((sale) => ({
     id: sale.id,
-    cardImages: sale.cardImages[0] ? (
+    cardImages: sale.images?.[0] ? (
       <Image
-        src={sale.cardImages[0]}
+        src={sale.images[0]}
         alt={sale.cardType}
         width={40}
         height={40}
@@ -45,14 +59,18 @@ export default function DataTableClient({
       "N/A"
     ),
     cardType: sale.cardType,
-    country: `${sale.country}`,
+    country: sale.country,
     cardRange: sale.cardRange,
-    cardValue: `${sale.cardCurrency} ${sale.cardValue}`,
-    quantity: sale.quantity,
-    totalCardValue: `${sale.cardCurrency} ${sale.totalCardValue}`,
+    cardValue: formatCurrency(sale.cardValue, {
+      currency: "USD",
+      locale: "en-US",
+    }),
+    totalCardValue: formatCurrency(sale.cardValue * sale.quantity, {
+      currency: "USD",
+      locale: "en-US",
+    }),
     payoutAmount: `${formatCurrency(sale.payoutAmount)}`,
-    status: sale.status,
-    paymentMethod: sale.paymentMethod,
+    status: <Badge text={sale.status} color={getStatusColor(sale.status)} />,
     createdAt: new Date(sale.createdAt).toLocaleDateString("en-US", {
       day: "numeric",
       month: "short",

@@ -5,6 +5,7 @@ import DetailItem from "@/components/shared/DetailItem";
 import { AcceptedGiftcard } from "@/types/models";
 import { ChevronLeft } from "lucide-react";
 import Image from "next/image";
+import { formatDateTime } from "@/lib/utils/format";
 
 export default function AcceptedGiftcardDetails({
   giftcard,
@@ -29,7 +30,6 @@ export default function AcceptedGiftcardDetails({
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-b border-gray-100 pb-4">
-          <DetailItem label="Brand" value={giftcard.brand} />
           <DetailItem
             label="Country"
             value={`${giftcard.country} (${giftcard.countryCode})`}
@@ -117,11 +117,11 @@ export default function AcceptedGiftcardDetails({
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <DetailItem
             label="Created At"
-            value={new Date(giftcard.createdAt).toLocaleString()}
+            value={formatDateTime(giftcard.createdAt)}
           />
           <DetailItem
             label="Updated At"
-            value={new Date(giftcard.updatedAt).toLocaleString()}
+            value={formatDateTime(giftcard.updatedAt)}
           />
         </div>
       </div>

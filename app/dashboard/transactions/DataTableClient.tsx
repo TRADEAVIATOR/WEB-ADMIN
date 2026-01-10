@@ -5,7 +5,7 @@ import DataTable from "@/components/ui/Table";
 import Pagination from "@/components/ui/Pagination";
 import { MenuItem, RowData } from "@/types/common";
 import { DataTableClientProps } from "@/types/props";
-import { formatCurrency } from "@/lib/utils/format";
+import { formatCurrency, formatDateTime } from "@/lib/utils/format";
 import PageHeader from "@/components/ui/PageHeader";
 import { Transaction } from "@/types/models";
 import Badge from "@/components/ui/Badge";
@@ -87,13 +87,7 @@ export default function DataTableClient({
         : formatCurrency(tx.amount, { currency: tx.currency }),
     currency: tx.currency.toUpperCase(),
     recipient: tx.recipient || "-",
-    createdAt: new Date(tx.createdAt).toLocaleString("en-US", {
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    }),
+    createdAt: formatDateTime(tx.createdAt),
   }));
 
   const menuItems: MenuItem<RowData>[] = [

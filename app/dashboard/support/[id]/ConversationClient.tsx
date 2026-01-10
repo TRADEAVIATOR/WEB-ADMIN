@@ -12,6 +12,7 @@ import {
   updateConversation,
 } from "@/lib/api/support";
 import { SupportConversation, SupportMessage } from "@/types/models";
+import { formatDateTime } from "@/lib/utils/format";
 
 type ReplyAttachment = {
   file: File;
@@ -204,14 +205,7 @@ export default function ConversationClient({
             )}
 
             <p className="text-[10px] text-gray-200 mt-1">
-              {new Date(msg.createdAt).toLocaleString("en-US", {
-                month: "short",
-                day: "numeric",
-                year: "numeric",
-                hour: "numeric",
-                minute: "2-digit",
-                hour12: true,
-              })}
+              {formatDateTime(msg.createdAt)}
             </p>
           </div>
         ))}

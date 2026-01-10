@@ -6,6 +6,7 @@ import Badge, { colorClasses } from "@/components/ui/Badge";
 import { Transaction } from "@/types/models";
 import { ChevronLeft, Copy } from "lucide-react";
 import { toast } from "react-hot-toast";
+import { formatDateTime } from "@/lib/utils/format";
 
 export default function TransactionDetails({
   transaction,
@@ -155,8 +156,11 @@ export default function TransactionDetails({
           )}
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-b border-gray-100 pb-4">
-            <DetailItem label="Created At" value={createdAt} />
-            <DetailItem label="Completed At" value={updatedAt} />
+            <DetailItem label="Created At" value={formatDateTime(createdAt)} />
+            <DetailItem
+              label="Completed At"
+              value={formatDateTime(updatedAt)}
+            />
           </div>
 
           {transaction.narration && (

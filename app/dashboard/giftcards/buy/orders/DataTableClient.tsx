@@ -17,6 +17,7 @@ import {
 import toast from "react-hot-toast";
 import { retryGiftcardOrderClient } from "@/lib/api/giftcards";
 import { handleApiError } from "@/lib/utils/errorHandler";
+import { formatCurrency } from "@/lib/utils/format";
 
 export default function DataTableClient({
   initialData = [],
@@ -31,7 +32,6 @@ export default function DataTableClient({
     { key: "cardType", label: "Gift Card" },
     { key: "cardValue", label: "Value (USD)" },
     { key: "quantity", label: "Qty" },
-    { key: "totalAmount", label: "Total Amount" },
     { key: "status", label: "Status" },
     { key: "channel", label: "Payment Method" },
     { key: "createdAt", label: "Date" },
@@ -66,9 +66,11 @@ export default function DataTableClient({
     return {
       id: order.id,
       cardType: order.cardType,
-      cardValue: `$${order.cardValue}`,
+      cardValue: formatCurrency(order.cardValue, {
+        currency: "USD",
+        locale: "en-US",
+      }),
       quantity: order.quantity,
-      totalAmount: order.totalAmount ?? "—",
       status: (
         <Badge text={order.status} color={statusColor} icon={statusIcon} />
       ),
@@ -96,6 +98,7 @@ export default function DataTableClient({
         });
       }
     } catch (error: any) {
+      toast.dismiss(toastId);
       handleApiError(error);
     }
   };

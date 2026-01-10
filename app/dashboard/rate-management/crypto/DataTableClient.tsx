@@ -1,31 +1,36 @@
 "use client";
 
 import DataTable from "@/components/ui/Table";
-import { formatCurrency } from "@/lib/utils/format";
+import { formatCurrency, formatDateTime } from "@/lib/utils/format";
 import { DataTableClientProps } from "@/types/props";
 import { MenuItem, RowData } from "@/types/common";
 import { deleteCryptoRateClient } from "@/lib/api/crypto";
 import toast from "react-hot-toast";
+import Image from "next/image";
+import Badge from "@/components/ui/Badge";
 
 interface CryptoRate {
   id: string;
-  baseAsset: string;
-  quoteAsset: string;
-  rate: string;
-  provider: string;
+  code: string;
+  name: string;
+  imageUrl: string;
+  isActive: boolean;
+  buyRate: string;
   createdAt: string;
   updatedAt: string;
+  baseAsset: string;
 }
 
 export default function DataTableClient({
   initialData = [],
 }: DataTableClientProps<CryptoRate>) {
   const columns = [
-    { key: "id", label: "ID" },
+    { key: "image", label: "Image" },
+    { key: "name", label: "Name" },
+    { key: "code", label: "Code" },
     { key: "baseAsset", label: "Base Asset" },
-    { key: "pair", label: "Pair" },
-    { key: "rate", label: "Rate" },
-    { key: "provider", label: "Provider" },
+    { key: "buyRate", label: "Buy Rate" },
+    { key: "isActive", label: "Active" },
     { key: "createdAt", label: "Created At" },
     { key: "updatedAt", label: "Updated At" },
   ];
@@ -33,36 +38,41 @@ export default function DataTableClient({
   const rows: RowData[] = initialData.map((rate) => ({
     id: rate.id,
 
+    image: rate.imageUrl ? (
+      <Image
+        src={rate.imageUrl}
+        alt={rate.name}
+        width={40}
+        height={40}
+        className="rounded object-cover"
+      />
+    ) : (
+      "N/A"
+    ),
+
+    name: rate.name,
+    code: rate.code,
     baseAsset: rate.baseAsset,
-
-    pair: `${rate.baseAsset}/${rate.quoteAsset}`,
-
-    rate: formatCurrency(rate.rate),
-
-    provider: rate.provider || "-",
-
-    createdAt: new Date(rate.createdAt).toLocaleString("en-US", {
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
+    buyRate: formatCurrency(Number(rate.buyRate), {
+      currency: "USD",
+      locale: "en-US",
     }),
+    isActive: (
+      <Badge
+        text={rate.isActive ? "Active" : "Inactive"}
+        color={rate.isActive ? "green" : "red"}
+      />
+    ),
+    createdAt: formatDateTime(rate.createdAt),
 
-    updatedAt: new Date(rate.updatedAt).toLocaleString("en-US", {
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    }),
+    updatedAt: formatDateTime(rate.updatedAt),
   }));
 
-  const handleDeleteCrypto = async (baseAsset: string) => {
+  const handleDeleteCrypto = async (code: string) => {
     const toastId = toast.loading("Deleting crypto pair...");
 
     try {
-      const res = await deleteCryptoRateClient(baseAsset);
+      const res = await deleteCryptoRateClient(code);
       if (!res.error) {
         toast.success("Crypto pair deleted successfully!", { id: toastId });
       } else {
@@ -71,12 +81,7 @@ export default function DataTableClient({
         });
       }
     } catch (error: any) {
-      toast.error(
-        error?.response?.data?.message ||
-          error?.message ||
-          "An error occurred.",
-        { id: toastId }
-      );
+      toast.error(error?.message || "An error occurred.", { id: toastId });
     }
   };
 
@@ -84,7 +89,7 @@ export default function DataTableClient({
     {
       label: "Delete",
       color: "text-red-600",
-      onClick: (row) => handleDeleteCrypto(String(row.baseAsset)),
+      onClick: (row) => handleDeleteCrypto(String(row.code)),
     },
   ];
 

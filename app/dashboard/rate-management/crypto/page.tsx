@@ -10,7 +10,13 @@ export default async function CryptoRatesPage() {
   const res = await getAllCryptoPairRates();
 
   if (!res || res.error) {
-    return <ResultState type="error" message="Unable to fetch crypto rates." />;
+    return (
+      <ResultState
+        type="error"
+        message="Unable to fetch crypto rates."
+        showRefresh
+      />
+    );
   }
 
   const payload = res.data as any[] | undefined;
