@@ -18,6 +18,7 @@ export default async function TransactionDetailsPage({
       <ResultState
         type="error"
         message="Unable to fetch transaction details."
+        showRefresh
       />
     );
   }

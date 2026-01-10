@@ -6,8 +6,10 @@ import {
   SelectHTMLAttributes,
   ReactNode,
   forwardRef,
+  useState,
 } from "react";
 import clsx from "clsx";
+import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 
 type BaseProps = {
   label?: string;
@@ -33,6 +35,10 @@ const FormField = forwardRef<
   FormFieldProps
 >((props, ref) => {
   const { label, error, icon, className, as, required, ...rest } = props as any;
+  const [showPassword, setShowPassword] = useState(false);
+
+  const isPassword =
+    !as && (rest as InputHTMLAttributes<HTMLInputElement>).type === "password";
 
   const baseClasses = clsx(
     "flex items-center gap-2 border rounded-full px-5 py-3 bg-[#F5F5F5] transition-all duration-200 focus-within:ring-2 focus-within:ring-primary focus-within:border-transparent",
@@ -78,7 +84,7 @@ const FormField = forwardRef<
             ref={ref as React.Ref<HTMLSelectElement>}
             {...(rest as SelectHTMLAttributes<HTMLSelectElement>)}
             className={clsx(
-              "w-full outline-none bg-transparent text-base text-gray-800 placeholder-gray-400 cursor-pointer",
+              "w-full outline-none bg-transparent text-base text-gray-800 cursor-pointer",
               (rest as SelectHTMLAttributes<HTMLSelectElement>).disabled &&
                 "cursor-not-allowed opacity-70"
             )}>
@@ -90,17 +96,36 @@ const FormField = forwardRef<
           </select>
         </div>
       ) : (
-        <div className={baseClasses}>
+        <div className={clsx(baseClasses, "relative")}>
           {icon && <span className="text-gray-400 text-lg">{icon}</span>}
           <input
             ref={ref as React.Ref<HTMLInputElement>}
             {...(rest as InputHTMLAttributes<HTMLInputElement>)}
+            type={
+              isPassword
+                ? showPassword
+                  ? "text"
+                  : "password"
+                : (rest as InputHTMLAttributes<HTMLInputElement>).type
+            }
             className={clsx(
               "w-full outline-none bg-transparent text-base text-gray-800 placeholder-gray-400",
               (rest as InputHTMLAttributes<HTMLInputElement>).disabled &&
                 "cursor-not-allowed opacity-70"
             )}
           />
+          {isPassword && (
+            <button
+              type="button"
+              onClick={() => setShowPassword((prev) => !prev)}
+              className="absolute right-5 text-gray-400 hover:text-gray-600">
+              {showPassword ? (
+                <AiOutlineEyeInvisible size={20} />
+              ) : (
+                <AiOutlineEye size={20} />
+              )}
+            </button>
+          )}
         </div>
       )}
 

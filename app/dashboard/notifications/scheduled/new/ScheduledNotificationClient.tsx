@@ -18,11 +18,17 @@ export default function ScheduledNotificationClient() {
 
     try {
       const res = await createScheduledNotification(values);
+
       toast.success(res?.message || "Notification scheduled successfully!", {
         id: toastId,
       });
+
       router.push("/dashboard/notifications/scheduled");
     } catch (error: any) {
+      toast.error(
+        error?.response?.data?.message || "Failed to schedule notification",
+        { id: toastId }
+      );
       handleApiError(error);
     }
   };

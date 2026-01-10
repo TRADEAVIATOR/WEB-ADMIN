@@ -1,7 +1,10 @@
-"use client";
-
 import { ReactNode } from "react";
-import Select, { ActionMeta, MultiValue, SingleValue } from "react-select";
+import Select, {
+  ActionMeta,
+  MultiValue,
+  SingleValue,
+  Props as ReactSelectProps,
+} from "react-select";
 import clsx from "clsx";
 
 export type SelectOption = { label: string; value: string };
@@ -18,6 +21,13 @@ type BaseProps = {
   error?: string;
 };
 
+type ExtraProps = Partial<
+  Pick<
+    ReactSelectProps<SelectOption, boolean>,
+    "isLoading" | "onInputChange" | "onMenuScrollToBottom"
+  >
+>;
+
 type SingleSelectProps = {
   isMulti?: false;
   value?: SingleValue<SelectOption>;
@@ -26,7 +36,7 @@ type SingleSelectProps = {
     value: SingleValue<SelectOption>,
     actionMeta: ActionMeta<SelectOption>
   ) => void;
-};
+} & ExtraProps;
 
 type MultiSelectProps = {
   isMulti: true;
@@ -36,7 +46,7 @@ type MultiSelectProps = {
     value: MultiValue<SelectOption>,
     actionMeta: ActionMeta<SelectOption>
   ) => void;
-};
+} & ExtraProps;
 
 type SelectFieldProps = BaseProps & (SingleSelectProps | MultiSelectProps);
 
@@ -54,6 +64,9 @@ export default function SelectField({
   defaultValue,
   onChange,
   isMulti,
+  isLoading,
+  onInputChange,
+  onMenuScrollToBottom,
 }: SelectFieldProps) {
   return (
     <div className="w-full flex flex-col gap-2">
@@ -97,6 +110,9 @@ export default function SelectField({
           }}
           className="flex-1 text-gray-800 bg-transparent"
           classNamePrefix="react-select"
+          isLoading={isLoading}
+          onInputChange={onInputChange}
+          onMenuScrollToBottom={onMenuScrollToBottom}
           styles={{
             control: (provided) => ({
               ...provided,

@@ -17,7 +17,13 @@ export default async function TicketsPage({
   const res = await getTickets(page);
 
   if (!res || res.error) {
-    return <ResultState type="error" message="Unable to fetch tickets." />;
+    return (
+      <ResultState
+        type="error"
+        message="Unable to fetch tickets."
+        showRefresh
+      />
+    );
   }
 
   const payload = res.data as TicketsResponse | undefined;

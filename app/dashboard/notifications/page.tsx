@@ -115,6 +115,23 @@ export default function NotificationsPage() {
           <div className="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow cursor-pointer border border-transparent hover:border-primary/30">
             <div className="flex items-start gap-4">
               <div className="bg-primary/10 p-3 rounded-full">
+                <FiBell className="text-primary text-xl" />
+              </div>
+
+              <div className="flex-1">
+                <h3 className="font-semibold text-base">Admin Notifications</h3>
+                <p className="text-sm text-gray-500 mt-1">
+                  View all system and application-generated alerts
+                </p>
+              </div>
+            </div>
+          </div>
+        </Link>
+
+        <Link href="/dashboard/notifications/user-specific">
+          <div className="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow cursor-pointer border border-transparent hover:border-primary/30">
+            <div className="flex items-start gap-4">
+              <div className="bg-primary/10 p-3 rounded-full">
                 <FiSend className="text-primary text-xl" />
               </div>
               <div className="flex-1">

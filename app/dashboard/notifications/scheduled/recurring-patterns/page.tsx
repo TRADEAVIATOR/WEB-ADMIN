@@ -10,7 +10,11 @@ export default async function RecurringPatternsPage() {
 
   if (!res || res.error) {
     return (
-      <ResultState type="error" message="Unable to fetch recurring patterns." />
+      <ResultState
+        type="error"
+        message="Unable to fetch recurring patterns."
+        showRefresh
+      />
     );
   }
 

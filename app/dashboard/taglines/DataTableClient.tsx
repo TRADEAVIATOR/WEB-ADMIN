@@ -28,14 +28,15 @@ export default function DataTableClient({
     try {
       const res = await deleteTaglineClient(index);
 
-      if (res.success) {
+      if (res?.success) {
         toast.success("Tagline deleted successfully!", { id: toastId });
       } else {
-        toast.error(res.message || "Failed to delete tagline.", {
+        toast.error(res?.message || "Failed to delete tagline.", {
           id: toastId,
         });
       }
     } catch (error: any) {
+      toast.error("An unexpected error occurred.", { id: toastId });
       handleApiError(error);
     }
   };

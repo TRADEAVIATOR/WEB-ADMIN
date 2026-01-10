@@ -41,6 +41,7 @@ export default function AddAdministratorModal({
       desc="Enter details">
       <form onSubmit={handleSubmit} className="space-y-4">
         <FormField
+          required
           label="Full Name"
           name="name"
           value={formData.name}
@@ -49,6 +50,7 @@ export default function AddAdministratorModal({
         />
 
         <FormField
+          required
           label="Email Address"
           name="email"
           type="email"
@@ -58,6 +60,7 @@ export default function AddAdministratorModal({
         />
 
         <FormField
+          required
           label="Password"
           name="password"
           type="password"

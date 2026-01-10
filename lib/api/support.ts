@@ -50,11 +50,11 @@ export const assignConversation = async (
 
 export const sendAdminReply = async (
   conversationId: string,
-  message: string
+  formData: FormData
 ) => {
   return clientApi
-    .post(`/admin/support/conversations/${conversationId}/reply`, {
-      message,
+    .post(`/admin/support/conversations/${conversationId}/reply`, formData, {
+      headers: {},
     })
     .then((r) => r.data);
 };

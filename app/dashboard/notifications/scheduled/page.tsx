@@ -22,6 +22,7 @@ export default async function ScheduledNotificationsPage({
       <ResultState
         type="error"
         message="Unable to fetch scheduled notifications."
+        showRefresh
       />
     );
   }

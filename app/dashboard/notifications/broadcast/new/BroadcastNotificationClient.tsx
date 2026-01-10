@@ -25,23 +25,29 @@ interface BroadcastNotificationPayload {
 
 export default function BroadcastNotificationClient() {
   const router = useRouter();
-
   const handleBroadcastNotification = async (
     values: BroadcastNotificationPayload
   ) => {
     const toastId = toast.loading("Sending broadcast notification...");
+
     try {
       const res = await createBroadcastNotification(values);
+
       toast.success(
         res?.message || "Broadcast notification sent successfully!",
         {
           id: toastId,
         }
       );
+
       router.push("/dashboard/notifications/broadcast");
     } catch (error: any) {
+      toast.error(
+        error?.response?.data?.message ||
+          "Failed to send broadcast notification",
+        { id: toastId }
+      );
       handleApiError(error);
-      toast.dismiss(toastId);
     }
   };
 

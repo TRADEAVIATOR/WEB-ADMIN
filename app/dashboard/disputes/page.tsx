@@ -17,7 +17,13 @@ export default async function DisputesPage({
   const res = await getDisputes(page);
 
   if (!res || res.error) {
-    return <ResultState type="error" message="Unable to fetch disputes." />;
+    return (
+      <ResultState
+        type="error"
+        message="Unable to fetch disputes."
+        showRefresh
+      />
+    );
   }
 
   const payload = res.data?.data as DisputesResponse | undefined;

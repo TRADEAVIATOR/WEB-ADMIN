@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import DetailItem from "@/components/shared/DetailItem";
-import Badge from "@/components/ui/Badge";
+import Badge, { colorClasses } from "@/components/ui/Badge";
 import { Transaction } from "@/types/models";
 import { ChevronLeft, Copy } from "lucide-react";
 import { toast } from "react-hot-toast";
@@ -113,7 +113,10 @@ export default function TransactionDetails({
             <DetailItem
               label="Category"
               value={
-                <Badge text={transaction.category} color={getCategoryColor()} />
+                <Badge
+                  text={transaction.category}
+                  color={getCategoryColor() as keyof typeof colorClasses}
+                />
               }
             />
             <DetailItem label="User Name" value={user.fullname || "-"} />

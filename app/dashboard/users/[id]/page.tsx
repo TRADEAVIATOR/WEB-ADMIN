@@ -17,7 +17,7 @@ export default async function UserDetailsPage({
   const { id } = await params;
 
   if (!id) {
-    return <ResultState type="error" message="Invalid user ID." />;
+    return <ResultState type="error" message="Invalid user ID." showRefresh />;
   }
 
   const res = await getCustomer(id);

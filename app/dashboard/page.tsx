@@ -18,47 +18,59 @@ export default async function DashboardPage() {
     getDashboardGrowth(),
   ]);
 
-  const [metricsRes, growthRes] = results.map((r) =>
-    r.status === "fulfilled" ? r.value : null
+  const hasError = results.some(
+    (r) => r.status === "rejected" || r.value?.error
   );
 
-  const metrics: DashboardMetrics | null = metricsRes?.error
-    ? null
-    : metricsRes?.data?.data ?? null;
+  if (hasError) {
+    return (
+      <ResultState
+        type="error"
+        message="Unable to load dashboard data. Please try again."
+        showRefresh
+      />
+    );
+  }
 
-  const growth: DashboardGrowth | null = growthRes?.error
-    ? null
-    : growthRes?.data?.data ?? null;
+  const metricsRes =
+    results[0].status === "fulfilled" ? results[0].value : null;
+  const growthRes = results[1].status === "fulfilled" ? results[1].value : null;
 
-  const statCards =
-    metrics && growth
-      ? [
-          {
-            label: "Total Users",
-            value: metrics.overview.totalUsers.toLocaleString(),
-            change: metrics.overview.totalUsersToday,
-            data: extractSparklineData(growth.charts.transactionsByType),
-          },
-          {
-            label: "Total Balance",
-            value: formatCurrency(metrics.overview.totalBalance),
-            change: calculateChange(
-              growth.charts.cryptoVolumeByMonth,
-              "balance"
-            ),
-            data: extractSparklineData(growth.charts.cryptoVolumeByMonth),
-          },
-          {
-            label: "Total Crypto Volume",
-            value: formatCurrency(metrics.overview.totalCryptoVolume, {
-              currency: "USD",
-              locale: "en-US",
-            }),
-            change: calculateChange(growth.charts.cryptoDistribution, "crypto"),
-            data: extractSparklineData(growth.charts.cryptoDistribution),
-          },
-        ]
-      : [];
+  if (!metricsRes || !growthRes) {
+    return (
+      <ResultState
+        type="error"
+        message="Unable to load dashboard data. Please try again."
+      />
+    );
+  }
+
+  const metrics: DashboardMetrics = metricsRes.data.data;
+  const growth: DashboardGrowth = growthRes.data.data;
+
+  const statCards = [
+    {
+      label: "Total Users",
+      value: metrics.overview.totalUsers.toLocaleString(),
+      change: metrics.overview.totalUsersToday,
+      data: extractSparklineData(growth.charts.transactionsByType),
+    },
+    {
+      label: "Total Balance",
+      value: formatCurrency(metrics.overview.totalBalance),
+      change: calculateChange(growth.charts.cryptoVolumeByMonth, "balance"),
+      data: extractSparklineData(growth.charts.cryptoVolumeByMonth),
+    },
+    {
+      label: "Total Crypto Volume",
+      value: formatCurrency(metrics.overview.totalCryptoVolume, {
+        currency: "USD",
+        locale: "en-US",
+      }),
+      change: calculateChange(growth.charts.cryptoDistribution, "crypto"),
+      data: extractSparklineData(growth.charts.cryptoDistribution),
+    },
+  ];
 
   return (
     <div className="flex flex-col gap-6">
@@ -72,63 +84,38 @@ export default async function DashboardPage() {
         </p>
       </div>
 
-      {metrics && growth ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {statCards.map((stat) => (
-            <StatCard key={stat.label} {...stat} />
-          ))}
-          <ActionRequiredCard
-            giftcards={metrics.actionRequired.giftcardRequests}
-            pending={metrics.actionRequired.pendingTransactions}
-          />
-        </div>
-      ) : (
-        <ResultState type="error" message="Unable to load metrics." />
-      )}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {statCards.map((stat) => (
+          <StatCard key={stat.label} {...stat} />
+        ))}
+        <ActionRequiredCard
+          giftcards={metrics.actionRequired.giftcardRequests}
+          pending={metrics.actionRequired.pendingTransactions}
+        />
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {growth ? (
-          <ChartCard
-            title="Total Transactions"
-            data={growth.charts.transactionsByType}
-            className="lg:col-span-8"
-          />
-        ) : (
-          <div className="lg:col-span-8">
-            <ResultState type="error" message="Unable to load chart." />
-          </div>
-        )}
+        <ChartCard
+          title="Total Transactions"
+          data={growth.charts.transactionsByType}
+          className="lg:col-span-8"
+        />
 
-        {metrics ? (
-          <ActivityTable
-            title="Recent Activities"
-            data={metrics.recentActivities as Activity[]}
-            className="lg:col-span-4"
-          />
-        ) : (
-          <div className="lg:col-span-4">
-            <ResultState type="error" message="Unable to load activities." />
-          </div>
-        )}
+        <ActivityTable
+          title="Recent Activities"
+          data={metrics.recentActivities as Activity[]}
+          className="lg:col-span-4"
+        />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         <LeaderboardCard title="Leaderboard" className="lg:col-span-8" />
 
-        {growth ? (
-          <PieChartCard
-            title="Virtual Card Analytics"
-            data={growth.charts.cardsDistribution}
-            className="lg:col-span-4"
-          />
-        ) : (
-          <div className="lg:col-span-4">
-            <ResultState
-              type="error"
-              message="Unable to load card analytics."
-            />
-          </div>
-        )}
+        <PieChartCard
+          title="Virtual Card Analytics"
+          data={growth.charts.cardsDistribution}
+          className="lg:col-span-4"
+        />
       </div>
     </div>
   );

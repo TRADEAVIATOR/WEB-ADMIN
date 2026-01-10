@@ -1,15 +1,30 @@
 import TrendCharts from "./components/TrendCharts";
 import PerformanceCard from "./components/PerformanceCard";
 import StatCard from "./components/StatCard";
+import ResultState from "@/components/ui/ResultState";
 import CryptoVolumeIcon from "@/assets/icons/crypto-volume.svg";
 import BillsPaymentIcon from "@/assets/icons/bills-payment.svg";
 import GiftcardsIcon from "@/assets/icons/giftcards.svg";
 import { getDashboardGrowth } from "@/lib/api/dashboard";
+import { formatCurrency } from "@/lib/utils/format";
 
 export default async function AnalyticsPage() {
   const dashboardData = await getDashboardGrowth();
 
-  const { overview, volumes, charts } = dashboardData?.data.data || {};
+  const hasError =
+    !dashboardData || dashboardData.error || !dashboardData.data?.data;
+
+  if (hasError) {
+    return (
+      <ResultState
+        type="error"
+        message="Unable to load dashboard data. Please try again."
+        showRefresh
+      />
+    );
+  }
+
+  const { overview, volumes, charts } = dashboardData.data.data;
 
   const cryptoMonthlyData = charts?.cryptoVolumeByMonth || [];
   const cryptoValues = cryptoMonthlyData.map((item: any) =>
@@ -39,9 +54,10 @@ export default async function AnalyticsPage() {
   const miniCards = [
     {
       label: "Overall Crypto Volume",
-      value: `₦${parseFloat(
-        overview?.totalCryptoBalance || "0"
-      ).toLocaleString()}`,
+      value: formatCurrency(overview?.totalCryptoBalance, {
+        currency: "USD",
+        locale: "en-US",
+      }),
       subChange:
         cryptoMonthlyData.length > 0
           ? `${cryptoMonthlyData.length} months data`
@@ -54,7 +70,7 @@ export default async function AnalyticsPage() {
     },
     {
       label: "Overall Bills Payment",
-      value: `₦${parseFloat(volumes?.bills || "0").toLocaleString()}`,
+      value: formatCurrency(volumes?.bills),
       subChange:
         billsTransactions > 0
           ? `${billsTransactions} Transactions`
@@ -67,7 +83,7 @@ export default async function AnalyticsPage() {
     },
     {
       label: "Giftcards",
-      value: `₦${parseFloat(volumes?.giftcards || "0").toLocaleString()}`,
+      value: formatCurrency(volumes?.giftcards),
       subChange: `${overview?.totalUsers || 0} Users`,
       change: parseFloat(volumes?.giftcards || "0") > 0 ? "+15%" : "0%",
       data: [],
@@ -79,13 +95,13 @@ export default async function AnalyticsPage() {
 
   return (
     <div className="space-y-8">
-      <PerformanceCard data={dashboardData?.data.data} />
+      <PerformanceCard data={dashboardData.data.data} />
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {miniCards.map((stat, i) => (
           <StatCard key={i} {...stat} />
         ))}
       </div>
-      <TrendCharts data={dashboardData?.data.data} />
+      <TrendCharts data={dashboardData.data.data} />
     </div>
   );
 }

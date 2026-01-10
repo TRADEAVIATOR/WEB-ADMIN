@@ -3,10 +3,10 @@
 import { ChevronLeft } from "lucide-react";
 import { createAcceptedGiftcard } from "@/lib/api/giftcards";
 import AcceptedGiftcardForm from "@/components/forms/AcceptedGiftcardForm";
-import { handleApiError } from "@/lib/utils/errorHandler";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { useState } from "react";
+import { handleApiError } from "@/lib/utils/errorHandler";
 
 export default function AddAcceptedGiftcardClient() {
   const router = useRouter();
@@ -33,6 +33,9 @@ export default function AddAcceptedGiftcardClient() {
 
       router.push("/dashboard/giftcards/sell/accepted");
     } catch (error: any) {
+      toast.error(error?.response?.data?.message || "Something went wrong", {
+        id: toastId,
+      });
       handleApiError(error);
     } finally {
       setIsLoading(false);

@@ -7,15 +7,16 @@ import { Menu } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useModal } from "@/context/ModalContext";
 import NotificationsPanel from "./NotificationsPanel";
-import { useState } from "react";
-
-import settingsIcon from "@/assets/icons/topbar-settings.svg";
+import { useState, useEffect } from "react";
 import notificationIcon from "@/assets/icons/notification.svg";
 import avatarIcon from "@/assets/icons/avatar.svg";
+import { getUnreadNotificationsCount } from "@/lib/api/notifications";
+import { handleApiError } from "@/lib/utils/errorHandler";
 
 export default function Topbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
 
   const pathname = usePathname();
   const { openModal } = useModal();
@@ -34,6 +35,25 @@ export default function Topbar() {
 
   const currentPage = findCurrentPage(pathname);
 
+  useEffect(() => {
+    let mounted = true;
+    const fetchUnreadCount = async () => {
+      try {
+        const count = await getUnreadNotificationsCount();
+        if (mounted) setUnreadCount(count);
+      } catch (error) {
+        handleApiError(error);
+        if (mounted) setUnreadCount(0);
+      }
+    };
+
+    fetchUnreadCount();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
   return (
     <header className="w-full bg-white border-b border-gray-200 px-4 md:px-8 py-3 flex items-center justify-between sticky top-0 z-50">
       <div className="flex items-center gap-3">
@@ -47,19 +67,6 @@ export default function Topbar() {
       </div>
 
       <div className="flex items-center gap-5">
-        <button>
-          <Link href="/dashboard/settings">
-            <Image
-              src={settingsIcon}
-              alt="Settings"
-              width={22}
-              height={22}
-              className="object-contain cursor-pointer hover:opacity-80 transition"
-              priority
-            />
-          </Link>
-        </button>
-
         <button
           onClick={() => setShowNotifications(!showNotifications)}
           className="relative flex items-center gap-2">
@@ -72,15 +79,17 @@ export default function Topbar() {
             priority
           />
 
-          <span
-            className="
-              absolute -top-1 -right-1
-              flex items-center justify-center
-              w-4 h-4 text-[10px] font-semibold
-              rounded-full
-              bg-primary text-white">
-            4
-          </span>
+          {unreadCount > 0 && (
+            <span
+              className="
+                absolute -top-1 -right-1
+                flex items-center justify-center
+                w-4 h-4 text-[10px] font-semibold
+                rounded-full
+                bg-primary text-white">
+              {unreadCount > 99 ? "99+" : unreadCount}
+            </span>
+          )}
         </button>
 
         <button className="flex items-center gap-2">

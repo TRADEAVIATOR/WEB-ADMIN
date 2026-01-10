@@ -15,7 +15,13 @@ export default async function TaglinesPage({
   const res = await getTaglines();
 
   if (!res || res.error || !res.data) {
-    return <ResultState type="error" message="Unable to fetch taglines." />;
+    return (
+      <ResultState
+        type="error"
+        message="Unable to fetch taglines."
+        showRefresh
+      />
+    );
   }
 
   const taglines = res.data.data.taglines || [];

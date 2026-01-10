@@ -13,11 +13,15 @@ export default async function NotificationsPage({
   const params = await searchParams;
   const page = params?.page ? Number(params.page) : 1;
 
-  const res = await getNotifications(page);
+  const res = await getNotifications(page, 50);
 
   if (!res || res.error) {
     return (
-      <ResultState type="error" message="Unable to fetch notifications." />
+      <ResultState
+        type="error"
+        message="Unable to fetch notifications."
+        showRefresh
+      />
     );
   }
 
@@ -33,8 +37,6 @@ export default async function NotificationsPage({
         title="Notifications"
         description="View all system, transaction, promo, and user notifications."
         showBackButton
-        buttonText="Send Notification"
-        buttonHref="/dashboard/notifications/all/new"
       />
 
       <DataTableClient

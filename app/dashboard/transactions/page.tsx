@@ -10,13 +10,19 @@ export default async function TransactionsPage({
 }) {
   const params = await searchParams;
   const page = params?.page ? Number(params.page) : 1;
-  const limit = params?.limit ? Number(params.limit) : 10;
+  const limit = params?.limit ? Number(params.limit) : 50;
   const status = params?.status || "";
 
   const res = await getTransactions(page, limit, status);
 
   if (!res || res.error) {
-    return <ResultState type="error" message="Unable to fetch transactions." />;
+    return (
+      <ResultState
+        type="error"
+        message="Unable to fetch transactions."
+        showRefresh
+      />
+    );
   }
 
   const payload = res.data?.data as TransactionsResponse | undefined;

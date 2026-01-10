@@ -128,8 +128,13 @@ export const sidebarLinks: SidebarLink[] = [
   },
   {
     label: "Settings",
-    href: "/dashboard/settings",
+    href: "/dashboard/profile",
     icon: SettingsIcon,
+  },
+  {
+    label: "Admin Notifications",
+    href: "/dashboard/admin-notifications",
+    icon: BellIcon,
   },
 ];
 

@@ -55,20 +55,22 @@ export default function DataTableClient({
       year: "numeric",
     }),
   }));
-
+  
   const handleToggleCustomerStatus = async (customerId: string) => {
     const toastId = toast.loading("Updating customer status...");
 
     try {
       const res = await toggleCustomerStatusClient(customerId);
-      if (!res.error) {
+
+      if (!res?.error) {
         toast.success("Customer status updated successfully!", { id: toastId });
       } else {
-        toast.error(res.message || "Failed to update customer status.", {
+        toast.error(res?.message || "Failed to update customer status.", {
           id: toastId,
         });
       }
     } catch (error: any) {
+      toast.error("An unexpected error occurred.", { id: toastId });
       handleApiError(error);
     }
   };

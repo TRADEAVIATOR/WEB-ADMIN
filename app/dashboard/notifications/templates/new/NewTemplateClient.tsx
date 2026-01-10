@@ -22,8 +22,15 @@ export default function NewTemplateClient() {
       toast.success(res?.message || "Template created successfully!", {
         id: toastId,
       });
+
       router.push("/dashboard/notifications/templates");
     } catch (error: any) {
+      toast.error(
+        error?.response?.data?.message || "Failed to create template",
+        {
+          id: toastId,
+        }
+      );
       handleApiError(error);
     }
   };

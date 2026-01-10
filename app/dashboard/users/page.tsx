@@ -16,7 +16,13 @@ export default async function UsersPage({
   const res = await getCustomers(page, 50);
 
   if (!res || res.error) {
-    return <ResultState type="error" message="Unable to fetch customers." />;
+    return (
+      <ResultState
+        type="error"
+        message="Unable to fetch customers."
+        showRefresh
+      />
+    );
   }
 
   const payload = res.data?.data as CustomersResponse | undefined;

@@ -35,3 +35,10 @@ export const createAdminUserClient = async (payload: {
 
   return res.data;
 };
+
+export const getAdmins = async (page = 1, limit = 10) => {
+  const api = await getServerApi();
+  return tryServer(
+    api.get(`/admin/auth?page=${page}&limit=${limit}`).then((r) => r.data)
+  );
+};

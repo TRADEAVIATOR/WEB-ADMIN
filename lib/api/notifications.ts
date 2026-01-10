@@ -137,3 +137,47 @@ export const createBroadcastNotification = async (
   const res = await clientApi.post("/admin/notifications/broadcast", payload);
   return res.data;
 };
+
+export const getAllAdminNotifications = async (page = 1, limit = 20) => {
+  const api = await getServerApi();
+  return tryServer(
+    api
+      .get(`/admin/notifications/admin?page=${page}&limit=${limit}`)
+      .then((r) => r.data)
+  );
+};
+
+export const getAdminNotificationsClient = async (limit = 5) => {
+  return clientApi
+    .get(`/admin/notifications/admin?limit=${limit}`)
+    .then((r) => r.data);
+};
+
+export const markNotificationAsRead = async (notificationId: string) => {
+  return clientApi
+    .patch(`/admin/notifications/admin/${notificationId}/read`)
+    .then((r) => r.data);
+};
+
+export const getUnreadNotificationsCount = async (): Promise<number> => {
+  const res = await clientApi
+    .get("/admin/notifications/admin/unread-count")
+    .then((r) => r.data);
+
+  return res?.data?.count || 0;
+};
+
+export const deleteAdminNotification = async (notificationId: string) => {
+  return clientApi
+    .delete(`/admin/notifications/admin/${notificationId}`)
+    .then((r) => r.data);
+};
+
+export const getUserSpecificNotifications = async (page = 1, limit = 50) => {
+  const api = await getServerApi();
+  return tryServer(
+    api
+      .get(`/admin/notifications/user-specific?page=${page}&limit=${limit}`)
+      .then((r) => r.data)
+  );
+};

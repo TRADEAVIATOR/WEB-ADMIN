@@ -27,9 +27,9 @@ export default function RecentActivities({
         "bg-white rounded-2xl p-6 flex flex-col gap-4 border border-gray-100",
         className
       )}>
-      <h2 className="text-lg font-semibold text-secondary mb-4">{title}</h2>
+      <h2 className="text-lg font-semibold text-secondary">{title}</h2>
 
-      <div className="flex flex-col divide-y divide-gray-200">
+      <div className="flex flex-col divide-y divide-gray-200 mt-6">
         {data.slice(0, 8).map((activity) => (
           <button
             key={activity.id}

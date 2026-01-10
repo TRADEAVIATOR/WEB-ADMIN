@@ -14,7 +14,7 @@ import {
 import { SupportConversation, SupportMessage } from "@/types/models";
 
 type ReplyAttachment = {
-  url: string;
+  file: File;
   fileName: string;
   fileType: string;
   fileSize: number;
@@ -71,26 +71,36 @@ export default function ConversationClient({
     if (!reply.trim() && attachments.length === 0) return;
 
     setSending(true);
+    const toastId = toast.loading("Sending reply...");
+
     try {
-      await sendAdminReply(conversation.id, reply);
+      const formData = new FormData();
+      formData.append("message", reply);
+
+      attachments.forEach((file) => {
+        formData.append("images", file.file, file.fileName);
+      });
+
+      await sendAdminReply(conversation.id, formData);
 
       setReply("");
       setAttachments([]);
       await refreshMessages();
-      toast.success("Reply sent");
+      toast.success("Reply sent!", { id: toastId });
     } catch {
-      toast.error("Failed to send reply");
+      toast.error("Failed to send reply", { id: toastId });
     } finally {
       setSending(false);
     }
   };
 
   const handleStatusChange = async (value: string) => {
+    const toastId = toast.loading("Updating status...");
     try {
       await updateConversation(conversation.id, { status: value });
-      toast.success("Status updated");
+      toast.success("Status updated", { id: toastId });
     } catch {
-      toast.error("Failed to update status");
+      toast.error("Failed to update status", { id: toastId });
     }
   };
 
@@ -98,7 +108,7 @@ export default function ConversationClient({
     setReply((prev) => prev + emoji.emoji);
   };
 
-  const handleFiles = async (files: FileList | null) => {
+  const handleFiles = (files: FileList | null) => {
     if (!files) return;
 
     if (files.length + attachments.length > MAX_FILES) {
@@ -118,10 +128,8 @@ export default function ConversationClient({
         continue;
       }
 
-      const uploadedUrl = await uploadFile(file);
-
       valid.push({
-        url: uploadedUrl,
+        file,
         fileName: file.name,
         fileType: file.type,
         fileSize: file.size,
@@ -172,7 +180,9 @@ export default function ConversationClient({
           <div
             key={msg.id}
             className={`rounded-lg p-3 text-sm max-w-[70%] ${
-              msg.senderType === "ADMIN" ? "ml-auto bg-green-50" : "bg-gray-100"
+              msg.senderType === "ADMIN"
+                ? "ml-auto bg-[#fe9b63] text-white"
+                : "bg-[#2a2f3d] text-white"
             }`}>
             <p>{msg.message}</p>
 
@@ -183,15 +193,25 @@ export default function ConversationClient({
                     key={i}
                     href={url}
                     target="_blank"
-                    className="text-xs text-primary underline">
+                    className="text-xs underline"
+                    style={{
+                      color: msg.senderType === "ADMIN" ? "#fff" : "#fff",
+                    }}>
                     Attachment {i + 1}
                   </a>
                 ))}
               </div>
             )}
 
-            <p className="text-[10px] text-gray-400 mt-1">
-              {new Date(msg.createdAt).toLocaleString()}
+            <p className="text-[10px] text-gray-200 mt-1">
+              {new Date(msg.createdAt).toLocaleString("en-US", {
+                month: "short",
+                day: "numeric",
+                year: "numeric",
+                hour: "numeric",
+                minute: "2-digit",
+                hour12: true,
+              })}
             </p>
           </div>
         ))}
@@ -215,6 +235,7 @@ export default function ConversationClient({
             ))}
           </div>
         )}
+
         <div className="flex items-end gap-2">
           <div className="flex-1 relative">
             <textarea
@@ -272,8 +293,4 @@ export default function ConversationClient({
       </div>
     </div>
   );
-}
-
-async function uploadFile(file: File): Promise<string> {
-  return Promise.resolve("https://via.placeholder.com/150");
 }
