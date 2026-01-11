@@ -501,13 +501,20 @@ export interface SupportUser {
   profilePicture?: string | null;
 }
 
+interface MessageAttachment {
+  fileName: string;
+  fileSize: number;
+  fileType: string;
+  url: string;
+}
+
 export interface SupportMessage {
   id: string;
   conversationId: string;
   senderId: string;
   senderType: SenderType;
   message: string;
-  attachments: string[];
+  attachments: MessageAttachment[];
   isRead: boolean;
   createdAt: string;
 }

@@ -54,7 +54,9 @@ export const sendAdminReply = async (
 ) => {
   return clientApi
     .post(`/admin/support/conversations/${conversationId}/reply`, formData, {
-      headers: {},
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
     })
     .then((r) => r.data);
 };

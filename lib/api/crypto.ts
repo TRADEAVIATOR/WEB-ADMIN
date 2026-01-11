@@ -1,5 +1,4 @@
-import { tryServer } from "../utils/errorHandler";
-import { clientApi, getServerApi } from "./config/client";
+import { clientApi } from "./config/client";
 
 export const setCryptoRateClient = async (payload: {
   valueNGN: number;

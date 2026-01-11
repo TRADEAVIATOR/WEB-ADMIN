@@ -5,8 +5,8 @@ import Modal from "@/components/ui/Modal";
 import FormField from "@/components/ui/FormField";
 import { useModal } from "@/context/ModalContext";
 import Button from "@/components/ui/Button";
-import { getCryptoAssets } from "@/lib/api/crypto";
 import SelectField, { SelectOption } from "../ui/SelectField";
+import { getAllCryptoPairRates } from "@/lib/api/giftcards";
 
 interface AddCryptoRateModalProps {
   isOpen: boolean;
@@ -56,7 +56,7 @@ export default function AddCryptoRateModal({
       setError(null);
 
       try {
-        const res = await getCryptoAssets();
+        const res = await getAllCryptoPairRates();
 
         console.log(res);
 
