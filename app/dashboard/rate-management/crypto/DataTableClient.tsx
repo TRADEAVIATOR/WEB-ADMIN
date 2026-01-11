@@ -35,7 +35,33 @@ export default function DataTableClient({
     { key: "updatedAt", label: "Updated At" },
   ];
 
-  const rows: RowData[] = initialData.map((rate) => ({
+  const CRYPTO_ORDER = [
+    "BTC",
+    "ETH",
+    "USDT",
+    "USDC",
+    "BNB",
+    "TRX",
+    "BCH",
+    "DOGE",
+    "LTC",
+    "POL",
+    "SHIB",
+    "SOL",
+  ];
+
+  const sortedData = [...initialData].sort((a, b) => {
+    const aIndex = CRYPTO_ORDER.indexOf(a.code);
+    const bIndex = CRYPTO_ORDER.indexOf(b.code);
+
+    if (aIndex === -1 && bIndex === -1) return 0;
+    if (aIndex === -1) return 1;
+    if (bIndex === -1) return -1;
+
+    return aIndex - bIndex;
+  });
+
+  const rows: RowData[] = sortedData.map((rate) => ({
     id: rate.id,
 
     image: rate.imageUrl ? (

@@ -68,7 +68,6 @@ export default function AddCryptoRateModal({
             const aIndex = CRYPTO_ORDER.indexOf(a.code);
             const bIndex = CRYPTO_ORDER.indexOf(b.code);
 
-            // push unknown coins to the bottom
             if (aIndex === -1) return 1;
             if (bIndex === -1) return -1;
 

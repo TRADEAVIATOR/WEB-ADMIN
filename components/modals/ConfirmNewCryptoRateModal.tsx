@@ -7,6 +7,7 @@ import { useModal } from "@/context/ModalContext";
 import { setCryptoRateClient } from "@/lib/api/crypto";
 import toast from "react-hot-toast";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 interface ConfirmNewCryptoRateModalProps {
   isOpen: boolean;
@@ -17,6 +18,7 @@ export default function ConfirmNewCryptoRateModal({
   isOpen,
   onClose,
 }: ConfirmNewCryptoRateModalProps) {
+  const router = useRouter();
   const { openModal, modalData } = useModal();
   const [loading, setLoading] = useState(false);
 
@@ -50,6 +52,9 @@ export default function ConfirmNewCryptoRateModal({
       });
 
       toast.success("Crypto rate set successfully!");
+
+      router.refresh();
+
       onClose();
     } catch (error: any) {
       handleApiError(error);
