@@ -1,8 +1,8 @@
 import ResultState from "@/components/ui/ResultState";
-import { getAllCryptoPairRates } from "@/lib/api/giftcards";
 import DataTableClient from "./DataTableClient";
 import { FiPlus } from "react-icons/fi";
 import PageHeader from "@/components/ui/PageHeader";
+import { getAllCryptoPairRates } from "@/lib/api/crypto";
 
 export const dynamic = "force-dynamic";
 

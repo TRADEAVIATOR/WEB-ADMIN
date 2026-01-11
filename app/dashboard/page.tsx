@@ -2,6 +2,7 @@ import ResultState from "@/components/ui/ResultState";
 import StatCard from "./components/StatCard";
 import { Activity, DashboardGrowth, DashboardMetrics } from "@/types/models";
 import { getDashboardMetrics, getDashboardGrowth } from "@/lib/api/dashboard";
+import { getAllCryptoPairRates } from "@/lib/api/crypto";
 import { calculateChange, extractSparklineData } from "@/lib/utils/dashboard";
 import ChartCard from "./components/ChartCard";
 import ActivityTable from "./components/ActivityTable";
@@ -9,6 +10,7 @@ import LeaderboardCard from "./components/LeaderboardCard";
 import PieChartCard from "./components/PieChartCard";
 import ActionRequiredCard from "./components/ActionRequiredCard";
 import { formatCurrency } from "@/lib/utils/format";
+import CryptoTicker from "./components/CryptoTicker";
 
 export const dynamic = "force-dynamic";
 
@@ -16,6 +18,7 @@ export default async function DashboardPage() {
   const results = await Promise.allSettled([
     getDashboardMetrics(),
     getDashboardGrowth(),
+    getAllCryptoPairRates(),
   ]);
 
   const hasError = results.some(
@@ -35,6 +38,7 @@ export default async function DashboardPage() {
   const metricsRes =
     results[0].status === "fulfilled" ? results[0].value : null;
   const growthRes = results[1].status === "fulfilled" ? results[1].value : null;
+  const cryptoRes = results[2].status === "fulfilled" ? results[2].value : [];
 
   if (!metricsRes || !growthRes) {
     return (
@@ -72,16 +76,24 @@ export default async function DashboardPage() {
     },
   ];
 
+  const cryptoData = cryptoRes && "data" in cryptoRes ? cryptoRes.data : [];
+
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-2">
-        <h1 className="text-2xl md:text-3xl font-semibold text-secondary">
-          Welcome back, <span className="text-primary">Big Brain</span>
-        </h1>
-        <p className="text-gray-500 text-sm md:text-base">
-          Here’s what’s happening today on{" "}
-          <span className="font-medium text-secondary">TradeAviator</span>
-        </p>
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between w-full gap-6">
+        <div className="flex flex-col gap-1 md:max-w-md whitespace-nowrap">
+          <h1 className="text-2xl md:text-3xl font-semibold text-secondary">
+            Welcome back, <span className="text-primary">Big Brain</span>
+          </h1>
+          <p className="text-gray-500 text-sm md:text-base">
+            Here’s what’s happening today on{" "}
+            <span className="font-medium text-secondary">TradeAviator</span>
+          </p>
+        </div>
+
+        <div className="flex-1 md:flex-none md:ml-auto min-w-0">
+          <CryptoTicker cryptos={cryptoData} />
+        </div>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

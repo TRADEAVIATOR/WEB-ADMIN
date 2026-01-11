@@ -50,7 +50,15 @@ export default function SalesDetails({ sale }: { sale: any }) {
       <div className="max-w-4xl mx-auto space-y-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-b border-gray-100 pb-4">
           <DetailItem label="Sale ID" value={sale.id} />
+          <DetailItem label="Sale Reference" value={sale.saleReference} />
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-b border-gray-100 pb-4">
           <DetailItem label="User ID" value={sale.userId} />
+          <DetailItem label="Full Name" value={sale.user?.fullname || "-"} />
+          <DetailItem label="Email" value={sale.user?.email || "-"} />
+          <DetailItem label="Username" value={sale.user?.username || "-"} />
+          <DetailItem label="Phone" value={sale.user?.phone || "-"} />
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-b border-gray-100 pb-4">
@@ -61,14 +69,8 @@ export default function SalesDetails({ sale }: { sale: any }) {
             }
           />
           <DetailItem label="Quantity" value={String(sale.quantity)} />
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-b border-gray-100 pb-4">
           <DetailItem label="Card Type" value={sale.cardType} />
           <DetailItem label="Card Range" value={sale.cardRange} />
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-b border-gray-100 pb-4">
           <DetailItem
             label="Card Value"
             value={formatCurrency(Number(sale.cardValue), {
@@ -80,6 +82,20 @@ export default function SalesDetails({ sale }: { sale: any }) {
             label="Payout Amount"
             value={formatCurrency(Number(sale.payoutAmount))}
           />
+          <DetailItem label="Country" value={sale.country} />
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-b border-gray-100 pb-4">
+          <DetailItem label="Reviewed By" value={sale.reviewedBy || "-"} />
+          <DetailItem
+            label="Reviewed At"
+            value={sale.reviewedAt ? formatDateTime(sale.reviewedAt) : "-"}
+          />
+          <DetailItem
+            label="Rejection Reason"
+            value={sale.rejectionReason || "-"}
+          />
+          <DetailItem label="Review Notes" value={sale.reviewNotes || "-"} />
         </div>
 
         {sale.images && sale.images.length > 0 && (
@@ -133,6 +149,7 @@ export default function SalesDetails({ sale }: { sale: any }) {
             value={formatDateTime(sale.updatedAt)}
           />
         </div>
+
         <GiftCardActions saleId={sale.id} />
       </div>
     </div>

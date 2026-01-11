@@ -1,12 +1,37 @@
 "use client";
 
-import Image from "next/image";
-import { Sparklines, SparklinesLine } from "react-sparklines";
+import { Line } from "react-chartjs-2";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+  Filler,
+  ChartDataset,
+} from "chart.js";
 import VirtualCardChart from "./VirtualCardChart";
 import DepositIcon from "@/assets/icons/deposit.svg";
 import WithdrawalIcon from "@/assets/icons/withdrawal.svg";
 import PeopleIcon from "@/assets/icons/people.svg";
+import Image from "next/image";
 import FormField from "@/components/ui/FormField";
+import { useState } from "react";
+import { formatCurrency } from "@/lib/utils/format";
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+  Filler
+);
 
 interface PerformanceCardProps {
   data?: {
@@ -27,15 +52,61 @@ interface PerformanceCardProps {
 
 export default function PerformanceCard({ data }: PerformanceCardProps) {
   const { overview, volumes, charts } = data || {};
+  const [selectedView, setSelectedView] = useState("All");
 
   const cryptoMonthlyData = charts?.cryptoVolumeByMonth || [];
-  const sparklineData = cryptoMonthlyData.map((item) =>
-    parseFloat(item.value || "0")
-  );
-  const monthLabels = cryptoMonthlyData.map((item) => item.month);
+  const labels = cryptoMonthlyData.map((d) => d.month);
+  const values = cryptoMonthlyData.map((d) => parseFloat(d.value || "0"));
 
-  const hasSparklineData =
-    sparklineData.length > 0 && sparklineData.some((val) => val > 0);
+  const lineChartData = {
+    labels,
+    datasets: [
+      {
+        label: "Crypto Volume",
+        data: values,
+        borderColor: "#1671D9",
+        backgroundColor: "rgba(22, 113, 217, 0.1)",
+        tension: 0.4,
+        fill: true,
+        pointBackgroundColor: "#1671D9",
+        pointBorderColor: "#fff",
+        pointBorderWidth: 2,
+        pointRadius: 4,
+        pointHoverRadius: 6,
+      },
+    ] as ChartDataset<"line", number[]>[],
+  };
+
+  const options = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        display: true,
+        position: "top" as const,
+        labels: { color: "#6B7280", boxWidth: 12, boxHeight: 12 },
+      },
+      tooltip: {
+        backgroundColor: "rgba(0,0,0,0.8)",
+        callbacks: {
+          label: function (context: any) {
+            return `${formatCurrency(context.parsed.y)}`;
+          },
+        },
+      },
+    },
+    scales: {
+      x: {
+        grid: { display: false },
+        ticks: { color: "#9CA3AF" },
+      },
+      y: {
+        beginAtZero: true,
+        grid: { color: "#F3F4F6" },
+        ticks: { color: "#9CA3AF" },
+      },
+    },
+  };
 
   return (
     <div className="bg-white rounded-2xl p-6">
@@ -43,6 +114,8 @@ export default function PerformanceCard({ data }: PerformanceCardProps) {
         <p className="text-sm font-medium text-gray-600">Performance</p>
         <FormField
           as="select"
+          value={selectedView}
+          onChange={(e) => setSelectedView(e.target.value)}
           options={[{ label: "All time", value: "All time" }]}
           className="w-40"
         />
@@ -51,11 +124,7 @@ export default function PerformanceCard({ data }: PerformanceCardProps) {
       <div className="mb-6">
         <p className="text-gray-500 text-sm">Total Balance</p>
         <p className="text-3xl font-bold text-gray-800">
-          ₦
-          {(overview?.totalBalance || 0).toLocaleString(undefined, {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-          })}
+          {formatCurrency(overview?.totalBalance)}
         </p>
       </div>
 
@@ -67,14 +136,7 @@ export default function PerformanceCard({ data }: PerformanceCardProps) {
               <div>
                 <p className="text-gray-500 text-sm">Total Deposit</p>
                 <p className="font-bold text-lg text-gray-800">
-                  ₦
-                  {parseFloat(volumes?.deposits || "0").toLocaleString(
-                    undefined,
-                    {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    }
-                  )}
+                  {formatCurrency(volumes?.deposits)}
                 </p>
               </div>
             </div>
@@ -89,14 +151,7 @@ export default function PerformanceCard({ data }: PerformanceCardProps) {
               <div>
                 <p className="text-gray-500 text-sm">Total Withdrawal</p>
                 <p className="font-bold text-lg text-gray-800">
-                  ₦
-                  {parseFloat(volumes?.withdrawals || "0").toLocaleString(
-                    undefined,
-                    {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    }
-                  )}
+                  {formatCurrency(volumes?.withdrawals)}
                 </p>
               </div>
             </div>
@@ -106,33 +161,18 @@ export default function PerformanceCard({ data }: PerformanceCardProps) {
               <div>
                 <p className="text-gray-500 text-sm">Total Users</p>
                 <p className="font-bold text-lg text-gray-800">
-                  {(overview?.totalUsers || 0).toLocaleString()}
+                  {overview?.totalUsers?.toLocaleString() || "0"}
                 </p>
               </div>
             </div>
           </div>
 
-          {hasSparklineData ? (
-            <div className="w-full h-24">
-              <Sparklines data={sparklineData}>
-                <SparklinesLine
-                  color="#FE7F32"
-                  style={{
-                    fill: "none",
-                    strokeWidth: 1.8,
-                    strokeLinejoin: "round",
-                    strokeLinecap: "round",
-                  }}
-                />
-              </Sparklines>
-              <div className="flex justify-between text-xs text-gray-400 mt-2 px-1">
-                {monthLabels.map((month, index) => (
-                  <span key={index}>{month}</span>
-                ))}
-              </div>
+          {values.length > 0 ? (
+            <div className="w-full h-80">
+              <Line data={lineChartData} options={options} />
             </div>
           ) : (
-            <div className="w-full h-24 flex items-center justify-center bg-gray-50 rounded">
+            <div className="w-full h-80 flex items-center justify-center bg-gray-50 rounded">
               <p className="text-sm text-gray-400">
                 No crypto volume data available
               </p>

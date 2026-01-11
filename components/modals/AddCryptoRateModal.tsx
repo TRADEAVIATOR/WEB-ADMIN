@@ -6,7 +6,7 @@ import FormField from "@/components/ui/FormField";
 import { useModal } from "@/context/ModalContext";
 import Button from "@/components/ui/Button";
 import SelectField, { SelectOption } from "../ui/SelectField";
-import { getAllCryptoPairRatesClient } from "@/lib/api/giftcards";
+import { getAllCryptoPairRatesClient } from "@/lib/api/crypto";
 
 interface AddCryptoRateModalProps {
   isOpen: boolean;
