@@ -181,3 +181,10 @@ export const getUserSpecificNotifications = async (page = 1, limit = 50) => {
       .then((r) => r.data)
   );
 };
+
+export const getNotificationAnalytics = async () => {
+  const api = await getServerApi();
+  return tryServer(
+    api.get("/admin/notifications/analytics").then((res) => res.data.data)
+  );
+};

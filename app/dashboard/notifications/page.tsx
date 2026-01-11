@@ -1,6 +1,3 @@
-"use client";
-
-import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
   FiSend,
@@ -10,12 +7,14 @@ import {
   FiClock,
   FiBell,
 } from "react-icons/fi";
+import { getNotificationAnalytics } from "@/lib/api/notifications";
+import ResultState from "@/components/ui/ResultState";
 
-type Stats = {
+type OverviewStats = {
   totalSent: number;
   totalRead: number;
+  totalUnread: number;
   readRate: number;
-  pending: number;
 };
 
 function StatsCard({
@@ -44,71 +43,54 @@ function StatsCard({
   );
 }
 
-export default function NotificationsPage() {
-  const [stats, setStats] = useState<Stats>({
+export default async function NotificationsPage() {
+  const data = await getNotificationAnalytics();
+
+  if (data.error) {
+    return (
+      <ResultState
+        type="error"
+        message="Unable to load dashboard data. Please try again."
+        showRefresh
+      />
+    );
+  }
+
+  const overview: OverviewStats = data?.data.overview || {
     totalSent: 0,
     totalRead: 0,
+    totalUnread: 0,
     readRate: 0,
-    pending: 0,
-  });
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const loadStats = async () => {
-      setLoading(true);
-
-      setStats({
-        totalSent: 1250,
-        totalRead: 890,
-        readRate: 71.2,
-        pending: 8,
-      });
-      setLoading(false);
-    };
-    loadStats();
-  }, []);
+  };
 
   return (
     <div className="space-y-6">
-      {loading ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {[1, 2, 3, 4].map((i) => (
-            <div
-              key={i}
-              className="bg-white rounded-lg shadow-sm p-6 animate-pulse">
-              <div className="h-4 bg-gray-200 rounded w-20 mb-2"></div>
-              <div className="h-8 bg-gray-200 rounded w-16"></div>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <StatsCard
-            title="Total Sent"
-            value={stats.totalSent.toLocaleString()}
-            icon={FiSend}
-            bgColor="bg-blue-100 text-blue-600"
-          />
-          <StatsCard
-            title="Total Read"
-            value={stats.totalRead.toLocaleString()}
-            icon={FiClock}
-            bgColor="bg-green-100 text-green-600"
-          />
-          <StatsCard
-            title="Read Rate"
-            value={`${stats.readRate}%`}
-            icon={FiBell}
-            bgColor="bg-yellow-100 text-yellow-600"
-          />
-          <StatsCard
-            title="Pending"
-            value={stats.pending}
-            icon={FiClock}
-            bgColor="bg-purple-100 text-purple-600"
-          />
-        </div>
-      )}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <StatsCard
+          title="Total Sent"
+          value={overview.totalSent.toLocaleString()}
+          icon={FiSend}
+          bgColor="bg-blue-100 text-blue-600"
+        />
+        <StatsCard
+          title="Total Read"
+          value={overview.totalRead.toLocaleString()}
+          icon={FiClock}
+          bgColor="bg-green-100 text-green-600"
+        />
+        <StatsCard
+          title="Unread"
+          value={overview.totalUnread.toLocaleString()}
+          icon={FiBell}
+          bgColor="bg-yellow-100 text-yellow-600"
+        />
+        <StatsCard
+          title="Read Rate"
+          value={`${overview.readRate.toFixed(2)}%`}
+          icon={FiClock}
+          bgColor="bg-purple-100 text-purple-600"
+        />
+      </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <Link href="/dashboard/notifications/all">
@@ -117,7 +99,6 @@ export default function NotificationsPage() {
               <div className="bg-primary/10 p-3 rounded-full">
                 <FiBell className="text-primary text-xl" />
               </div>
-
               <div className="flex-1">
                 <h3 className="font-semibold text-base">Admin Notifications</h3>
                 <p className="text-sm text-gray-500 mt-1">

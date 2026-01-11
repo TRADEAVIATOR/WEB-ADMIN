@@ -16,6 +16,7 @@ import {
 import { useState } from "react";
 import { LineChartCardProps } from "@/types/props";
 import FormField from "@/components/ui/FormField";
+import { formatCurrency } from "@/lib/utils/format";
 
 ChartJS.register(
   CategoryScale,
@@ -39,6 +40,19 @@ export default function LineChartCard({
   const cryptoTransactions = data.find((t) => t.type === "CRYPTO");
   const giftcardTransactions = data.find((t) => t.type === "GIFTCARDS");
 
+  const billPaymentTypes = ["AIRTIME", "CABLE", "ELECTRICITY"];
+  const billPaymentTransactions = data.filter((t) =>
+    billPaymentTypes.includes(t.type)
+  );
+  const billPaymentCount = billPaymentTransactions.reduce(
+    (sum, t) => sum + t.count,
+    0
+  );
+  const billPaymentPercentage = billPaymentTransactions.reduce(
+    (sum, t) => sum + parseFloat(t.percentage),
+    0
+  );
+
   const months = [
     "Jan",
     "Feb",
@@ -53,7 +67,7 @@ export default function LineChartCard({
     "Nov",
     "Dec",
   ];
-  const currentMonth = 9;
+  const currentMonth = new Date().getMonth(); // dynamic current month
   const labels = Array.from({ length: 12 }, (_, i) => {
     const idx = (currentMonth - 11 + i + 12) % 12;
     return months[idx];
@@ -95,6 +109,7 @@ export default function LineChartCard({
 
   const cryptoTrendData = generateTrendData(cryptoCount, 0.4);
   const giftcardTrendData = generateTrendData(giftcardCount, 0.35);
+  const billPaymentTrendData = generateTrendData(billPaymentCount, 0.3);
 
   const lineChartData = {
     labels,
@@ -133,6 +148,22 @@ export default function LineChartCard({
     });
   }
 
+  if (selectedView === "All" || selectedView === "Bill Payments") {
+    lineChartData.datasets.push({
+      label: "Bill Payments",
+      data: billPaymentTrendData,
+      borderColor: "#10B981",
+      backgroundColor: "rgba(16, 185, 129, 0.1)",
+      tension: 0.4,
+      fill: true,
+      pointBackgroundColor: "#10B981",
+      pointBorderColor: "#fff",
+      pointBorderWidth: 2,
+      pointRadius: 4,
+      pointHoverRadius: 6,
+    });
+  }
+
   const options = {
     responsive: true,
     maintainAspectRatio: false,
@@ -159,7 +190,14 @@ export default function LineChartCard({
         bodyFont: { size: 12 },
         callbacks: {
           label: function (context: any) {
-            return `${context.dataset.label}: ${context.parsed.y} transactions`;
+            let value = 0;
+            if (context.dataset.label === "Crypto Transactions")
+              value = cryptoValue;
+            return `${context.dataset.label}: ${context.parsed.y} transactions${
+              context.dataset.label === "Crypto Transactions"
+                ? ` | Volume: ${formatCurrency(value)}`
+                : ""
+            }`;
           },
         },
       },
@@ -194,8 +232,9 @@ export default function LineChartCard({
             { label: "All", value: "All" },
             { label: "Crypto", value: "Crypto" },
             { label: "Giftcard", value: "Giftcard" },
+            { label: "Bill Payments", value: "Bill Payments" },
           ]}
-          className="w-40"
+          className="w-44"
         />
       </div>
 
@@ -204,7 +243,7 @@ export default function LineChartCard({
       </div>
 
       <div className="mt-6 pt-4 border-t border-gray-100">
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-3 gap-4">
           <div className="bg-blue-50 rounded-lg p-4">
             <div className="flex items-center gap-2 mb-2">
               <div className="w-3 h-3 rounded-full bg-[#1671D9]"></div>
@@ -215,7 +254,7 @@ export default function LineChartCard({
               {cryptoTransactions?.percentage}% of total
             </p>
             <p className="text-xs text-gray-400 mt-1">
-              Volume: ₦{cryptoValue.toFixed(2)}
+              Volume: {formatCurrency(cryptoValue)}
             </p>
           </div>
 
@@ -227,6 +266,19 @@ export default function LineChartCard({
             <p className="text-2xl font-bold text-gray-800">{giftcardCount}</p>
             <p className="text-xs text-gray-500 mt-1">
               {giftcardTransactions?.percentage}% of total
+            </p>
+          </div>
+
+          <div className="bg-green-50 rounded-lg p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="w-3 h-3 rounded-full bg-[#10B981]"></div>
+              <p className="text-xs font-medium text-gray-600">Bill Payments</p>
+            </div>
+            <p className="text-2xl font-bold text-gray-800">
+              {billPaymentCount}
+            </p>
+            <p className="text-xs text-gray-500 mt-1">
+              {billPaymentPercentage.toFixed(2)}% of total
             </p>
           </div>
         </div>

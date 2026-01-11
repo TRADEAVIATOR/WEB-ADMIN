@@ -3,6 +3,7 @@
 import Modal from "@/components/ui/Modal";
 import Button from "@/components/ui/Button";
 import { Activity } from "@/types/models";
+import { formatCurrency } from "@/lib/utils/format";
 
 interface ActivityDetailsModalProps {
   isOpen: boolean;
@@ -28,8 +29,7 @@ export default function ActivityDetailsModal({
         <div>
           <p className="text-xs text-gray-400 mb-1">Type & Amount</p>
           <p>
-            {activity.type} - {activity.amount}{" "}
-            {activity.currency.toUpperCase()}
+            {activity.type} - {formatCurrency(activity.amount)}
           </p>
         </div>
 

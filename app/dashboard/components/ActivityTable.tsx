@@ -1,6 +1,7 @@
 "use client";
 
 import { useModal } from "@/context/ModalContext";
+import { formatCurrency } from "@/lib/utils/format";
 import { RecentActivitiesProps } from "@/types/props";
 import clsx from "clsx";
 
@@ -41,9 +42,7 @@ export default function RecentActivities({
               </p>
               <p className="text-sm text-gray-500">
                 {truncate(
-                  `${activity.type} - ${
-                    activity.amount
-                  } ${activity.currency.toUpperCase()}`,
+                  `${activity.type} - ${formatCurrency(activity.amount)}`,
                   30
                 )}
               </p>
