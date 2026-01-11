@@ -17,10 +17,7 @@ export interface AcceptedGiftcardFormValues {
   currency: string;
   availableRanges: string[];
   receiptTypes: string[];
-  rates: Record<
-    string,
-    { rate: number; noReceipt?: number; cashReceipt?: number }
-  >;
+  rates: Record<string, Record<string, number>>;
   image?: File | null;
   isActive: boolean;
 }
@@ -32,10 +29,7 @@ interface AcceptedGiftcardFormProps {
 }
 
 const RECEIPT_TYPE_OPTIONS = [
-  { label: "Cash Receipt", value: "CASH_RECEIPT" },
-  { label: "Debit Receipt", value: "DEBIT_RECEIPT" },
-  { label: "No Receipt", value: "NO_RECEIPT" },
-  { label: "E-Code", value: "E_CODE" },
+  { label: "E-Code", value: "E-CODE" },
   { label: "Physical Receipt", value: "PHYSICAL" },
 ];
 
@@ -258,55 +252,31 @@ export default function AcceptedGiftcardForm({
         {values.availableRanges
           .filter((range) => range.trim())
           .map((range, i) => {
-            const rateData = values.rates[range] || {
-              rate: 0,
-              noReceipt: 0,
-              cashReceipt: 0,
-            };
+            const rateData = values.rates[range] || {};
             return (
               <div key={i} className="p-4 border rounded space-y-3">
                 <h4 className="font-medium">{range}</h4>
-                <div className="grid grid-cols-3 gap-2">
-                  <FormField
-                    label="Rate"
-                    type="number"
-                    value={rateData.rate}
-                    onChange={(e) => {
-                      const newRates = { ...values.rates };
-                      newRates[range] = {
-                        ...rateData,
-                        rate: Number(e.target.value),
-                      };
-                      setValues((prev) => ({ ...prev, rates: newRates }));
-                    }}
-                    required
-                  />
-                  <FormField
-                    label="No Receipt"
-                    type="number"
-                    value={rateData.noReceipt || 0}
-                    onChange={(e) => {
-                      const newRates = { ...values.rates };
-                      newRates[range] = {
-                        ...rateData,
-                        noReceipt: Number(e.target.value),
-                      };
-                      setValues((prev) => ({ ...prev, rates: newRates }));
-                    }}
-                  />
-                  <FormField
-                    label="Cash Receipt"
-                    type="number"
-                    value={rateData.cashReceipt || 0}
-                    onChange={(e) => {
-                      const newRates = { ...values.rates };
-                      newRates[range] = {
-                        ...rateData,
-                        cashReceipt: Number(e.target.value),
-                      };
-                      setValues((prev) => ({ ...prev, rates: newRates }));
-                    }}
-                  />
+                <div className="grid grid-cols-2 gap-2">
+                  {values.receiptTypes.map((receiptType) => (
+                    <FormField
+                      key={receiptType}
+                      label={receiptType}
+                      type="number"
+                      value={rateData[receiptType] || 0}
+                      onChange={(e) => {
+                        const newRates = { ...values.rates };
+                        if (!newRates[range]) {
+                          newRates[range] = {};
+                        }
+                        newRates[range] = {
+                          ...newRates[range],
+                          [receiptType]: Number(e.target.value),
+                        };
+                        setValues((prev) => ({ ...prev, rates: newRates }));
+                      }}
+                      required
+                    />
+                  ))}
                 </div>
               </div>
             );

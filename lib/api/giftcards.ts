@@ -96,6 +96,10 @@ export const getAllCryptoPairRates = async () => {
   return tryServer(api.get("/admin/crypto").then((res) => res.data));
 };
 
+export const getAllCryptoPairRatesClient = async () => {
+  return clientApi.get("/admin/crypto").then((res) => res.data);
+};
+
 export const reviewGiftCardSale = async (saleId: string) => {
   const res = await clientApi.post(`/admin/giftcards/sales/${saleId}/review`);
   return res.data;

@@ -6,7 +6,7 @@ import FormField from "@/components/ui/FormField";
 import { useModal } from "@/context/ModalContext";
 import Button from "@/components/ui/Button";
 import SelectField, { SelectOption } from "../ui/SelectField";
-import { getAllCryptoPairRates } from "@/lib/api/giftcards";
+import { getAllCryptoPairRatesClient } from "@/lib/api/giftcards";
 
 interface AddCryptoRateModalProps {
   isOpen: boolean;
@@ -56,9 +56,7 @@ export default function AddCryptoRateModal({
       setError(null);
 
       try {
-        const res = await getAllCryptoPairRates();
-
-        console.log(res);
+        const res = await getAllCryptoPairRatesClient();
 
         if (!Array.isArray(res)) {
           throw new Error("Invalid crypto assets response");
