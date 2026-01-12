@@ -128,6 +128,13 @@ export default function AcceptedGiftcardForm({
     onSubmit(formData);
   };
 
+  const priceRangeOptions = [
+    { label: "$20 - $99", value: "$20 - $99" },
+    { label: "$100 - $200", value: "$100 - $200" },
+    { label: "$300 - $500", value: "$300 - $500" },
+    { label: "$50 - $500", value: "$50 - $500" },
+  ];
+
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <FormField
@@ -212,12 +219,14 @@ export default function AcceptedGiftcardForm({
         </div>
         {values.availableRanges.map((v, i) => (
           <div key={i} className="flex gap-2">
-            <FormField
-              value={v}
+            <SelectField
+              id={`availableRanges-${i}`}
               required
-              placeholder="e.g., $50-$100"
-              onChange={(e) =>
-                handleArrayChange("availableRanges", i, e.target.value)
+              placeholder="Select price range"
+              options={priceRangeOptions}
+              value={v ? { label: v, value: v } : null}
+              onChange={(option) =>
+                handleArrayChange("availableRanges", i, option?.value ?? "")
               }
             />
             <Button

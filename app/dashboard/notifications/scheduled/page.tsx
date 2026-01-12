@@ -2,8 +2,6 @@ import PageHeader from "@/components/ui/PageHeader";
 import ResultState from "@/components/ui/ResultState";
 import { getScheduledNotifications } from "@/lib/api/notifications";
 import DataTableClient from "./DataTableClient";
-import Button from "@/components/ui/Button";
-import Link from "next/link";
 
 export const dynamic = "force-dynamic";
 
@@ -44,14 +42,6 @@ export default async function ScheduledNotificationsPage({
         buttonText="Create Notification"
         buttonHref="/dashboard/notifications/scheduled/new"
       />
-
-      <Link href="/dashboard/notifications/scheduled/recurring-patterns">
-        <Button
-          size="sm"
-          className="flex items-center gap-2 text-white text-sm px-5 py-2.5 rounded-full mb-4">
-          Recurring Patterns
-        </Button>
-      </Link>
 
       <DataTableClient
         initialData={payload.data}

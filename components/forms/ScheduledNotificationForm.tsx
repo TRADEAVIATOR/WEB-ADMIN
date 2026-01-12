@@ -10,6 +10,8 @@ import { handleApiError } from "@/lib/utils/errorHandler";
 import EmojiPicker from "emoji-picker-react";
 import { Smile } from "lucide-react";
 import { getNotificationTemplatesClient } from "@/lib/api/notifications";
+import Link from "next/link";
+import { FiArrowRight } from "react-icons/fi";
 
 interface NotificationTemplate {
   id: string;
@@ -473,28 +475,49 @@ export default function ScheduledNotificationForm({
       </div>
 
       {formData.isRecurring && (
-        <SelectField
-          id="recurring-pattern"
-          label="Recurring Pattern"
-          value={{
-            label: formData.recurringPattern,
-            value: formData.recurringPattern,
-          }}
-          onChange={(option) =>
-            setFormData({
-              ...formData,
-              recurringPattern: (option as { label: string; value: string })
-                .value,
-            })
-          }
-          options={[
-            { label: "Daily", value: "daily" },
-            { label: "Weekly", value: "weekly" },
-            { label: "Monthly", value: "monthly" },
-            { label: "Yearly", value: "yearly" },
-          ]}
-          required
-        />
+        <>
+          <SelectField
+            id="recurring-pattern"
+            label="Recurring Pattern"
+            value={{
+              label: formData.recurringPattern,
+              value: formData.recurringPattern,
+            }}
+            onChange={(option) =>
+              setFormData({
+                ...formData,
+                recurringPattern: (option as { label: string; value: string })
+                  .value,
+              })
+            }
+            options={[
+              { label: "Daily", value: "daily" },
+              { label: "Weekly", value: "weekly" },
+              { label: "Monthly", value: "monthly" },
+              { label: "Yearly", value: "yearly" },
+            ]}
+            required
+          />
+
+          <div className="bg-blue-50 border border-blue-100 rounded-lg p-4 flex items-start justify-between gap-4">
+            <div>
+              <p className="text-sm font-medium text-blue-900">
+                Manage Recurring Notifications
+              </p>
+              <p className="text-xs text-blue-700 mt-1">
+                View, edit, or disable existing recurring notification
+                schedules.
+              </p>
+            </div>
+
+            <Link
+              href="/dashboard/notifications/scheduled/recurring"
+              className="inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline whitespace-nowrap">
+              View schedules
+              <FiArrowRight className="text-base" />
+            </Link>
+          </div>
+        </>
       )}
 
       <div className="flex items-center gap-2 bg-gray-50 p-3 rounded-lg">
