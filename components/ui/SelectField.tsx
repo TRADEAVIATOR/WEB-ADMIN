@@ -19,6 +19,7 @@ type BaseProps = {
   icon?: ReactNode;
   className?: string;
   error?: string;
+  disabled?: boolean;
 };
 
 type ExtraProps = Partial<
@@ -60,6 +61,7 @@ export default function SelectField({
   icon,
   className,
   error,
+  disabled,
   value,
   defaultValue,
   onChange,
@@ -84,8 +86,14 @@ export default function SelectField({
 
       <div
         className={clsx(
-          "flex items-center gap-2 border rounded-full px-5 py-3 bg-[#F5F5F5] transition-all duration-200 focus-within:ring-2 focus-within:ring-primary focus-within:border-transparent",
-          { "border-gray-200": !error, "border-red-500": error },
+          "flex items-center gap-2 border rounded-full px-5 py-3 transition-all duration-200",
+          {
+            "bg-[#F5F5F5] focus-within:ring-2 focus-within:ring-primary focus-within:border-transparent":
+              !disabled,
+            "bg-gray-100 opacity-60 cursor-not-allowed": disabled,
+            "border-gray-200": !error,
+            "border-red-500": error,
+          },
           className
         )}>
         {icon && <span className="text-gray-400 text-lg">{icon}</span>}
@@ -100,8 +108,9 @@ export default function SelectField({
           placeholder={placeholder}
           menuPlacement="auto"
           menuPosition="fixed"
+          isDisabled={disabled}
           onChange={(val, meta) => {
-            if (!onChange) return;
+            if (!onChange || disabled) return;
             if (isMulti) {
               onChange(val as MultiValue<SelectOption>, meta);
             } else {
@@ -121,6 +130,7 @@ export default function SelectField({
               border: "none",
               boxShadow: "none",
               background: "transparent",
+              cursor: disabled ? "not-allowed" : "default",
             }),
             placeholder: (provided) => ({
               ...provided,

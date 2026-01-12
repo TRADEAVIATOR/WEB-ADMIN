@@ -10,6 +10,17 @@ import SelectField, { SelectOption } from "../ui/SelectField";
 import { handleApiError } from "@/lib/utils/errorHandler";
 import EmojiPicker from "emoji-picker-react";
 import { Smile } from "lucide-react";
+import { getNotificationTemplatesClient } from "@/lib/api/notifications";
+
+interface NotificationTemplate {
+  id: string;
+  name: string;
+  title: string;
+  message: string;
+  type: string;
+  priority: string;
+  variables: string[];
+}
 
 interface SendNotificationFormProps {
   initialData?: Partial<SendNotificationPayload>;
@@ -29,6 +40,14 @@ export default function SendNotificationForm({
   const [showEmojiPicker, setShowEmojiPicker] = useState<
     "title" | "message" | null
   >(null);
+  const [templates, setTemplates] = useState<NotificationTemplate[]>([]);
+  const [selectedTemplate, setSelectedTemplate] =
+    useState<NotificationTemplate | null>(null);
+  const [templateVariables, setTemplateVariables] = useState<
+    Record<string, string>
+  >({});
+  const [loadingTemplates, setLoadingTemplates] = useState(false);
+
   const emojiPickerRef = useRef<HTMLDivElement>(null);
   const titleInputRef = useRef<HTMLInputElement>(null);
   const messageInputRef = useRef<HTMLTextAreaElement>(null);
@@ -44,6 +63,12 @@ export default function SendNotificationForm({
   });
 
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (useTemplate) {
+      fetchTemplates();
+    }
+  }, [useTemplate]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -63,6 +88,51 @@ export default function SendNotificationForm({
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [showEmojiPicker]);
+
+  const fetchTemplates = async () => {
+    setLoadingTemplates(true);
+    try {
+      const response = await getNotificationTemplatesClient(1, 100);
+      setTemplates(response.data || []);
+    } catch (err) {
+      handleApiError(err);
+    } finally {
+      setLoadingTemplates(false);
+    }
+  };
+
+  const handleTemplateSelect = (option: SelectOption | null) => {
+    if (!option) {
+      setSelectedTemplate(null);
+      setTemplateVariables({});
+      setFormData({ ...formData, templateId: "" });
+      return;
+    }
+
+    const template = templates.find((t) => t.id === option.value);
+    if (template) {
+      setSelectedTemplate(template);
+      setFormData({
+        ...formData,
+        templateId: template.id,
+        notificationType: template.type,
+        priority: template.priority,
+      });
+
+      const initialVars: Record<string, string> = {};
+      template.variables.forEach((varName) => {
+        initialVars[varName] = "";
+      });
+      setTemplateVariables(initialVars);
+    }
+  };
+
+  const handleVariableChange = (varName: string, value: string) => {
+    setTemplateVariables((prev) => ({
+      ...prev,
+      [varName]: value,
+    }));
+  };
 
   const handleEmojiClick = (emoji: any) => {
     if (showEmojiPicker === "title") {
@@ -127,6 +197,9 @@ export default function SendNotificationForm({
 
       if (useTemplate) {
         payload.templateId = formData.templateId;
+        if (Object.keys(templateVariables).length > 0) {
+          payload.templateVariables = templateVariables;
+        }
       } else {
         payload.title = formData.title;
         payload.message = formData.message;
@@ -155,14 +228,65 @@ export default function SendNotificationForm({
       </div>
 
       {useTemplate ? (
-        <FormField
-          label="Template ID"
-          value={formData.templateId}
-          onChange={(e) =>
-            setFormData({ ...formData, templateId: e.target.value })
-          }
-          required
-        />
+        <>
+          <SelectField
+            id="template-select"
+            label="Select Template"
+            value={
+              selectedTemplate
+                ? {
+                    label: selectedTemplate.name,
+                    value: selectedTemplate.id,
+                  }
+                : null
+            }
+            onChange={handleTemplateSelect}
+            options={templates.map((template) => ({
+              label: template.name,
+              value: template.id,
+            }))}
+            isLoading={loadingTemplates}
+            required
+          />
+
+          {selectedTemplate && (
+            <div className="space-y-3 p-4 bg-gray-50 rounded-lg">
+              <div>
+                <p className="text-sm font-medium text-gray-700">
+                  Template Preview
+                </p>
+                <p className="text-xs text-gray-500 mt-1">
+                  <strong>Title:</strong> {selectedTemplate.title}
+                </p>
+                <p className="text-xs text-gray-500 mt-1">
+                  <strong>Message:</strong> {selectedTemplate.message}
+                </p>
+              </div>
+
+              {selectedTemplate.variables.length > 0 && (
+                <div className="space-y-3 pt-3 border-t border-gray-200">
+                  <p className="text-sm font-medium text-gray-700">
+                    Template Variables
+                  </p>
+                  {selectedTemplate.variables.map((varName) => (
+                    <FormField
+                      key={varName}
+                      label={varName
+                        .replace(/([A-Z])/g, " $1")
+                        .replace(/^./, (str) => str.toUpperCase())}
+                      value={templateVariables[varName] || ""}
+                      onChange={(e) =>
+                        handleVariableChange(varName, e.target.value)
+                      }
+                      placeholder={`Enter ${varName}`}
+                      required
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+        </>
       ) : (
         <>
           <div className="relative">
@@ -250,6 +374,7 @@ export default function SendNotificationForm({
             value: type,
           }))}
           required
+          disabled={useTemplate && selectedTemplate !== null}
         />
 
         <SelectField
@@ -268,6 +393,7 @@ export default function SendNotificationForm({
             value: priority,
           }))}
           required
+          disabled={useTemplate && selectedTemplate !== null}
         />
       </div>
 

@@ -23,6 +23,12 @@ export const getNotificationTemplates = async (page = 1, limit = 10) => {
   );
 };
 
+export const getNotificationTemplatesClient = async (page = 1, limit = 10) => {
+  return clientApi
+    .get(`/admin/notifications/templates?page=${page}&limit=${limit}`)
+    .then((r) => r.data);
+};
+
 export const getNotificationTemplate = async (id: string) => {
   const api = await getServerApi();
   return tryServer(

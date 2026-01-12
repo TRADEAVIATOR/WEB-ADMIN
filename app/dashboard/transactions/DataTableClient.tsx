@@ -81,10 +81,7 @@ export default function DataTableClient({
         }
       />
     ),
-    amount:
-      tx.category?.toUpperCase() === "CRYPTO"
-        ? formatCurrency(tx.amount, { currency: "USD", locale: "en-US" })
-        : formatCurrency(tx.amount, { currency: tx.currency }),
+    amount: formatCurrency(tx.amount),
     currency: tx.currency.toUpperCase(),
     recipient: tx.recipient || "-",
     createdAt: formatDateTime(tx.createdAt),
