@@ -21,6 +21,8 @@ import GiftcardIcon from "@/assets/icons/giftcard.svg";
 import BellIcon from "@/assets/icons/bell.svg";
 import SettingsIcon from "@/assets/icons/settings.svg";
 import LogoutIcon from "@/assets/icons/logout.svg";
+import WalletIcon from "@/assets/icons/wallets.svg";
+import VoucherIcon from "@/assets/icons/voucher.svg";
 
 export const sidebarLinks: SidebarLink[] = [
   {
@@ -94,6 +96,16 @@ export const sidebarLinks: SidebarLink[] = [
         icon: RateIcon,
       },
     ],
+  },
+  {
+    label: "Wallets",
+    href: "/dashboard/wallets",
+    icon: WalletIcon,
+  },
+  {
+    label: "Voucher",
+    href: "/dashboard/voucher",
+    icon: VoucherIcon,
   },
   {
     label: "Rewards",

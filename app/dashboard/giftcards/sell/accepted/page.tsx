@@ -17,7 +17,7 @@ export default async function AcceptedGiftCardsPage({
   const params = await searchParams;
   const page = params?.page ? Number(params.page) : 1;
 
-  const res = await getAcceptedGiftCards(page);
+  const res = await getAcceptedGiftCards(page, 50);
 
   if (!res || res.error) {
     return (

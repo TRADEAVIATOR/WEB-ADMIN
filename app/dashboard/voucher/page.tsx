@@ -1,11 +1,11 @@
 import PageHeader from "@/components/ui/PageHeader";
 import ResultState from "@/components/ui/ResultState";
+import { getVouchers } from "@/lib/api/voucher";
 import DataTableClient from "./DataTableClient";
-import { getAllAdminNotifications } from "@/lib/api/notifications";
 
 export const dynamic = "force-dynamic";
 
-export default async function AdminNotificationsPage({
+export default async function VoucherPage({
   searchParams,
 }: {
   searchParams?: Promise<{ page?: string }>;
@@ -13,13 +13,13 @@ export default async function AdminNotificationsPage({
   const params = await searchParams;
   const page = params?.page ? Number(params.page) : 1;
 
-  const res = await getAllAdminNotifications(page, 50);
+  const res = await getVouchers(page, 50);
 
   if (!res || res.error) {
     return (
       <ResultState
         type="error"
-        message="Unable to fetch admin notifications."
+        message="Unable to fetch vouchers."
         showRefresh
       />
     );
@@ -27,20 +27,20 @@ export default async function AdminNotificationsPage({
 
   const payload = res.data;
 
-  if (!payload?.data || payload.data.length === 0) {
-    return <ResultState type="empty" message="No notifications found." />;
+  if (!payload) {
+    return <ResultState type="empty" message="No vouchers found." />;
   }
 
   return (
     <>
       <PageHeader
-        title="Admin Notifications"
-        description="System alerts, activities, and important updates"
+        title="Vouchers"
+        description="View all vouchers and their status"
       />
       <DataTableClient
-        initialData={payload.data}
-        initialPage={payload.pagination.page}
-        totalPages={payload.pagination.totalPages}
+        initialData={payload}
+        initialPage={payload.pagination?.currentPage || 1}
+        totalPages={payload.pagination?.totalPages || 1}
       />
     </>
   );

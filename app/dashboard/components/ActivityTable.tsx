@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useModal } from "@/context/ModalContext";
 import { formatCurrency } from "@/lib/utils/format";
 import { RecentActivitiesProps } from "@/types/props";
@@ -11,6 +12,7 @@ export default function RecentActivities({
   className,
 }: RecentActivitiesProps) {
   const { openModal } = useModal();
+  const [showAll, setShowAll] = useState(false);
 
   const truncate = (text: string, maxLength = 25) =>
     text.length > maxLength ? text.slice(0, maxLength) + "…" : text;
@@ -26,12 +28,19 @@ export default function RecentActivities({
     <div
       className={clsx(
         "bg-white rounded-2xl p-6 flex flex-col gap-4 border border-gray-100",
-        className
+        className,
       )}>
-      <h2 className="text-lg font-semibold text-secondary">{title}</h2>
+      <div className="flex items-center justify-between">
+        <h2 className="text-lg font-semibold text-secondary">{title}</h2>
+        <button
+          className="text-sm text-primary hover:underline"
+          onClick={() => setShowAll(!showAll)}>
+          {showAll ? "Show Less" : "See All"}
+        </button>
+      </div>
 
       <div className="flex flex-col divide-y divide-gray-200">
-        {data.slice(0, 8).map((activity) => (
+        {(showAll ? data : data.slice(0, 8)).map((activity) => (
           <button
             key={activity.id}
             onClick={() => openModal("view-activity-details", activity)}
@@ -43,7 +52,7 @@ export default function RecentActivities({
               <p className="text-sm text-gray-500">
                 {truncate(
                   `${activity.type} - ${formatCurrency(activity.amount)}`,
-                  30
+                  30,
                 )}
               </p>
             </div>

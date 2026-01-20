@@ -33,6 +33,16 @@ const nextConfig: NextConfig = {
         hostname: "assets.coingecko.com",
         pathname: "**",
       },
+      {
+        protocol: "https",
+        hostname: "pisces.bbystatic.com",
+        pathname: "**",
+      },
+      {
+        protocol: "https",
+        hostname: "slimages.macysassets.com",
+        pathname: "**",
+      },
     ],
   },
 };

@@ -13,7 +13,7 @@ export default async function UserSpecificNotificationsPage({
   const params = await searchParams;
   const page = params?.page ? Number(params.page) : 1;
 
-  const res = await getUserSpecificNotifications(page);
+  const res = await getUserSpecificNotifications(page, 50);
 
   if (!res || res.error) {
     return (

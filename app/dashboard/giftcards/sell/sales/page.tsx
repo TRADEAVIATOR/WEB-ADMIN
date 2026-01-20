@@ -16,7 +16,7 @@ export default async function GiftCardSalesPage({
   const params = await searchParams;
   const page = params?.page ? Number(params.page) : 1;
 
-  const res = await getGiftCardSales(page);
+  const res = await getGiftCardSales(page, 50);
 
   if (!res || res.error) {
     return (

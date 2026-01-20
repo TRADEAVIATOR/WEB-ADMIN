@@ -15,6 +15,8 @@ export type ModalType =
   | "view-activity-details"
   | "view-transaction-details"
   | "generic-filter"
+  | "credit-wallet"
+  | "debit-wallet"
   | null;
 
 export interface RowData {

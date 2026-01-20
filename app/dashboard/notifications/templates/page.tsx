@@ -13,7 +13,7 @@ export default async function NotificationTemplatesPage({
   const params = await searchParams;
   const page = params?.page ? Number(params.page) : 1;
 
-  const res = await getNotificationTemplates(page);
+  const res = await getNotificationTemplates(page, 50);
 
   if (!res || res.error) {
     return (

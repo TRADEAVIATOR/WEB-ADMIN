@@ -57,7 +57,7 @@ export default function DataTableClient({
   }));
 
   const handlePageChange = (page: number) => {
-    router.push(`/dashboard/notifications/broadcasts?page=${page}`);
+    router.push(`/dashboard/notifications/broadcast?page=${page}`);
   };
 
   return (

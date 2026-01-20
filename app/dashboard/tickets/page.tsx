@@ -14,7 +14,7 @@ export default async function TicketsPage({
   const params = await searchParams;
   const page = params?.page ? Number(params.page) : 1;
 
-  const res = await getTickets(page);
+  const res = await getTickets(page, 50);
 
   if (!res || res.error) {
     return (

@@ -68,6 +68,13 @@ export default function LoginForm() {
           required
         />
       </div>
+      <div className="text-center">
+        <button
+          type="button"
+          className="text-sm text-gray-600 hover:text-orange-600 font-medium">
+          Forgot password? <span className="text-orange-500">Reset it</span>
+        </button>
+      </div>
       <Button
         type="submit"
         isLoading={loading}

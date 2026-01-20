@@ -16,6 +16,8 @@ import TransactionDetailsModal from "../modals/TransactionDetailsModal";
 import LogoutModal from "../modals/LogoutModal";
 import CreateTaglineModal from "../modals/CreateTaglineModal";
 import { ModalManagerProps } from "@/types/props";
+import DebitWalletModal from "../modals/DebitWalletModal";
+import CreditWalletModal from "../modals/CreditWalletModal";
 
 export default function ModalManager({
   modalData,
@@ -79,6 +81,12 @@ export default function ModalManager({
 
     case "create-tagline":
       return <CreateTaglineModal isOpen={true} onClose={onClose} />;
+
+    case "credit-wallet":
+      return <CreditWalletModal isOpen={true} onClose={onClose} />;
+
+    case "debit-wallet":
+      return <DebitWalletModal isOpen={true} onClose={onClose} />;
 
     case "generic-filter":
       return (

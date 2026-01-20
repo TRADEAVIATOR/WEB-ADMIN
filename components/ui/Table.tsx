@@ -63,13 +63,13 @@ export default function DataTable<T extends RowData>({
   const handleSelectRow = (
     index: number,
     checked: boolean,
-    e: React.ChangeEvent<HTMLInputElement>
+    e: React.ChangeEvent<HTMLInputElement>,
   ) => {
     e.stopPropagation();
     setSelectedRows((prev) =>
       checked
         ? [...prev, index.toString()]
-        : prev.filter((id) => id !== index.toString())
+        : prev.filter((id) => id !== index.toString()),
     );
   };
 
@@ -78,7 +78,7 @@ export default function DataTable<T extends RowData>({
 
   const toggleMenu = (
     index: number,
-    e: React.MouseEvent | React.TouchEvent
+    e: React.MouseEvent | React.TouchEvent,
   ) => {
     e.preventDefault();
     e.stopPropagation();
@@ -121,7 +121,7 @@ export default function DataTable<T extends RowData>({
   const handleMenuItemClick = (
     item: MenuItem<T>,
     row: T,
-    e: React.MouseEvent | React.TouchEvent
+    e: React.MouseEvent | React.TouchEvent,
   ) => {
     e.preventDefault();
     e.stopPropagation();
@@ -352,7 +352,7 @@ export default function DataTable<T extends RowData>({
                             e.preventDefault();
                             e.stopPropagation();
                             setOpenMenuIndex((prev) =>
-                              prev === idx ? null : idx
+                              prev === idx ? null : idx,
                             );
                           }}>
                           <MoreVertical size={18} />

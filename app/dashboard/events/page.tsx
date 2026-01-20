@@ -14,7 +14,7 @@ export default async function EventsPage({
   const params = await searchParams;
   const page = params?.page ? Number(params.page) : 1;
 
-  const res = await getEvents(page);
+  const res = await getEvents(page, 50);
 
   if (!res || res.error) {
     return <ResultState type="error" message="Unable to fetch events." />;

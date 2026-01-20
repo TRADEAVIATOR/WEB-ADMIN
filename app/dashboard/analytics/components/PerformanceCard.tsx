@@ -12,6 +12,7 @@ import {
   Legend,
   Filler,
   ChartDataset,
+  ChartOptions,
 } from "chart.js";
 import VirtualCardChart from "./VirtualCardChart";
 import DepositIcon from "@/assets/icons/deposit.svg";
@@ -30,7 +31,7 @@ ChartJS.register(
   Title,
   Tooltip,
   Legend,
-  Filler
+  Filler,
 );
 
 interface PerformanceCardProps {
@@ -38,14 +39,23 @@ interface PerformanceCardProps {
     overview?: {
       totalBalance: number;
       totalUsers: number;
+      virtualCardBalance: string;
+      totalCryptoBalance: string;
     };
     volumes?: {
       deposits: string;
       withdrawals: string;
+      bills: string;
+      giftcards: string;
     };
     charts?: {
       cryptoVolumeByMonth?: Array<{ month: string; value: string }>;
       cardsDistribution?: Array<{ count: number; percentage: string }>;
+      transactionsByType?: Array<{
+        type: string;
+        count: number;
+        percentage: string;
+      }>;
     };
   };
 }
@@ -56,14 +66,23 @@ export default function PerformanceCard({ data }: PerformanceCardProps) {
 
   const cryptoMonthlyData = charts?.cryptoVolumeByMonth || [];
   const labels = cryptoMonthlyData.map((d) => d.month);
-  const values = cryptoMonthlyData.map((d) => parseFloat(d.value || "0"));
+
+  const totalDeposits = parseFloat(volumes?.deposits || "0");
+  const totalWithdrawals = parseFloat(volumes?.withdrawals || "0");
+  const totalGiftcards = parseFloat(volumes?.giftcards || "0");
+
+  const monthCount = labels.length || 1;
+  const depositsPerMonth = labels.map(() => totalDeposits / monthCount);
+  const withdrawalsPerMonth = labels.map(() => totalWithdrawals / monthCount);
+  const giftcardsPerMonth = labels.map(() => totalGiftcards / monthCount);
+  const cryptoValues = cryptoMonthlyData.map((d) => parseFloat(d.value || "0"));
 
   const lineChartData = {
     labels,
     datasets: [
       {
         label: "Crypto Volume",
-        data: values,
+        data: cryptoValues,
         borderColor: "#1671D9",
         backgroundColor: "rgba(22, 113, 217, 0.1)",
         tension: 0.4,
@@ -74,23 +93,81 @@ export default function PerformanceCard({ data }: PerformanceCardProps) {
         pointRadius: 4,
         pointHoverRadius: 6,
       },
+      {
+        label: "Deposits",
+        data: depositsPerMonth,
+        borderColor: "#10B981",
+        backgroundColor: "rgba(16, 185, 129, 0.1)",
+        tension: 0.4,
+        fill: true,
+        pointBackgroundColor: "#10B981",
+        pointBorderColor: "#fff",
+        pointBorderWidth: 2,
+        pointRadius: 4,
+        pointHoverRadius: 6,
+      },
+      {
+        label: "Withdrawals",
+        data: withdrawalsPerMonth,
+        borderColor: "#EF4444",
+        backgroundColor: "rgba(239, 68, 68, 0.1)",
+        tension: 0.4,
+        fill: true,
+        pointBackgroundColor: "#EF4444",
+        pointBorderColor: "#fff",
+        pointBorderWidth: 2,
+        pointRadius: 4,
+        pointHoverRadius: 6,
+      },
+      {
+        label: "Giftcards",
+        data: giftcardsPerMonth,
+        borderColor: "#F59E0B",
+        backgroundColor: "rgba(245, 158, 11, 0.1)",
+        tension: 0.4,
+        fill: true,
+        pointBackgroundColor: "#F59E0B",
+        pointBorderColor: "#fff",
+        pointBorderWidth: 2,
+        pointRadius: 4,
+        pointHoverRadius: 6,
+      },
     ] as ChartDataset<"line", number[]>[],
   };
 
-  const options = {
+  const options: ChartOptions<"line"> = {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
       legend: {
         display: true,
-        position: "top" as const,
-        labels: { color: "#6B7280", boxWidth: 12, boxHeight: 12 },
+        position: "top",
+        labels: {
+          color: "#6B7280",
+          boxWidth: 12,
+          boxHeight: 12,
+          padding: 15,
+          font: {
+            size: 12,
+            weight: 500,
+          },
+        },
       },
       tooltip: {
         backgroundColor: "rgba(0,0,0,0.8)",
+        padding: 12,
+        titleFont: {
+          size: 13,
+          weight: "bold",
+        },
+        bodyFont: {
+          size: 12,
+          weight: "normal",
+        },
         callbacks: {
           label: function (context: any) {
-            return `${formatCurrency(context.parsed.y)}`;
+            const label = context.dataset.label || "";
+            return `${label}: ${formatCurrency(context.parsed.y)}`;
           },
         },
       },
@@ -98,13 +175,37 @@ export default function PerformanceCard({ data }: PerformanceCardProps) {
     scales: {
       x: {
         grid: { display: false },
-        ticks: { color: "#9CA3AF" },
+        ticks: {
+          color: "#9CA3AF",
+          font: {
+            size: 11,
+          },
+        },
       },
       y: {
         beginAtZero: true,
-        grid: { color: "#F3F4F6" },
-        ticks: { color: "#9CA3AF" },
+        grid: {
+          color: "#F3F4F6",
+        },
+        ticks: {
+          color: "#9CA3AF",
+          font: {
+            size: 11,
+          },
+          callback: function (value: any) {
+            if (value >= 1000000) {
+              return "₦" + (value / 1000000).toFixed(1) + "M";
+            } else if (value >= 1000) {
+              return "₦" + (value / 1000).toFixed(1) + "K";
+            }
+            return "₦" + value;
+          },
+        },
       },
+    },
+    interaction: {
+      mode: "index",
+      intersect: false,
     },
   };
 
@@ -167,15 +268,13 @@ export default function PerformanceCard({ data }: PerformanceCardProps) {
             </div>
           </div>
 
-          {values.length > 0 ? (
+          {labels.length > 0 ? (
             <div className="w-full h-80">
               <Line data={lineChartData} options={options} />
             </div>
           ) : (
             <div className="w-full h-80 flex items-center justify-center bg-gray-50 rounded">
-              <p className="text-sm text-gray-400">
-                No crypto volume data available
-              </p>
+              <p className="text-sm text-gray-400">No data available</p>
             </div>
           )}
         </div>

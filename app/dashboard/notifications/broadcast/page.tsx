@@ -13,7 +13,7 @@ export default async function BroadcastNotificationsPage({
   const params = await searchParams;
   const page = params?.page ? Number(params.page) : 1;
 
-  const res = await getBroadcastNotifications(page);
+  const res = await getBroadcastNotifications(page, 50);
 
   if (!res || res.error) {
     return (

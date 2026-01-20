@@ -13,7 +13,7 @@ export default async function ScheduledNotificationsPage({
   const params = await searchParams;
   const page = params?.page ? Number(params.page) : 1;
 
-  const res = await getScheduledNotifications(page);
+  const res = await getScheduledNotifications(page, 50);
 
   if (!res || res.error) {
     return (
