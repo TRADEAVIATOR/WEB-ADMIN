@@ -141,7 +141,7 @@ export default function DataTable<T extends RowData>({
     <div className="w-full max-w-full">
       <div className="block lg:hidden w-full overflow-x-auto border border-gray-100 rounded-lg">
         <div className="min-w-full inline-block align-middle">
-          <table className="min-w-full text-base bg-white">
+          <table className="min-w-full text-sm bg-white">
             <thead className="bg-[#F0F2F5] text-[#101928]">
               <tr>
                 <th className="py-3 px-4 text-left w-12 sticky left-0 bg-[#F0F2F5] z-20">
@@ -288,7 +288,7 @@ export default function DataTable<T extends RowData>({
 
       <div className="hidden lg:block w-full overflow-x-auto border border-gray-100 rounded-lg">
         <div className="min-w-full inline-block align-middle">
-          <table className="min-w-full text-base bg-white">
+          <table className="min-w-full text-sm bg-white">
             <thead className="bg-[#F0F2F5] text-[#101928]">
               <tr>
                 <th className="py-3 px-4 text-left w-12 sticky left-0 bg-[#F0F2F5] z-50">

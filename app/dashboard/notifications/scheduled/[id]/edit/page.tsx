@@ -1,4 +1,5 @@
 import EditScheduledNotificationClient from "./EditScheduledNotificationClient";
+import { getScheduledNotification } from "@/lib/api/notifications";
 
 export default async function EditScheduledNotificationPage({
   params,
@@ -6,5 +7,12 @@ export default async function EditScheduledNotificationPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  return <EditScheduledNotificationClient id={id} />;
+  const scheduledNotification = await getScheduledNotification(id);
+
+  return (
+    <EditScheduledNotificationClient
+      id={id}
+      scheduledNotification={scheduledNotification.data.data}
+    />
+  );
 }

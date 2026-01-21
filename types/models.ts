@@ -517,6 +517,7 @@ export interface SupportMessage {
   attachments: MessageAttachment[];
   isRead: boolean;
   createdAt: string;
+  updatedAt: string;
 }
 
 export interface SupportConversation {

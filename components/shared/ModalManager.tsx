@@ -18,6 +18,7 @@ import CreateTaglineModal from "../modals/CreateTaglineModal";
 import { ModalManagerProps } from "@/types/props";
 import DebitWalletModal from "../modals/DebitWalletModal";
 import CreditWalletModal from "../modals/CreditWalletModal";
+import BulkVoucherModal from "../modals/BulkVoucherModal";
 
 export default function ModalManager({
   modalData,
@@ -87,6 +88,9 @@ export default function ModalManager({
 
     case "debit-wallet":
       return <DebitWalletModal isOpen={true} onClose={onClose} />;
+
+    case "create-bulk-vouchers":
+      return <BulkVoucherModal isOpen={true} onClose={onClose} />;
 
     case "generic-filter":
       return (

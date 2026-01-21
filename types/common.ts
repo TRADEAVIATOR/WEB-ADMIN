@@ -17,6 +17,7 @@ export type ModalType =
   | "generic-filter"
   | "credit-wallet"
   | "debit-wallet"
+  | "create-bulk-vouchers"
   | null;
 
 export interface RowData {

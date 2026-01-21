@@ -15,13 +15,9 @@ export default function TransactionDetails({
 }) {
   const router = useRouter();
 
+  console.log(transaction);
+
   const amountNumber = Number(transaction.amount) || 0;
-  const createdAt = transaction.createdAt
-    ? new Date(transaction.createdAt).toLocaleString()
-    : "-";
-  const updatedAt = transaction.updatedAt
-    ? new Date(transaction.updatedAt).toLocaleString()
-    : "-";
 
   const user = transaction.user || { fullname: "-", email: "-", phone: "-" };
 
@@ -156,10 +152,15 @@ export default function TransactionDetails({
           )}
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-b border-gray-100 pb-4">
-            <DetailItem label="Created At" value={formatDateTime(createdAt)} />
+            <DetailItem
+              label="Created At"
+              value={formatDateTime(transaction.createdAt)}
+            />
             <DetailItem
               label="Completed At"
-              value={formatDateTime(updatedAt)}
+              value={formatDateTime(
+                transaction.updatedAt || transaction.createdAt,
+              )}
             />
           </div>
 

@@ -62,13 +62,16 @@ export default function ConversationClient({
   conversation,
 }: ConversationClientProps) {
   const [messages, setMessages] = useState<SupportMessage[]>(
-    conversation.messages
+    conversation.messages,
   );
   const [reply, setReply] = useState("");
   const [sending, setSending] = useState(false);
   const [showEmoji, setShowEmoji] = useState(false);
   const [attachments, setAttachments] = useState<ReplyAttachment[]>([]);
   const [userTyping, setUserTyping] = useState(false);
+  const [conversationStatus, setConversationStatus] = useState(
+    conversation.status,
+  );
   const [previewAttachment, setPreviewAttachment] = useState<{
     url: string;
     fileName: string;
@@ -78,6 +81,7 @@ export default function ConversationClient({
   const socketRef = useRef<Socket | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const userTypingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const { data: session, status } = useSession();
 
@@ -107,22 +111,94 @@ export default function ConversationClient({
     socket.on("connect", () => {
       console.log("✅ Socket connected:", socket.id);
 
-      socket.emit("support:join-conversation", {
-        conversationId: conversation.id,
-      });
+      socket.emit(
+        "support:join-conversation",
+        {
+          conversationId: conversation.id,
+        },
+        (response: any) => {
+          if (response?.success) {
+            console.log("✅ Joined conversation:", conversation.id);
+          }
+        },
+      );
     });
 
     socket.on("connect_error", (err) => {
       console.error("❌ Socket connect error:", err.message);
+      toast.error("Connection error. Retrying...");
     });
 
-    socket.on("support:new-message", (data: { message: SupportMessage }) => {
-      setMessages((prev) => [...prev, data.message]);
+    socket.on("disconnect", () => {
+      console.log("🔌 Socket disconnected");
+    });
+
+    socket.on(
+      "support:new-message",
+      (data: { conversationId: string; message: SupportMessage }) => {
+        if (data.conversationId === conversation.id) {
+          setMessages((prev) => {
+            const exists = prev.some((msg) => msg.id === data.message.id);
+            if (exists) return prev;
+            return [...prev, data.message];
+          });
+        }
+      },
+    );
+
+    socket.on("support:user-typing", (data: { isTyping: boolean }) => {
+      setUserTyping(data.isTyping);
+
+      if (data.isTyping) {
+        if (userTypingTimeoutRef.current) {
+          clearTimeout(userTypingTimeoutRef.current);
+        }
+        userTypingTimeoutRef.current = setTimeout(() => {
+          setUserTyping(false);
+        }, 3000);
+      }
+    });
+
+    socket.on(
+      "support:conversation-closed",
+      (data: { conversationId: string }) => {
+        if (data.conversationId === conversation.id) {
+          setConversationStatus("CLOSED");
+          toast.success("Conversation closed");
+        }
+      },
+    );
+
+    socket.on(
+      "support:conversation-opened",
+      (data: { conversationId: string }) => {
+        if (data.conversationId === conversation.id) {
+          setConversationStatus("OPEN");
+          toast.success("Conversation reopened");
+        }
+      },
+    );
+
+    socket.on("support:error", (error: { message: string; code?: string }) => {
+      console.error("Socket error:", error);
+      toast.error(error.message || "An error occurred");
     });
 
     return () => {
-      socket.disconnect();
-      socketRef.current = null;
+      if (socketRef.current) {
+        socketRef.current.emit("support:leave-conversation", {
+          conversationId: conversation.id,
+        });
+        socketRef.current.disconnect();
+        socketRef.current = null;
+      }
+
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current);
+      }
+      if (userTypingTimeoutRef.current) {
+        clearTimeout(userTypingTimeoutRef.current);
+      }
     };
   }, [status, session?.accessToken, conversation.id]);
 
@@ -137,35 +213,67 @@ export default function ConversationClient({
   const handleSend = async () => {
     if (!reply.trim() && attachments.length === 0) return;
 
+    const tempId = `temp-${Date.now()}`;
+    const optimisticMessage: SupportMessage = {
+      id: tempId,
+      conversationId: conversation.id,
+      senderId: session?.user?.id || "",
+      senderType: "ADMIN",
+      message: reply,
+      attachments: [],
+      isRead: false,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    setMessages((prev) => [...prev, optimisticMessage]);
+    const messageText = reply;
+    const messageAttachments = [...attachments];
+
+    setReply("");
+    setAttachments([]);
     setSending(true);
-    const toastId = toast.loading("Sending reply...");
 
     try {
       const formData = new FormData();
-      formData.append("message", reply);
+      formData.append("message", messageText);
 
-      attachments.forEach((file) => {
+      messageAttachments.forEach((file) => {
         formData.append("images", file.file, file.fileName);
       });
 
       await sendAdminReply(conversation.id, formData);
 
-      setReply("");
-      setAttachments([]);
-      toast.success("Reply sent!", { id: toastId });
-    } catch {
-      toast.error("Failed to send reply", { id: toastId });
+      toast.success("Reply sent!");
+    } catch (error) {
+      setMessages((prev) => prev.filter((msg) => msg.id !== tempId));
+      setReply(messageText);
+      setAttachments(messageAttachments);
+      toast.error("Failed to send reply");
     } finally {
       setSending(false);
     }
   };
 
   const handleStatusChange = async (value: string) => {
+    const previousStatus = conversationStatus;
+    type ConversationStatus = "OPEN" | "CLOSED";
+
+    setConversationStatus(value as ConversationStatus);
+
     const toastId = toast.loading("Updating status...");
     try {
       await updateConversation(conversation.id, { status: value });
+
+      if (value === "CLOSED") {
+        socketRef.current?.emit("status-closed", {
+          conversationId: conversation.id,
+        });
+      }
+
       toast.success("Status updated", { id: toastId });
-    } catch {
+    } catch (error) {
+      setConversationStatus(previousStatus);
       toast.error("Failed to update status", { id: toastId });
     }
   };
@@ -266,7 +374,7 @@ export default function ConversationClient({
         <div className="flex items-center gap-2">
           <span className="text-sm text-gray-500">Status</span>
           <select
-            defaultValue={conversation.status}
+            value={conversationStatus}
             onChange={(e) => handleStatusChange(e.target.value)}
             className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-primary">
             <option value="OPEN">Open</option>
@@ -283,7 +391,7 @@ export default function ConversationClient({
               msg.senderType === "ADMIN"
                 ? "ml-auto bg-[#fe9b63] text-white"
                 : "bg-[#2a2f3d] text-white"
-            }`}>
+            } ${msg.id.startsWith("temp-") ? "opacity-70" : ""}`}>
             <p className="whitespace-pre-wrap">{msg.message}</p>
 
             {msg.attachments.length > 0 && (

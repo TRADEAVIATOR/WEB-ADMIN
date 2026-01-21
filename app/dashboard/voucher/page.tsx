@@ -36,6 +36,8 @@ export default async function VoucherPage({
       <PageHeader
         title="Vouchers"
         description="View all vouchers and their status"
+        buttonText="Create Bulk Vouchers"
+        modalTypeToOpen={"create-bulk-vouchers"}
       />
       <DataTableClient
         initialData={payload}

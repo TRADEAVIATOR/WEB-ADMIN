@@ -45,7 +45,7 @@ export default function Badge({
       className={clsx(
         "inline-flex items-center gap-1 px-2 py-1 text-xs font-semibold rounded-full",
         colorClasses[color],
-        className
+        className,
       )}>
       {icon && <span className="flex-shrink-0">{icon}</span>}
       {text}

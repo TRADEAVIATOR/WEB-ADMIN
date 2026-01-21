@@ -12,14 +12,16 @@ import toast from "react-hot-toast";
 
 export default function EditScheduledNotificationClient({
   id,
+  scheduledNotification,
 }: {
   id: string;
+  scheduledNotification: any;
 }) {
   const router = useRouter();
 
   const handleEditSchedule = async (
     id: string,
-    values: ScheduledNotificationPayload
+    values: ScheduledNotificationPayload,
   ) => {
     const toastId = toast.loading("Updating scheduled notification...");
 
@@ -27,12 +29,14 @@ export default function EditScheduledNotificationClient({
       const res = await updateScheduledNotification(id, values);
       toast.success(
         res?.message || "Scheduled notification updated successfully!",
-        {
-          id: toastId,
-        }
+        { id: toastId },
       );
       router.push("/dashboard/notifications/scheduled");
     } catch (error: any) {
+      toast.error(
+        error?.response?.data?.message || "Failed to schedule notification",
+        { id: toastId },
+      );
       handleApiError(error);
     }
   };
@@ -55,6 +59,7 @@ export default function EditScheduledNotificationClient({
         </div>
 
         <ScheduledNotificationForm
+          initialData={scheduledNotification}
           onSubmit={(data) => handleEditSchedule(id, data)}
         />
       </div>

@@ -14,6 +14,13 @@ export const getScheduledNotifications = async (page = 1, limit = 10) => {
   );
 };
 
+export const getScheduledNotification = async (id: string) => {
+  const api = await getServerApi();
+  return tryServer(
+    api.get(`/admin/notifications/scheduled/${id}`).then((res) => res.data),
+  );
+};
+
 export const getNotificationTemplates = async (page = 1, limit = 10) => {
   const api = await getServerApi();
   return tryServer(
