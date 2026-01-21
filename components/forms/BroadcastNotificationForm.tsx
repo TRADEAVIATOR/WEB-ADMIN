@@ -4,17 +4,33 @@ import { useState, useRef, useEffect } from "react";
 import FormField from "@/components/ui/FormField";
 import { NotificationPriority, NotificationType } from "@/types/enums";
 import Button from "@/components/ui/Button";
-import SelectField from "../ui/SelectField";
+import SelectField, { SelectOption } from "../ui/SelectField";
 import EmojiPicker from "emoji-picker-react";
 import { Smile } from "lucide-react";
+import { handleApiError } from "@/lib/utils/errorHandler";
+import { getNotificationTemplatesClient } from "@/lib/api/notifications";
+
+interface NotificationTemplate {
+  id: string;
+  name: string;
+  title: string;
+  message: string;
+  type: string;
+  priority: string;
+  variables: string[];
+}
 
 interface BroadcastNotificationFormData {
   notificationType: string;
   priority: string;
-  title: string;
-  message: string;
+  title?: string;
+
+  message?: string;
+
   metadata?: Record<string, any>;
   deliveryChannels: string[];
+  templateId?: string;
+  templateVariables?: Record<string, string>;
   filters?: {
     tier?: string[];
     isActive?: boolean;
@@ -35,12 +51,24 @@ export default function BroadcastNotificationForm({
   initialData,
   isEdit = false,
 }: BroadcastNotificationFormProps) {
+  const [useTemplate, setUseTemplate] = useState(
+    Boolean(initialData?.templateId),
+  );
+  const [templates, setTemplates] = useState<NotificationTemplate[]>([]);
+  const [selectedTemplate, setSelectedTemplate] =
+    useState<NotificationTemplate | null>(null);
+  const [templateVariables, setTemplateVariables] = useState<
+    Record<string, string>
+  >(initialData?.templateVariables || {});
+  const [loadingTemplates, setLoadingTemplates] = useState(false);
+
   const [formData, setFormData] = useState<BroadcastNotificationFormData>({
     notificationType: initialData?.notificationType || "",
     priority: initialData?.priority || "",
     title: initialData?.title || "",
     message: initialData?.message || "",
     deliveryChannels: initialData?.deliveryChannels || [],
+    templateId: initialData?.templateId || "",
     filters: {
       tier: initialData?.filters?.tier || [],
       isActive: initialData?.filters?.isActive,
@@ -56,6 +84,12 @@ export default function BroadcastNotificationForm({
   const emojiPickerRef = useRef<HTMLDivElement>(null);
   const titleInputRef = useRef<HTMLInputElement>(null);
   const messageInputRef = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    if (useTemplate) {
+      fetchTemplates();
+    }
+  }, [useTemplate]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -76,42 +110,90 @@ export default function BroadcastNotificationForm({
     };
   }, [showEmojiPicker]);
 
+  const fetchTemplates = async () => {
+    setLoadingTemplates(true);
+    try {
+      const response = await getNotificationTemplatesClient(1, 100);
+      setTemplates(response.data || []);
+    } catch (err) {
+      handleApiError(err);
+    } finally {
+      setLoadingTemplates(false);
+    }
+  };
+
+  const handleTemplateSelect = (option: SelectOption | null) => {
+    if (!option) {
+      setSelectedTemplate(null);
+      setTemplateVariables({});
+      setFormData({ ...formData, templateId: "" });
+      return;
+    }
+
+    const template = templates.find((t) => t.id === option.value);
+    if (template) {
+      setSelectedTemplate(template);
+      setFormData({
+        ...formData,
+        templateId: template.id,
+        notificationType: template.type,
+        priority: template.priority,
+      });
+
+      const initialVars: Record<string, string> = {};
+      template.variables.forEach((varName) => {
+        initialVars[varName] = "";
+      });
+      setTemplateVariables(initialVars);
+    }
+  };
+
+  const handleVariableChange = (varName: string, value: string) => {
+    setTemplateVariables((prev) => ({
+      ...prev,
+      [varName]: value,
+    }));
+  };
+
   const handleEmojiClick = (emoji: any) => {
     if (showEmojiPicker === "title") {
       const input = titleInputRef.current;
       if (input) {
-        const cursorPos = input.selectionStart || formData.title.length;
+        const title = formData.title || "";
+        const cursorPos = input.selectionStart ?? title.length;
         const newTitle =
-          formData.title.slice(0, cursorPos) +
-          emoji.emoji +
-          formData.title.slice(cursorPos);
+          title.slice(0, cursorPos) + emoji.emoji + title.slice(cursorPos);
+
         setFormData({ ...formData, title: newTitle });
+
         setTimeout(() => {
           input.focus();
           input.setSelectionRange(
             cursorPos + emoji.emoji.length,
-            cursorPos + emoji.emoji.length
+            cursorPos + emoji.emoji.length,
           );
         }, 0);
       }
     } else if (showEmojiPicker === "message") {
       const textarea = messageInputRef.current;
       if (textarea) {
-        const cursorPos = textarea.selectionStart || formData.message.length;
+        const message = formData.message || "";
+        const cursorPos = textarea.selectionStart ?? message.length;
         const newMessage =
-          formData.message.slice(0, cursorPos) +
-          emoji.emoji +
-          formData.message.slice(cursorPos);
+          message.slice(0, cursorPos) + emoji.emoji + message.slice(cursorPos);
+
         setFormData({ ...formData, message: newMessage });
+
         setTimeout(() => {
           textarea.focus();
           textarea.setSelectionRange(
             cursorPos + emoji.emoji.length,
-            cursorPos + emoji.emoji.length
+            cursorPos + emoji.emoji.length,
           );
         }, 0);
       }
     }
+
     setShowEmojiPicker(null);
   };
 
@@ -123,10 +205,18 @@ export default function BroadcastNotificationForm({
       const payload: BroadcastNotificationFormData = {
         notificationType: formData.notificationType,
         priority: formData.priority,
-        title: formData.title,
-        message: formData.message,
         deliveryChannels: formData.deliveryChannels,
       };
+
+      if (useTemplate) {
+        payload.templateId = formData.templateId;
+        if (Object.keys(templateVariables).length > 0) {
+          payload.templateVariables = templateVariables;
+        }
+      } else {
+        payload.title = formData.title;
+        payload.message = formData.message;
+      }
 
       const hasFilters =
         (formData.filters?.tier && formData.filters.tier.length > 0) ||
@@ -190,70 +280,146 @@ export default function BroadcastNotificationForm({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="relative">
-        <FormField
-          label="Title"
-          name="title"
-          value={formData.title}
-          ref={titleInputRef}
-          onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-          placeholder="Enter broadcast title"
-          className="rounded-full bg-[#F5F5F5] py-3 px-4 pr-12 text-base"
-          required
+      <div className="flex items-center gap-2 bg-gray-50 p-3 rounded-lg">
+        <input
+          type="checkbox"
+          checked={useTemplate}
+          onChange={(e) => setUseTemplate(e.target.checked)}
+          className="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary"
         />
-        <button
-          type="button"
-          onClick={() =>
-            setShowEmojiPicker(showEmojiPicker === "title" ? null : "title")
-          }
-          className="absolute right-4 top-9 p-1.5 rounded-lg hover:bg-gray-200 transition-colors text-gray-500 hover:text-gray-700">
-          <Smile size={18} />
-        </button>
-        {showEmojiPicker === "title" && (
-          <div
-            ref={emojiPickerRef}
-            className="absolute right-0 top-full mt-2 z-50 shadow-xl">
-            <EmojiPicker onEmojiClick={handleEmojiClick} />
-          </div>
-        )}
+        <span className="text-sm font-medium text-gray-700">Use Template</span>
       </div>
 
-      <div className="relative">
-        <label className="block text-sm font-medium text-gray-700 mb-1.5">
-          Message <span className="text-red-500">*</span>
-        </label>
-        <div className="relative">
-          <textarea
-            ref={messageInputRef}
-            name="message"
-            value={formData.message}
-            onChange={(e) =>
-              setFormData({ ...formData, message: e.target.value })
+      {useTemplate ? (
+        <>
+          <SelectField
+            id="template-select"
+            label="Select Template"
+            value={
+              selectedTemplate
+                ? {
+                    label: selectedTemplate.name,
+                    value: selectedTemplate.id,
+                  }
+                : null
             }
-            placeholder="Enter broadcast message"
-            className="w-full rounded-2xl bg-[#F5F5F5] py-3 px-4 pr-12 text-base focus:outline-none focus:ring-2 focus:ring-primary resize-none"
-            rows={4}
+            onChange={handleTemplateSelect}
+            options={templates.map((template) => ({
+              label: template.name,
+              value: template.id,
+            }))}
+            isLoading={loadingTemplates}
             required
           />
-          <button
-            type="button"
-            onClick={() =>
-              setShowEmojiPicker(
-                showEmojiPicker === "message" ? null : "message"
-              )
-            }
-            className="absolute right-4 top-3 p-1.5 rounded-lg hover:bg-gray-200 transition-colors text-gray-500 hover:text-gray-700">
-            <Smile size={18} />
-          </button>
-        </div>
-        {showEmojiPicker === "message" && (
-          <div
-            ref={emojiPickerRef}
-            className="absolute right-0 top-full mt-2 z-50 shadow-xl">
-            <EmojiPicker onEmojiClick={handleEmojiClick} />
+
+          {selectedTemplate && (
+            <div className="space-y-3 p-4 bg-gray-50 rounded-lg">
+              <div>
+                <p className="text-sm font-medium text-gray-700">
+                  Template Preview
+                </p>
+                <p className="text-xs text-gray-500 mt-1">
+                  <strong>Title:</strong> {selectedTemplate.title}
+                </p>
+                <p className="text-xs text-gray-500 mt-1">
+                  <strong>Message:</strong> {selectedTemplate.message}
+                </p>
+              </div>
+
+              {selectedTemplate.variables.length > 0 && (
+                <div className="space-y-3 pt-3 border-t border-gray-200">
+                  <p className="text-sm font-medium text-gray-700">
+                    Template Variables
+                  </p>
+                  {selectedTemplate.variables.map((varName) => (
+                    <FormField
+                      key={varName}
+                      label={varName
+                        .replace(/([A-Z])/g, " $1")
+                        .replace(/^./, (str) => str.toUpperCase())}
+                      value={templateVariables[varName] || ""}
+                      onChange={(e) =>
+                        handleVariableChange(varName, e.target.value)
+                      }
+                      placeholder={`Enter ${varName}`}
+                      required
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+        </>
+      ) : (
+        <>
+          <div className="relative">
+            <FormField
+              label="Title"
+              name="title"
+              value={formData.title}
+              ref={titleInputRef}
+              onChange={(e) =>
+                setFormData({ ...formData, title: e.target.value })
+              }
+              placeholder="Enter broadcast title"
+              className="rounded-full bg-[#F5F5F5] py-3 px-4 pr-12 text-base"
+              required
+            />
+            <button
+              type="button"
+              onClick={() =>
+                setShowEmojiPicker(showEmojiPicker === "title" ? null : "title")
+              }
+              className="absolute right-4 top-9 p-1.5 rounded-lg hover:bg-gray-200 transition-colors text-gray-500 hover:text-gray-700">
+              <Smile size={18} />
+            </button>
+            {showEmojiPicker === "title" && (
+              <div
+                ref={emojiPickerRef}
+                className="absolute right-0 top-full mt-2 z-50 shadow-xl">
+                <EmojiPicker onEmojiClick={handleEmojiClick} />
+              </div>
+            )}
           </div>
-        )}
-      </div>
+
+          <div className="relative">
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">
+              Message <span className="text-red-500">*</span>
+            </label>
+            <div className="relative">
+              <textarea
+                ref={messageInputRef}
+                name="message"
+                value={formData.message}
+                onChange={(e) =>
+                  setFormData({ ...formData, message: e.target.value })
+                }
+                placeholder="Enter broadcast message"
+                className="w-full rounded-2xl bg-[#F5F5F5] py-3 px-4 pr-12 text-base focus:outline-none focus:ring-2 focus:ring-primary resize-none"
+                rows={4}
+                required
+              />
+              <button
+                type="button"
+                onClick={() =>
+                  setShowEmojiPicker(
+                    showEmojiPicker === "message" ? null : "message",
+                  )
+                }
+                className="absolute right-4 top-3 p-1.5 rounded-lg hover:bg-gray-200 transition-colors text-gray-500 hover:text-gray-700">
+                <Smile size={18} />
+              </button>
+            </div>
+            {showEmojiPicker === "message" && (
+              <div
+                ref={emojiPickerRef}
+                className="absolute right-0 top-full mt-2 z-50 shadow-xl">
+                <EmojiPicker onEmojiClick={handleEmojiClick} />
+              </div>
+            )}
+          </div>
+        </>
+      )}
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <SelectField
@@ -275,6 +441,7 @@ export default function BroadcastNotificationForm({
             value: type,
           }))}
           required
+          disabled={useTemplate && selectedTemplate !== null}
         />
 
         <SelectField
@@ -293,6 +460,7 @@ export default function BroadcastNotificationForm({
             value: priority,
           }))}
           required
+          disabled={useTemplate && selectedTemplate !== null}
         />
       </div>
 
@@ -358,8 +526,8 @@ export default function BroadcastNotificationForm({
                   formData.filters?.isActive === undefined
                     ? "All users"
                     : formData.filters.isActive
-                    ? "Active only"
-                    : "Inactive only",
+                      ? "Active only"
+                      : "Inactive only",
                 value:
                   formData.filters?.isActive === undefined
                     ? ""
@@ -393,8 +561,8 @@ export default function BroadcastNotificationForm({
                   formData.filters?.isVerified === undefined
                     ? "All users"
                     : formData.filters.isVerified
-                    ? "Verified only"
-                    : "Unverified only",
+                      ? "Verified only"
+                      : "Unverified only",
                 value:
                   formData.filters?.isVerified === undefined
                     ? ""
@@ -473,8 +641,8 @@ export default function BroadcastNotificationForm({
           {isLoading
             ? "Sending..."
             : isEdit
-            ? "Update Broadcast"
-            : "Send Broadcast"}
+              ? "Update Broadcast"
+              : "Send Broadcast"}
         </Button>
       </div>
     </form>

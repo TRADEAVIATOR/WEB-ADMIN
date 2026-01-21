@@ -23,6 +23,7 @@ export default function SendNotificationClient() {
 
       router.push("/dashboard/notifications/user-specific");
     } catch (error: any) {
+      toast.error(error?.response?.data?.message, { id: toastId });
       handleApiError(error);
     }
   };

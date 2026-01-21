@@ -55,8 +55,8 @@ export interface SendNotificationPayload {
 export type BroadcastNotificationPayload = {
   notificationType: string;
   priority: string;
-  title: string;
-  message: string;
+  title?: string;
+  message?: string;
   metadata?: Record<string, any>;
   deliveryChannels: string[];
   filters?: {

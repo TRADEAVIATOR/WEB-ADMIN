@@ -1,7 +1,9 @@
 "use client";
 
+import Badge from "@/components/ui/Badge";
 import ResultState from "@/components/ui/ResultState";
 import DataTable from "@/components/ui/Table";
+import { formatCurrency } from "@/lib/utils/format";
 import { Customer } from "@/types/models";
 
 export default function TransactionsTab({ customer }: { customer: Customer }) {
@@ -22,10 +24,10 @@ export default function TransactionsTab({ customer }: { customer: Customer }) {
   const data =
     customer.transactions?.map((tx) => ({
       id: tx.id,
-      type: tx.type,
-      category: tx.category,
-      amount: `$${Number(tx.amount).toLocaleString()}`,
-      status: tx.status.charAt(0) + tx.status.slice(1).toLowerCase(),
+      type: <Badge text={tx.type} color="teal" />,
+      category: <Badge text={tx.category} color="blue" />,
+      amount: formatCurrency(tx.amount || 0),
+      status: <Badge text={tx.status} color="green" />,
       method: tx.channel,
       timeframe: new Date(tx.createdAt).toLocaleString("en-US", {
         month: "short",

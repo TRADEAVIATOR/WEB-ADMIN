@@ -10,8 +10,8 @@ import toast from "react-hot-toast";
 interface BroadcastNotificationPayload {
   notificationType: string;
   priority: string;
-  title: string;
-  message: string;
+  title?: string;
+  message?: string;
   metadata?: Record<string, any>;
   deliveryChannels: string[];
   filters?: {
@@ -26,7 +26,7 @@ interface BroadcastNotificationPayload {
 export default function BroadcastNotificationClient() {
   const router = useRouter();
   const handleBroadcastNotification = async (
-    values: BroadcastNotificationPayload
+    values: BroadcastNotificationPayload,
   ) => {
     const toastId = toast.loading("Sending broadcast notification...");
 
@@ -37,7 +37,7 @@ export default function BroadcastNotificationClient() {
         res?.message || "Broadcast notification sent successfully!",
         {
           id: toastId,
-        }
+        },
       );
 
       router.push("/dashboard/notifications/broadcast");
@@ -45,7 +45,7 @@ export default function BroadcastNotificationClient() {
       toast.error(
         error?.response?.data?.message ||
           "Failed to send broadcast notification",
-        { id: toastId }
+        { id: toastId },
       );
       handleApiError(error);
     }

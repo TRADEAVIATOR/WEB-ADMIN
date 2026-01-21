@@ -4,7 +4,7 @@ import PersonalDetailsTab from "./components/PersonalDetailsTab";
 import BankingDetailsTab from "./components/BankingDetailsTab";
 import TransactionsTab from "./components/TransactionsTab";
 import StatisticsTab from "./components/StatisticsTab";
-import { getCustomer } from "@/lib/api/customers";
+import { getCustomer, getCustomerStats } from "@/lib/api/customers";
 import ResultState from "@/components/ui/ResultState";
 
 export const dynamic = "force-dynamic";
@@ -34,6 +34,9 @@ export default async function UserDetailsPage({
     return <ResultState type="empty" message="Customer not found." />;
   }
 
+  const statsRes = await getCustomerStats(customer.id);
+  const customerStats = statsRes.error ? null : statsRes.data.data;
+
   const tabs = [
     {
       key: "personal",
@@ -53,7 +56,7 @@ export default async function UserDetailsPage({
     {
       key: "statistics",
       label: "Statistics",
-      content: <StatisticsTab customerId={customer.id} />,
+      content: <StatisticsTab customerStats={customerStats} />,
     },
   ];
 

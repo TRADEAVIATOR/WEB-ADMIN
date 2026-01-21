@@ -27,7 +27,7 @@ export default function ScheduledNotificationClient() {
     } catch (error: any) {
       toast.error(
         error?.response?.data?.message || "Failed to schedule notification",
-        { id: toastId }
+        { id: toastId },
       );
       handleApiError(error);
     }

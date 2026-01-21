@@ -10,7 +10,7 @@ export const getScheduledNotifications = async (page = 1, limit = 10) => {
   return tryServer(
     api
       .get(`/admin/notifications/scheduled?page=${page}&limit=${limit}`)
-      .then((r) => r.data)
+      .then((r) => r.data),
   );
 };
 
@@ -19,7 +19,7 @@ export const getNotificationTemplates = async (page = 1, limit = 10) => {
   return tryServer(
     api
       .get(`/admin/notifications/templates?page=${page}&limit=${limit}`)
-      .then((r) => r.data)
+      .then((r) => r.data),
   );
 };
 
@@ -32,7 +32,7 @@ export const getNotificationTemplatesClient = async (page = 1, limit = 10) => {
 export const getNotificationTemplate = async (id: string) => {
   const api = await getServerApi();
   return tryServer(
-    api.get(`/admin/notifications/templates/${id}`).then((r) => r.data)
+    api.get(`/admin/notifications/templates/${id}`).then((r) => r.data),
   );
 };
 
@@ -41,7 +41,7 @@ export const getBroadcastNotifications = async (page = 1, limit = 10) => {
   return tryServer(
     api
       .get(`/admin/notifications/broadcasts?page=${page}&limit=${limit}`)
-      .then((r) => r.data)
+      .then((r) => r.data),
   );
 };
 
@@ -61,7 +61,7 @@ export type NotificationTemplatePayload = {
 };
 
 export const createNotificationTemplate = async (
-  payload: NotificationTemplatePayload
+  payload: NotificationTemplatePayload,
 ) => {
   const res = await clientApi.post("/admin/notifications/templates", payload);
   return res.data;
@@ -69,11 +69,11 @@ export const createNotificationTemplate = async (
 
 export const updateNotificationTemplate = async (
   id: string,
-  payload: NotificationTemplatePayload
+  payload: NotificationTemplatePayload,
 ) => {
   const res = await clientApi.patch(
     `/admin/notifications/templates/${id}`,
-    payload
+    payload,
   );
   return res.data;
 };
@@ -92,7 +92,7 @@ export interface ScheduledNotificationPayload {
 }
 
 export const createScheduledNotification = async (
-  payload: ScheduledNotificationPayload
+  payload: ScheduledNotificationPayload,
 ) => {
   const res = await clientApi.post("/admin/notifications/scheduled", payload);
   return res.data;
@@ -100,18 +100,18 @@ export const createScheduledNotification = async (
 
 export const updateScheduledNotification = async (
   id: string,
-  payload: ScheduledNotificationPayload
+  payload: ScheduledNotificationPayload,
 ) => {
   const res = await clientApi.patch(
     `/admin/notifications/scheduled/${id}`,
-    payload
+    payload,
   );
   return res.data;
 };
 
 export const cancelScheduledNotification = async (id: string) => {
   const res = await clientApi.post(
-    `/admin/notifications/scheduled/${id}/cancel`
+    `/admin/notifications/scheduled/${id}/cancel`,
   );
   return res.data;
 };
@@ -119,7 +119,7 @@ export const cancelScheduledNotification = async (id: string) => {
 export const getRecurringPatterns = async () => {
   const api = await getServerApi();
   return tryServer(
-    api.get("/admin/notifications/recurring-patterns").then((res) => res.data)
+    api.get("/admin/notifications/recurring-patterns").then((res) => res.data),
   );
 };
 
@@ -128,7 +128,7 @@ export const getNotifications = async (page = 1, limit = 20) => {
   return tryServer(
     api
       .get(`/admin/notifications?page=${page}&limit=${limit}`)
-      .then((r) => r.data)
+      .then((r) => r.data),
   );
 };
 
@@ -138,7 +138,7 @@ export const sendNotification = async (payload: SendNotificationPayload) => {
 };
 
 export const createBroadcastNotification = async (
-  payload: BroadcastNotificationPayload
+  payload: BroadcastNotificationPayload,
 ) => {
   const res = await clientApi.post("/admin/notifications/broadcast", payload);
   return res.data;
@@ -149,7 +149,7 @@ export const getAllAdminNotifications = async (page = 1, limit = 20) => {
   return tryServer(
     api
       .get(`/admin/notifications/admin?page=${page}&limit=${limit}`)
-      .then((r) => r.data)
+      .then((r) => r.data),
   );
 };
 
@@ -184,13 +184,13 @@ export const getUserSpecificNotifications = async (page = 1, limit = 50) => {
   return tryServer(
     api
       .get(`/admin/notifications/user-specific?page=${page}&limit=${limit}`)
-      .then((r) => r.data)
+      .then((r) => r.data),
   );
 };
 
 export const getNotificationAnalytics = async () => {
   const api = await getServerApi();
   return tryServer(
-    api.get("/admin/notifications/analytics").then((res) => res.data.data)
+    api.get("/admin/notifications/analytics").then((res) => res.data.data),
   );
 };

@@ -4,13 +4,13 @@ import { tryServer } from "../utils/errorHandler";
 export const getCustomers = async (page = 1, limit = 10) => {
   const api = await getServerApi();
   return tryServer(
-    api.get(`/admin/customers?page=${page}&limit=${limit}`).then((r) => r.data)
+    api.get(`/admin/customers?page=${page}&limit=${limit}`).then((r) => r.data),
   );
 };
 
 export const getCustomersClient = async (page = 1, limit = 10) => {
   const res = await clientApi.get(
-    `/admin/customers?page=${page}&limit=${limit}`
+    `/admin/customers?page=${page}&limit=${limit}`,
   );
   return res.data;
 };
@@ -23,4 +23,11 @@ export const getCustomer = async (id: string) => {
 export const toggleCustomerStatusClient = async (id: string) => {
   const res = await clientApi.patch(`/admin/customers/${id}/toggle-status`);
   return res.data;
+};
+
+export const getCustomerStats = async (customerId: string) => {
+  const api = await getServerApi();
+  return tryServer(
+    api.get(`/admin/customers/${customerId}/stats`).then((r) => r.data),
+  );
 };

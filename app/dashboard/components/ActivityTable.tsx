@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useModal } from "@/context/ModalContext";
 import { formatCurrency } from "@/lib/utils/format";
 import { RecentActivitiesProps } from "@/types/props";
@@ -32,11 +33,11 @@ export default function RecentActivities({
       )}>
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-semibold text-secondary">{title}</h2>
-        <button
-          className="text-sm text-primary hover:underline"
-          onClick={() => setShowAll(!showAll)}>
-          {showAll ? "Show Less" : "See All"}
-        </button>
+        <Link
+          href="/dashboard/transactions"
+          className="text-sm text-primary hover:underline">
+          View All
+        </Link>
       </div>
 
       <div className="flex flex-col divide-y divide-gray-200">

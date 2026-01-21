@@ -54,10 +54,10 @@ export default function ScheduledNotificationForm({
 }: ScheduledNotificationFormProps) {
   const [multiUsers, setMultiUsers] = useState<SelectOption[]>([]);
   const [sendToAllUsers, setSendToAllUsers] = useState(
-    !initialData?.targetUserIds || initialData.targetUserIds.length === 0
+    !initialData?.targetUserIds || initialData.targetUserIds.length === 0,
   );
   const [useTemplate, setUseTemplate] = useState(
-    Boolean(initialData?.templateId)
+    Boolean(initialData?.templateId),
   );
   const [templates, setTemplates] = useState<NotificationTemplate[]>([]);
   const [selectedTemplate, setSelectedTemplate] =
@@ -185,7 +185,7 @@ export default function ScheduledNotificationForm({
           input.focus();
           input.setSelectionRange(
             cursorPos + emoji.emoji.length,
-            cursorPos + emoji.emoji.length
+            cursorPos + emoji.emoji.length,
           );
         }, 0);
       }
@@ -202,7 +202,7 @@ export default function ScheduledNotificationForm({
           textarea.focus();
           textarea.setSelectionRange(
             cursorPos + emoji.emoji.length,
-            cursorPos + emoji.emoji.length
+            cursorPos + emoji.emoji.length,
           );
         }, 0);
       }
@@ -225,7 +225,7 @@ export default function ScheduledNotificationForm({
 
     try {
       const scheduledDate = new Date(
-        `${formData.scheduledFor}T${formData.time}`
+        `${formData.scheduledFor}T${formData.time}`,
       ).toISOString();
 
       const payload: any = {
@@ -383,7 +383,7 @@ export default function ScheduledNotificationForm({
                 type="button"
                 onClick={() =>
                   setShowEmojiPicker(
-                    showEmojiPicker === "message" ? null : "message"
+                    showEmojiPicker === "message" ? null : "message",
                   )
                 }
                 className="absolute right-3 top-3 p-1.5 rounded-lg hover:bg-gray-100 transition-colors text-gray-500 hover:text-gray-700">

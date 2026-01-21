@@ -130,11 +130,18 @@ export default function DataTable<T extends RowData>({
     setMenuPosition(null);
   };
 
+  const getRowBackgroundClass = (idx: number) => {
+    if (isRowSelected(idx)) return "bg-[#FFF5EE]";
+    return idx % 2 === 0
+      ? "bg-white hover:bg-gray-50"
+      : "bg-[#F9FAFB] hover:bg-gray-100";
+  };
+
   return (
     <div className="w-full max-w-full">
       <div className="block lg:hidden w-full overflow-x-auto border border-gray-100 rounded-lg">
         <div className="min-w-full inline-block align-middle">
-          <table className="min-w-full text-sm bg-white">
+          <table className="min-w-full text-base bg-white">
             <thead className="bg-[#F0F2F5] text-[#101928]">
               <tr>
                 <th className="py-3 px-4 text-left w-12 sticky left-0 bg-[#F0F2F5] z-20">
@@ -167,7 +174,7 @@ export default function DataTable<T extends RowData>({
                 <tr>
                   <td
                     colSpan={columns.length + (hasActions ? 2 : 1)}
-                    className="text-center text-gray-500 py-6 text-sm">
+                    className="text-center text-gray-500 py-6 text-base">
                     No records found.
                   </td>
                 </tr>
@@ -176,9 +183,7 @@ export default function DataTable<T extends RowData>({
                   <tr
                     key={idx}
                     onClick={() => handleRowClick(row)}
-                    className={`border-b border-gray-100 last:border-b-0 transition-colors cursor-pointer ${
-                      isRowSelected(idx) ? "bg-[#FFF5EE]" : "hover:bg-gray-50"
-                    }`}>
+                    className={`border-b border-gray-100 last:border-b-0 transition-colors cursor-pointer ${getRowBackgroundClass(idx)}`}>
                     <td
                       className="py-3 px-4 sticky left-0 bg-inherit z-10"
                       onClick={(e) => e.stopPropagation()}>
@@ -239,7 +244,7 @@ export default function DataTable<T extends RowData>({
               right: `${menuPosition.right}px`,
             }}
             onClick={(e) => e.stopPropagation()}>
-            <ul className="py-2 text-sm text-gray-700">
+            <ul className="py-2 text-base text-gray-700">
               {menuItems.map((item, i) => {
                 const baseClasses = `block px-4 py-3 active:bg-gray-100 cursor-pointer transition-colors touch-manipulation ${
                   item.color || "text-gray-700"
@@ -283,7 +288,7 @@ export default function DataTable<T extends RowData>({
 
       <div className="hidden lg:block w-full overflow-x-auto border border-gray-100 rounded-lg">
         <div className="min-w-full inline-block align-middle">
-          <table className="min-w-full text-sm bg-white">
+          <table className="min-w-full text-base bg-white">
             <thead className="bg-[#F0F2F5] text-[#101928]">
               <tr>
                 <th className="py-3 px-4 text-left w-12 sticky left-0 bg-[#F0F2F5] z-50">
@@ -316,9 +321,7 @@ export default function DataTable<T extends RowData>({
                 <tr
                   key={idx}
                   onClick={() => handleRowClick(row)}
-                  className={`border-b border-gray-100 last:border-b-0 transition-colors cursor-pointer ${
-                    isRowSelected(idx) ? "bg-[#FFF5EE]" : "hover:bg-gray-50"
-                  }`}>
+                  className={`border-b border-gray-100 last:border-b-0 transition-colors cursor-pointer ${getRowBackgroundClass(idx)}`}>
                   <td
                     className="py-3 px-4 sticky left-0 bg-inherit z-10"
                     onClick={(e) => e.stopPropagation()}>
@@ -362,7 +365,7 @@ export default function DataTable<T extends RowData>({
                           <div
                             ref={menuRef}
                             className="absolute right-0 mt-2 w-44 bg-white border border-gray-100 rounded-lg shadow-lg z-50 animate-fadeIn">
-                            <ul className="py-2 text-sm text-gray-700">
+                            <ul className="py-2 text-base text-gray-700">
                               {menuItems.map((item, i) => {
                                 const baseClasses = `block px-4 py-2 hover:bg-gray-50 cursor-pointer transition-colors ${
                                   item.color || "text-gray-700"
