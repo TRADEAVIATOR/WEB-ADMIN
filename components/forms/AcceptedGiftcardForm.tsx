@@ -51,6 +51,8 @@ export default function AcceptedGiftcardForm({
     isActive: initialValues?.isActive ?? true,
   });
 
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+
   const countries = Country.getAllCountries();
   const countryOptions = countries.map((c) => ({
     label: c.name,
@@ -67,7 +69,7 @@ export default function AcceptedGiftcardForm({
 
   const handleChange = (
     field: keyof AcceptedGiftcardFormValues,
-    value: any
+    value: any,
   ) => {
     setValues((prev) => ({ ...prev, [field]: value }));
   };
@@ -75,7 +77,7 @@ export default function AcceptedGiftcardForm({
   const handleArrayChange = (
     field: "availableRanges",
     index: number,
-    value: string
+    value: string,
   ) => {
     const updated = [...values[field]];
     updated[index] = value;
@@ -93,7 +95,14 @@ export default function AcceptedGiftcardForm({
 
   const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) setValues((prev) => ({ ...prev, image: file }));
+    if (file) {
+      setValues((prev) => ({ ...prev, image: file }));
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -114,16 +123,17 @@ export default function AcceptedGiftcardForm({
     formData.append("country", values.country);
     formData.append("countryCode", values.countryCode);
     formData.append("currency", values.currency);
-    formData.append("isActive", String(values.isActive));
-
-    values.availableRanges.forEach((range) =>
-      formData.append("availableRanges[]", range)
+    formData.append("isActive", JSON.stringify(values.isActive));
+    formData.append(
+      "availableRanges",
+      JSON.stringify(values.availableRanges.filter((r) => r.trim())),
     );
-    values.receiptTypes.forEach((type) =>
-      formData.append("receiptTypes[]", type)
-    );
+    formData.append("receiptTypes", JSON.stringify(values.receiptTypes));
     formData.append("rates", JSON.stringify(values.rates || {}));
-    if (values.image) formData.append("image", values.image);
+
+    if (values.image && values.image instanceof File) {
+      formData.append("image", values.image, values.image.name);
+    }
 
     onSubmit(formData);
   };
@@ -163,7 +173,7 @@ export default function AcceptedGiftcardForm({
           onChange={(option) =>
             handleChange(
               "country",
-              (option as { label: string; value: string }).value
+              (option as { label: string; value: string }).value,
             )
           }
           options={[{ label: "Select country", value: "" }, ...countryOptions]}
@@ -181,7 +191,7 @@ export default function AcceptedGiftcardForm({
           onChange={(option) =>
             handleChange(
               "countryCode",
-              (option as { label: string; value: string }).value
+              (option as { label: string; value: string }).value,
             )
           }
           options={[
@@ -203,7 +213,7 @@ export default function AcceptedGiftcardForm({
         onChange={(option) =>
           handleChange(
             "currency",
-            (option as { label: string; value: string }).value
+            (option as { label: string; value: string }).value,
           )
         }
         options={[{ label: "Select currency", value: "" }, ...currencyOptions]}
@@ -248,8 +258,8 @@ export default function AcceptedGiftcardForm({
           handleChange(
             "receiptTypes",
             (options as { label: string; value: string }[]).map(
-              (opt) => opt.value
-            )
+              (opt) => opt.value,
+            ),
           )
         }
         options={RECEIPT_TYPE_OPTIONS}
@@ -292,17 +302,24 @@ export default function AcceptedGiftcardForm({
           })}
       </div>
 
-      <FormField label="Image" type="file" onChange={handleImageChange} />
-      {values.image && (
-        <div className="w-32 h-32 relative">
-          <Image
-            src={URL.createObjectURL(values.image)}
-            alt="Preview"
-            fill
-            className="object-cover rounded"
-          />
-        </div>
-      )}
+      <div className="space-y-2">
+        <FormField
+          label="Image"
+          type="file"
+          onChange={handleImageChange}
+          accept="image/*"
+        />
+        {imagePreview && (
+          <div className="w-32 h-32 relative">
+            <Image
+              src={imagePreview}
+              alt="Preview"
+              fill
+              className="object-cover rounded"
+            />
+          </div>
+        )}
+      </div>
 
       <div className="flex items-center gap-2">
         <input

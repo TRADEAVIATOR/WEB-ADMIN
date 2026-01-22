@@ -5,7 +5,9 @@ import { tryServer } from "../utils/errorHandler";
 export const getEvents = async (page = 1, limit = 10) => {
   const api = await getServerApi();
   return tryServer(
-    api.get(`/admin/events?page=${page}&limit=${limit}`).then((res) => res.data)
+    api
+      .get(`/admin/events?page=${page}&limit=${limit}`)
+      .then((res) => res.data),
   );
 };
 
@@ -40,7 +42,9 @@ export const createEvent = async (data: EventFormValues) => {
   const formData = buildFormData(data);
 
   return tryServer(
-    clientApi.post("/admin/events/create", formData, {}).then((res) => res.data)
+    clientApi
+      .post("/admin/events/create", formData, {})
+      .then((res) => res.data),
   );
 };
 
@@ -48,6 +52,6 @@ export const editEvent = async (data: EventFormValues, eventId: string) => {
   const formData = buildFormData(data);
 
   return tryServer(
-    clientApi.put(`/admin/events/${eventId}`, formData).then((res) => res.data)
+    clientApi.put(`/admin/events/${eventId}`, formData).then((res) => res.data),
   );
 };

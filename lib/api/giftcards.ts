@@ -6,7 +6,7 @@ export const getGiftCards = async (page = 1, limit = 10) => {
   return tryServer(
     api
       .get(`/admin/giftcards/products?page=${page}&limit=${limit}`)
-      .then((r) => r.data)
+      .then((r) => r.data),
   );
 };
 
@@ -15,7 +15,7 @@ export const getGiftCardOrders = async (page = 1, limit = 10) => {
   return tryServer(
     api
       .get(`/admin/giftcards/orders?page=${page}&limit=${limit}`)
-      .then((res) => res.data)
+      .then((res) => res.data),
   );
 };
 
@@ -24,7 +24,7 @@ export const getAcceptedGiftCards = async (page = 1, limit = 10) => {
   return tryServer(
     api
       .get(`/admin/giftcards/accepted-cards?page=${page}&limit=${limit}`)
-      .then((res) => res.data)
+      .then((res) => res.data),
   );
 };
 
@@ -36,7 +36,7 @@ export const syncGiftCardProductsClient = async () => {
 export const getGiftCardOrderById = async (orderId: string) => {
   const api = await getServerApi();
   return tryServer(
-    api.get(`/admin/giftcards/orders/${orderId}`).then((res) => res.data)
+    api.get(`/admin/giftcards/orders/${orderId}`).then((res) => res.data),
   );
 };
 
@@ -45,21 +45,23 @@ export const getGiftCardSales = async (page = 1, limit = 10) => {
   return tryServer(
     api
       .get(`/admin/giftcards/sales?page=${page}&limit=${limit}`)
-      .then((res) => res.data)
+      .then((res) => res.data),
   );
 };
 
 export const getGiftCardSaleById = async (saleId: string) => {
   const api = await getServerApi();
   return tryServer(
-    api.get(`/admin/giftcards/sales/${saleId}`).then((res) => res.data)
+    api.get(`/admin/giftcards/sales/${saleId}`).then((res) => res.data),
   );
 };
 
 export const getAcceptedGiftCardById = async (cardId: string) => {
   const api = await getServerApi();
   return tryServer(
-    api.get(`/admin/giftcards/accepted-cards/${cardId}`).then((res) => res.data)
+    api
+      .get(`/admin/giftcards/accepted-cards/${cardId}`)
+      .then((res) => res.data),
   );
 };
 
@@ -71,11 +73,11 @@ export const retryGiftcardOrderClient = async (orderId: string) => {
 
 export const refundGiftcardOrderClient = async (
   orderId: string,
-  reason: string
+  reason: string,
 ) => {
   const res = await clientApi.post(
     `/admin/giftcards/orders/${orderId}/refund`,
-    { reason }
+    { reason },
   );
 
   return res.data;
