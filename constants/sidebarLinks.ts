@@ -139,6 +139,11 @@ export const sidebarLinks: SidebarLink[] = [
     icon: BellIcon,
   },
   {
+    label: "Promo Codes",
+    href: "/dashboard/promocodes",
+    icon: TagIcon,
+  },
+  {
     label: "Settings",
     href: "/dashboard/profile",
     icon: SettingsIcon,

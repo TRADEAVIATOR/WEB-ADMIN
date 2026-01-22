@@ -84,12 +84,27 @@ export const refundGiftcardOrderClient = async (
 };
 
 export const createAcceptedGiftcard = async (payload: FormData) => {
-  const res = await clientApi.post("/admin/giftcards/accepted-card", payload);
+  const res = await clientApi.post("/admin/giftcards/accepted-card", payload, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
   return res.data;
 };
 
 export const updateAcceptedGiftcard = async (id: string, payload: FormData) => {
-  const res = await clientApi.put(`/admin/giftcards/accepted/${id}`, payload);
+  const res = await clientApi.put(`/admin/giftcards/accepted/${id}`, payload, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+  return res.data;
+};
+
+export const deleteAcceptedGiftcard = async (cardId: string) => {
+  const res = await clientApi.delete(
+    `/admin/giftcards/accepted-cards/${cardId}`,
+  );
   return res.data;
 };
 

@@ -1,13 +1,14 @@
 import ResultState from "@/components/ui/ResultState";
 import AdminProfileClient from "./AdminProfileClient";
 import { getAdminProfile } from "@/lib/api/auth";
+import { getNotificationPreferences } from "@/lib/api/notifications";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminProfilePage() {
-  const res = await getAdminProfile();
+  const adminRes = await getAdminProfile();
 
-  if (!res || res.error) {
+  if (!adminRes || adminRes.error) {
     return (
       <ResultState
         type="error"
@@ -17,11 +18,14 @@ export default async function AdminProfilePage() {
     );
   }
 
-  const admin = res.data?.admin;
+  const admin = adminRes.data?.admin;
 
   if (!admin) {
     return <ResultState type="error" message="Admin profile not found." />;
   }
 
-  return <AdminProfileClient admin={admin} />;
+  const prefRes = await getNotificationPreferences(admin.id);
+  const preferences = prefRes?.data?.data || null;
+
+  return <AdminProfileClient admin={admin} initialPreferences={preferences} />;
 }

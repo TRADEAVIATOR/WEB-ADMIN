@@ -13,7 +13,6 @@ export interface AcceptedGiftcardFormValues {
   cardName: string;
   cardType: string;
   country: string;
-  countryCode: string;
   currency: string;
   availableRanges: string[];
   receiptTypes: string[];
@@ -42,9 +41,8 @@ export default function AcceptedGiftcardForm({
     cardName: initialValues?.cardName || "",
     cardType: initialValues?.cardType || "",
     country: initialValues?.country || "",
-    countryCode: initialValues?.countryCode || "",
     currency: initialValues?.currency || "",
-    availableRanges: initialValues?.availableRanges || [""],
+    availableRanges: initialValues?.availableRanges || [],
     receiptTypes: initialValues?.receiptTypes || [],
     rates: initialValues?.rates || {},
     image: null,
@@ -58,10 +56,6 @@ export default function AcceptedGiftcardForm({
     label: c.name,
     value: c.name,
   }));
-  const countryCodeOptions = countries.map((c) => ({
-    label: `${c.name} (+${c.phonecode})`,
-    value: c.isoCode,
-  }));
   const currencyOptions = currencyCodes.data.map((c) => ({
     label: `${c.code} – ${c.currency}`,
     value: c.code,
@@ -72,25 +66,6 @@ export default function AcceptedGiftcardForm({
     value: any,
   ) => {
     setValues((prev) => ({ ...prev, [field]: value }));
-  };
-
-  const handleArrayChange = (
-    field: "availableRanges",
-    index: number,
-    value: string,
-  ) => {
-    const updated = [...values[field]];
-    updated[index] = value;
-    setValues((prev) => ({ ...prev, [field]: updated }));
-  };
-
-  const addArrayItem = (field: "availableRanges") => {
-    setValues((prev) => ({ ...prev, [field]: [...prev[field], ""] }));
-  };
-
-  const removeArrayItem = (field: "availableRanges", index: number) => {
-    const updated = values[field].filter((_, i) => i !== index);
-    setValues((prev) => ({ ...prev, [field]: updated }));
   };
 
   const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -121,7 +96,6 @@ export default function AcceptedGiftcardForm({
     formData.append("cardName", values.cardName);
     formData.append("cardType", values.cardType);
     formData.append("country", values.country);
-    formData.append("countryCode", values.countryCode);
     formData.append("currency", values.currency);
     formData.append("isActive", JSON.stringify(values.isActive));
     formData.append(
@@ -161,46 +135,23 @@ export default function AcceptedGiftcardForm({
         onChange={(e) => handleChange("cardType", e.target.value)}
       />
 
-      <div className="grid grid-cols-2 gap-4">
-        <SelectField
-          id="country"
-          label="Country"
-          value={
-            values.country
-              ? { label: values.country, value: values.country }
-              : null
-          }
-          onChange={(option) =>
-            handleChange(
-              "country",
-              (option as { label: string; value: string }).value,
-            )
-          }
-          options={[{ label: "Select country", value: "" }, ...countryOptions]}
-          required
-        />
-
-        <SelectField
-          id="country-code"
-          label="Country Code"
-          value={
-            values.countryCode
-              ? { label: values.countryCode, value: values.countryCode }
-              : null
-          }
-          onChange={(option) =>
-            handleChange(
-              "countryCode",
-              (option as { label: string; value: string }).value,
-            )
-          }
-          options={[
-            { label: "Select country code", value: "" },
-            ...countryCodeOptions,
-          ]}
-          required
-        />
-      </div>
+      <SelectField
+        id="country"
+        label="Country"
+        value={
+          values.country
+            ? { label: values.country, value: values.country }
+            : null
+        }
+        onChange={(option) =>
+          handleChange(
+            "country",
+            (option as { label: string; value: string }).value,
+          )
+        }
+        options={[{ label: "Select country", value: "" }, ...countryOptions]}
+        required
+      />
 
       <SelectField
         id="currency"
@@ -220,34 +171,24 @@ export default function AcceptedGiftcardForm({
         required
       />
 
-      <div className="space-y-2">
-        <div className="flex justify-between">
-          <span className="font-semibold">Available Ranges *</span>
-          <Button type="button" onClick={() => addArrayItem("availableRanges")}>
-            Add
-          </Button>
-        </div>
-        {values.availableRanges.map((v, i) => (
-          <div key={i} className="flex gap-2">
-            <SelectField
-              id={`availableRanges-${i}`}
-              required
-              placeholder="Select price range"
-              options={priceRangeOptions}
-              value={v ? { label: v, value: v } : null}
-              onChange={(option) =>
-                handleArrayChange("availableRanges", i, option?.value ?? "")
-              }
-            />
-            <Button
-              type="button"
-              variant="danger"
-              onClick={() => removeArrayItem("availableRanges", i)}>
-              Remove
-            </Button>
-          </div>
-        ))}
-      </div>
+      <SelectField
+        id="availableRanges"
+        label="Available Ranges"
+        required
+        isMulti
+        placeholder="Select price ranges"
+        options={priceRangeOptions}
+        value={values.availableRanges.map((range) => ({
+          label: range,
+          value: range,
+        }))}
+        onChange={(options) =>
+          handleChange(
+            "availableRanges",
+            options.map((opt) => opt.value),
+          )
+        }
+      />
 
       <SelectField
         id="receipt-types"

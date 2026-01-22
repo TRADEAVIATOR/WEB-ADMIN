@@ -78,7 +78,7 @@ export default async function AcceptedGiftCardsPage({
         title="Accepted Gift Cards"
         description="Manage all accepted gift cards"
         buttonIcon={<FiPlus size={16} />}
-        buttonText="Add New Accepted Giftcard"
+        buttonText="Add Accepted Giftcard"
         buttonHref="/dashboard/giftcards/sell/accepted/add"
       />
 

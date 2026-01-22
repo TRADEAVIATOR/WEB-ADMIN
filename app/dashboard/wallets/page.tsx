@@ -32,47 +32,57 @@ export default async function WalletsPage() {
 
   return (
     <>
-      <PageHeader
-        title="Wallets"
-        description="View GiftBills account balance and earnings"
-      />
+      <section className="mb-12 p-6 bg-white rounded-lg shadow-md">
+        <PageHeader
+          title="GiftBills Wallet"
+          description="View GiftBills account balance and earnings"
+        />
 
-      <AdminWalletActions />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
+          <StatCard
+            title="Balance"
+            value={formatCurrency(payload.balance)}
+            color="blue"
+          />
+          <StatCard
+            title="Earnings"
+            value={formatCurrency(payload.earning)}
+            color="green"
+          />
+          <StatCard
+            title="Cashback"
+            value={formatCurrency(payload.cashback)}
+            color="orange"
+          />
+          <StatCard title="Points" value={payload.point} color="purple" />
+          <StatCard title="SMS Units" value={payload.sms_units} color="teal" />
+          <StatCard
+            title="MTN CG"
+            value={formatCurrency(payload.mtn_cg)}
+            color="yellow"
+          />
+          <StatCard
+            title="MTN SME"
+            value={formatCurrency(payload.mtn_sme)}
+            color="red"
+          />
+          <StatCard
+            title="Airtel CG"
+            value={formatCurrency(payload.airtel_cg)}
+            color="indigo"
+          />
+        </div>
+      </section>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
-        <StatCard
-          title="Balance"
-          value={formatCurrency(payload.balance)}
-          color="blue"
+      <hr className="my-12 border-gray-300" />
+
+      <section className="p-6 bg-gray-50 rounded-lg shadow-md">
+        <PageHeader
+          title="Admin Wallet Actions"
+          description="Manage system wallets and perform administrative actions"
         />
-        <StatCard
-          title="Earnings"
-          value={formatCurrency(payload.earning)}
-          color="green"
-        />
-        <StatCard
-          title="Cashback"
-          value={formatCurrency(payload.cashback)}
-          color="orange"
-        />
-        <StatCard title="Points" value={payload.point} color="purple" />
-        <StatCard title="SMS Units" value={payload.sms_units} color="teal" />
-        <StatCard
-          title="MTN CG"
-          value={formatCurrency(payload.mtn_cg)}
-          color="yellow"
-        />
-        <StatCard
-          title="MTN SME"
-          value={formatCurrency(payload.mtn_sme)}
-          color="red"
-        />
-        <StatCard
-          title="Airtel CG"
-          value={formatCurrency(payload.airtel_cg)}
-          color="indigo"
-        />
-      </div>
+        <AdminWalletActions />
+      </section>
     </>
   );
 }

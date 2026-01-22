@@ -1,6 +1,5 @@
 "use client";
 
-import { AdminProfile } from "@/types/models";
 import { useRouter } from "next/navigation";
 import { ChevronLeft, MoreVertical } from "lucide-react";
 import AvatarImg from "@/assets/icons/avatar.svg";
@@ -11,8 +10,24 @@ import { changeAdminPasswordClient } from "@/lib/api/auth";
 import Button from "@/components/ui/Button";
 import { toast } from "react-hot-toast";
 import { useSession } from "next-auth/react";
+import { updateNotificationPreferences } from "@/lib/api/notifications";
+import { handleApiError } from "@/lib/utils/errorHandler";
 
-export default function AdminProfileClient({ admin }: { admin: AdminProfile }) {
+interface AdminNotificationPreferencesClientProps {
+  admin: any;
+  initialPreferences: {
+    enableInApp: boolean;
+    enablePush: boolean;
+    enableEmail: boolean;
+    mutedTypes: string[];
+    mutedUntil?: string;
+  } | null;
+}
+
+export default function AdminProfileClient({
+  admin,
+  initialPreferences,
+}: AdminNotificationPreferencesClientProps) {
   const router = useRouter();
   const isActive = admin.status === "Active";
   const { data: session } = useSession();
@@ -23,7 +38,6 @@ export default function AdminProfileClient({ admin }: { admin: AdminProfile }) {
     newPassword: "",
     confirmNewPassword: "",
   });
-  const [loading, setLoading] = useState(false);
 
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -63,9 +77,33 @@ export default function AdminProfileClient({ admin }: { admin: AdminProfile }) {
         confirmNewPassword: "",
       });
     } catch (error: any) {
-      toast.error(
-        error?.response?.data?.message || "Failed to change password"
-      );
+      handleApiError(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const [prefs, setPrefs] = useState({
+    enableInApp: initialPreferences?.enableInApp ?? true,
+    enablePush: initialPreferences?.enablePush ?? true,
+    enableEmail: initialPreferences?.enableEmail ?? true,
+    mutedTypes: initialPreferences?.mutedTypes || [],
+    mutedUntil: initialPreferences?.mutedUntil || "",
+  });
+
+  const [loading, setLoading] = useState(false);
+
+  const handleToggle = (field: keyof typeof prefs) => {
+    setPrefs((prev) => ({ ...prev, [field]: !prev[field] }));
+  };
+
+  const handleSubmit = async () => {
+    setLoading(true);
+    try {
+      await updateNotificationPreferences(admin.userId, prefs);
+      toast.success("Notification preferences updated!");
+    } catch (error: any) {
+      handleApiError(error);
     } finally {
       setLoading(false);
     }
@@ -233,6 +271,71 @@ export default function AdminProfileClient({ admin }: { admin: AdminProfile }) {
               {loading ? "Updating..." : "Update Password"}
             </Button>
           </form>
+        </div>
+
+        <div className="border border-gray-200 rounded-xl p-6 space-y-4">
+          <h3 className="text-lg font-semibold text-gray-900">
+            User Notification Preferences
+          </h3>
+
+          <div className="space-y-2">
+            <label className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                checked={prefs.enableInApp}
+                onChange={() => handleToggle("enableInApp")}
+              />
+              Enable In-App Notifications
+            </label>
+
+            <label className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                checked={prefs.enablePush}
+                onChange={() => handleToggle("enablePush")}
+              />
+              Enable Push Notifications
+            </label>
+
+            <label className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                checked={prefs.enableEmail}
+                onChange={() => handleToggle("enableEmail")}
+              />
+              Enable Email Notifications
+            </label>
+
+            <label className="flex flex-col gap-1">
+              Muted Types (comma-separated)
+              <input
+                type="text"
+                className="border rounded px-2 py-1"
+                value={prefs.mutedTypes.join(",")}
+                onChange={(e) =>
+                  setPrefs((prev) => ({
+                    ...prev,
+                    mutedTypes: e.target.value.split(",").map((t) => t.trim()),
+                  }))
+                }
+              />
+            </label>
+
+            <label className="flex flex-col gap-1">
+              Muted Until
+              <input
+                type="datetime-local"
+                value={prefs.mutedUntil ? prefs.mutedUntil.slice(0, 16) : ""}
+                onChange={(e) =>
+                  setPrefs((prev) => ({ ...prev, mutedUntil: e.target.value }))
+                }
+              />
+            </label>
+          </div>
+
+          <Button onClick={handleSubmit} disabled={loading} isLoading={loading}>
+            Save Preferences
+          </Button>
         </div>
       </div>
     </div>

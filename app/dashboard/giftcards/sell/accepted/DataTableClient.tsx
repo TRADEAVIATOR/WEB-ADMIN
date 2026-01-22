@@ -9,6 +9,9 @@ import { DataTableClientProps } from "@/types/props";
 import { AcceptedGiftCard } from "@/types/models";
 import Badge from "@/components/ui/Badge";
 import { formatCurrency } from "@/lib/utils/format";
+import toast from "react-hot-toast";
+import { handleApiError } from "@/lib/utils/errorHandler";
+import { deleteAcceptedGiftcard } from "@/lib/api/giftcards";
 
 export default function AcceptedGiftCardsTable({
   initialData = [],
@@ -76,6 +79,26 @@ export default function AcceptedGiftCardsTable({
     };
   });
 
+  const handleDeleteAcceptedGiftcard = async (cardId: string) => {
+    const toastId = toast.loading("Deleting giftcard...");
+
+    try {
+      const res = await deleteAcceptedGiftcard(cardId);
+
+      if (!res?.error) {
+        toast.success("Giftcard deleted successfully!", { id: toastId });
+        router.refresh();
+      } else {
+        toast.error(res?.message || "Failed to delete giftcard.", {
+          id: toastId,
+        });
+      }
+    } catch (error: any) {
+      toast.error("An unexpected error occurred.", { id: toastId });
+      handleApiError(error);
+    }
+  };
+
   const menuItems: MenuItem<RowData>[] = [
     {
       label: "View",
@@ -86,6 +109,11 @@ export default function AcceptedGiftCardsTable({
       label: "Edit",
       onClick: (row) =>
         router.push(`/dashboard/giftcards/sell/accepted/${row.id}/edit`),
+    },
+    {
+      label: "Delete",
+      color: "text-red-600",
+      onClick: (row) => handleDeleteAcceptedGiftcard(String(row.id)),
     },
   ];
 

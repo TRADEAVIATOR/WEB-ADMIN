@@ -201,3 +201,25 @@ export const getNotificationAnalytics = async () => {
     api.get("/admin/notifications/analytics").then((res) => res.data.data),
   );
 };
+
+export const getNotificationPreferences = async (userId: string) => {
+  const api = await getServerApi();
+  return tryServer(api.get(`/admin/notifications/preferences/${userId}`));
+};
+
+export const updateNotificationPreferences = async (
+  userId: string,
+  payload: {
+    enableInApp: boolean;
+    enablePush: boolean;
+    enableEmail: boolean;
+    mutedTypes: string[];
+    mutedUntil?: string;
+  },
+) => {
+  const res = await clientApi.patch(
+    `/api/v1/admin/notifications/preferences/${userId}`,
+    payload,
+  );
+  return res.data;
+};

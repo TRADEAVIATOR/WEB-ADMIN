@@ -35,7 +35,7 @@ type SingleSelectProps = {
   defaultValue?: SingleValue<SelectOption>;
   onChange?: (
     value: SingleValue<SelectOption>,
-    actionMeta: ActionMeta<SelectOption>
+    actionMeta: ActionMeta<SelectOption>,
   ) => void;
 } & ExtraProps;
 
@@ -45,7 +45,7 @@ type MultiSelectProps = {
   defaultValue?: MultiValue<SelectOption>;
   onChange?: (
     value: MultiValue<SelectOption>,
-    actionMeta: ActionMeta<SelectOption>
+    actionMeta: ActionMeta<SelectOption>,
   ) => void;
 } & ExtraProps;
 
@@ -94,7 +94,7 @@ export default function SelectField({
             "border-gray-200": !error,
             "border-red-500": error,
           },
-          className
+          className,
         )}>
         {icon && <span className="text-gray-400 text-lg">{icon}</span>}
 
@@ -153,8 +153,8 @@ export default function SelectField({
               backgroundColor: state.isFocused
                 ? "#F3F4F6"
                 : state.isSelected
-                ? "#0284C7"
-                : "#FFF",
+                  ? "#0284C7"
+                  : "#FFF",
               color: state.isSelected ? "#FFF" : "#111827",
               fontSize: "1rem",
             }),
