@@ -36,6 +36,7 @@ export default async function NotificationsPage({
       <PageHeader
         title="Notifications"
         description="View all system, transaction, promo, and user notifications."
+        backHref="/dashboard/notifications"
         showBackButton
       />
 

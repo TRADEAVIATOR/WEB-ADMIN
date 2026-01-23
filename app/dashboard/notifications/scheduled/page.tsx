@@ -37,10 +37,11 @@ export default async function ScheduledNotificationsPage({
     <>
       <PageHeader
         title="Scheduled Notifications"
-        description="Manage all scheduled notifications and broadcasts"
-        showBackButton
-        buttonText="Create Notification"
         buttonHref="/dashboard/notifications/scheduled/new"
+        backHref="/dashboard/notifications"
+        description="Manage all scheduled notifications and broadcasts"
+        buttonText="Create Notification"
+        showBackButton
       />
 
       <DataTableClient

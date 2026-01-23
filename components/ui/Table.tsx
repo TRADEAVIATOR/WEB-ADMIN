@@ -134,7 +134,7 @@ export default function DataTable<T extends RowData>({
     if (isRowSelected(idx)) return "bg-[#FFF5EE]";
     return idx % 2 === 0
       ? "bg-white hover:bg-gray-50"
-      : "bg-[#F9FAFB] hover:bg-gray-100";
+      : "bg-gray-200 hover:bg-gray-300";
   };
 
   return (

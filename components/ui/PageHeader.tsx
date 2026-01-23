@@ -13,7 +13,9 @@ export default function PageHeader({
 
   onSearch,
   onDateSelect,
+
   showBackButton = false,
+  backHref,
 
   buttonText,
   buttonIcon,
@@ -95,7 +97,13 @@ export default function PageHeader({
       {showBackButton && (
         <div className="mb-4">
           <button
-            onClick={() => router.back()}
+            onClick={() => {
+              if (backHref) {
+                router.push(backHref);
+              } else {
+                router.back();
+              }
+            }}
             className="flex items-center gap-1 text-sm text-gray-600 hover:text-gray-800 transition">
             <ChevronLeft size={18} />
             <span>Back</span>

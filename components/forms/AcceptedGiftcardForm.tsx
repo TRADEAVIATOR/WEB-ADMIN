@@ -222,7 +222,7 @@ export default function AcceptedGiftcardForm({
                       key={receiptType}
                       label={receiptType}
                       type="number"
-                      value={rateData[receiptType] || 0}
+                      value={rateData[receiptType] || ""}
                       onChange={(e) => {
                         const newRates = { ...values.rates };
                         if (!newRates[range]) {

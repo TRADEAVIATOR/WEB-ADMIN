@@ -73,6 +73,7 @@ export interface PageHeaderProps {
   onDateSelect?: () => void;
 
   showBackButton?: boolean;
+  backHref?: string;
 
   buttonText?: string;
   buttonIcon?: React.ReactNode;

@@ -40,6 +40,7 @@ export default async function NotificationTemplatesPage({
         description="Manage system and security notification templates. Create, edit, or delete templates as needed."
         buttonHref="/dashboard/notifications/templates/new"
         buttonText="Create Template"
+        backHref="/dashboard/notifications"
         showBackButton
       />
       <DataTableClient

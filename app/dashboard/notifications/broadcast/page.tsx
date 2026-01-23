@@ -39,6 +39,7 @@ export default async function BroadcastNotificationsPage({
         description="Send notifications to multiple users at once"
         buttonText="Create Notification"
         buttonHref="/dashboard/notifications/broadcast/new"
+        backHref="/dashboard/notifications"
         showBackButton
       />
       <DataTableClient

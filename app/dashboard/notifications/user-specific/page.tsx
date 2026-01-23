@@ -41,9 +41,10 @@ export default async function UserSpecificNotificationsPage({
       <PageHeader
         title="User Notifications"
         description="View notifications sent to individual users across the platform"
-        showBackButton
         buttonText="Send Notification"
         buttonHref="/dashboard/notifications/user-specific/new"
+        backHref="/dashboard/notifications"
+        showBackButton
       />
 
       <DataTableClient

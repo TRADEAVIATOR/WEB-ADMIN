@@ -93,8 +93,8 @@ export const createAcceptedGiftcard = async (payload: FormData) => {
 };
 
 export const updateAcceptedGiftcard = async (id: string, payload: FormData) => {
-  const res = await clientApi.put(
-    `/admin/giftcards/accepted-card/${id}`,
+  const res = await clientApi.patch(
+    `/admin/giftcards/accepted-cards/${id}`,
     payload,
     {
       headers: {

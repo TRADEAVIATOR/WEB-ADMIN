@@ -9,10 +9,10 @@ import toast from "react-hot-toast";
 export type PromoCodeFormValues = {
   code: string;
   description: string;
-  bonusAmount: number;
+  bonusAmount: string;
   bonusType: "FIXED" | "PERCENTAGE";
-  minSaleAmount?: number;
-  maxUses?: number;
+  minSaleAmount?: string;
+  maxUses?: string;
   validFrom: string;
   validUntil?: string;
   isActive?: boolean;
@@ -37,10 +37,10 @@ export default function PromoCodeForm({
   const [values, setValues] = useState<PromoCodeFormValues>({
     code: initialValues?.code || "",
     description: initialValues?.description || "",
-    bonusAmount: initialValues?.bonusAmount || 0,
+    bonusAmount: initialValues?.bonusAmount?.toString() || "",
     bonusType: initialValues?.bonusType || "FIXED",
-    minSaleAmount: initialValues?.minSaleAmount || 0,
-    maxUses: initialValues?.maxUses || 0,
+    minSaleAmount: initialValues?.minSaleAmount?.toString() || "",
+    maxUses: initialValues?.maxUses?.toString() || "",
     validFrom: initialValues?.validFrom || "",
     validUntil: initialValues?.validUntil || "",
     isActive: initialValues?.isActive ?? true,

@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { FiX } from "react-icons/fi";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import bellScheduled from "@/assets/icons/bell-scheduled.svg";
 import noNotifications from "@/assets/icons/no-notifications.svg";
 import {
@@ -45,15 +45,34 @@ export default function NotificationsPanel({
     try {
       await markNotificationAsRead(id);
       setNotifications((prev) =>
-        prev.map((n) => (n.id === id ? { ...n, isRead: true } : n))
+        prev.map((n) => (n.id === id ? { ...n, isRead: true } : n)),
       );
     } catch (error) {
       handleApiError(error);
     }
   };
 
+  const panelRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        panelRef.current &&
+        !panelRef.current.contains(event.target as Node)
+      ) {
+        onClose();
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [onClose]);
+
   return (
-    <div className="absolute right-2 sm:right-4 top-16 w-[90vw] max-w-[380px] bg-white rounded-xl shadow-lg border border-gray-200 z-50 animate-fade-in">
+    <div
+      ref={panelRef}
+      className="absolute right-2 sm:right-4 top-16 w-[90vw] max-w-[380px] bg-white rounded-xl shadow-lg border border-gray-200 z-50 animate-fade-in">
       <div className="flex items-center justify-between p-4 border-b border-gray-100">
         <h2 className="text-lg font-semibold text-secondary">Notifications</h2>
         <button

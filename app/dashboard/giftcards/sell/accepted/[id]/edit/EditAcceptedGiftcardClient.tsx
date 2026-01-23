@@ -6,11 +6,14 @@ import AcceptedGiftcardForm from "@/components/forms/AcceptedGiftcardForm";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { handleApiError } from "@/lib/utils/errorHandler";
+import { useState } from "react";
 
 export default function EditAcceptedGiftcardClient({ initialValues, id }) {
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (values: FormData) => {
+    setIsLoading(true);
     try {
       const res = await updateAcceptedGiftcard(id, values);
 
@@ -20,11 +23,13 @@ export default function EditAcceptedGiftcardClient({ initialValues, id }) {
       }
 
       toast.success(
-        res?.data?.message || "Accepted giftcard updated successfully!"
+        res?.data?.message || "Accepted giftcard updated successfully!",
       );
       router.push("/dashboard/giftcards/sell/accepted");
     } catch (error: any) {
       handleApiError(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -41,6 +46,7 @@ export default function EditAcceptedGiftcardClient({ initialValues, id }) {
         <AcceptedGiftcardForm
           initialValues={initialValues}
           onSubmit={handleSubmit}
+          isLoading={isLoading}
         />
       </div>
     </div>
