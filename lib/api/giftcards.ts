@@ -93,11 +93,15 @@ export const createAcceptedGiftcard = async (payload: FormData) => {
 };
 
 export const updateAcceptedGiftcard = async (id: string, payload: FormData) => {
-  const res = await clientApi.put(`/admin/giftcards/accepted/${id}`, payload, {
-    headers: {
-      "Content-Type": "multipart/form-data",
+  const res = await clientApi.put(
+    `/admin/giftcards/accepted-card/${id}`,
+    payload,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
     },
-  });
+  );
   return res.data;
 };
 
