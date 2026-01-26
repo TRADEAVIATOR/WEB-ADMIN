@@ -3,21 +3,16 @@
 import { useRouter } from "next/navigation";
 import DetailItem from "@/components/shared/DetailItem";
 import Badge, { colorClasses } from "@/components/ui/Badge";
-import { Transaction } from "@/types/models";
 import { ChevronLeft, Copy } from "lucide-react";
 import { toast } from "react-hot-toast";
-import { formatDateTime } from "@/lib/utils/format";
+import { formatCurrency, formatDateTime } from "@/lib/utils/format";
 
 export default function TransactionDetails({
   transaction,
 }: {
-  transaction: Transaction;
+  transaction: any;
 }) {
   const router = useRouter();
-
-  console.log(transaction);
-
-  const amountNumber = Number(transaction.amount) || 0;
 
   const user = transaction.user || { fullname: "-", email: "-", phone: "-" };
 
@@ -51,9 +46,7 @@ export default function TransactionDetails({
     }
   };
 
-  const getCategoryColor = () => {
-    return "blue";
-  };
+  const getCategoryColor = () => "blue";
 
   return (
     <div className="bg-white rounded-2xl p-6 w-full">
@@ -66,62 +59,80 @@ export default function TransactionDetails({
 
       <div className="max-w-4xl mx-auto space-y-8">
         <div className="space-y-5">
+          {transaction.id && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-b border-gray-100 pb-4">
+              <DetailItem
+                label="Transaction ID"
+                value={
+                  <div className="flex items-center gap-2">
+                    <span>{transaction.id}</span>
+                    <Copy
+                      className="w-4 h-4 cursor-pointer text-gray-400 hover:text-gray-600"
+                      onClick={() => copyToClipboard(transaction.id)}
+                    />
+                  </div>
+                }
+              />
+              {transaction.type && (
+                <DetailItem
+                  label="Type"
+                  value={
+                    <Badge
+                      text={transaction.type}
+                      color={getTypeColor(transaction.type)}
+                    />
+                  }
+                />
+              )}
+            </div>
+          )}
+
+          {transaction.amount && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-b border-gray-100 pb-4">
+              <DetailItem
+                label="Amount"
+                value={formatCurrency(Number(transaction.amount))}
+              />
+              {transaction.currency && (
+                <DetailItem
+                  label="Currency"
+                  value={transaction.currency.toUpperCase()}
+                />
+              )}
+              {transaction.status && (
+                <DetailItem
+                  label="Status"
+                  value={
+                    <Badge
+                      text={transaction.status}
+                      color={getStatusColor(transaction.status)}
+                    />
+                  }
+                />
+              )}
+            </div>
+          )}
+
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-b border-gray-100 pb-4">
-            <DetailItem
-              label="Transaction ID"
-              value={
-                <div className="flex items-center gap-2">
-                  <span>{transaction.id}</span>
-                  <Copy
-                    className="w-4 h-4 cursor-pointer text-gray-400 hover:text-gray-600"
-                    onClick={() => copyToClipboard(transaction.id)}
+            {transaction.category && (
+              <DetailItem
+                label="Category"
+                value={
+                  <Badge
+                    text={transaction.category}
+                    color={getCategoryColor() as keyof typeof colorClasses}
                   />
-                </div>
-              }
-            />
-            <DetailItem
-              label="Type"
-              value={
-                <Badge
-                  text={transaction.type || "-"}
-                  color={getTypeColor(transaction.type || "")}
-                />
-              }
-            />
+                }
+              />
+            )}
+            {user.fullname && (
+              <DetailItem label="User Name" value={user.fullname} />
+            )}
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-b border-gray-100 pb-4">
-            <DetailItem
-              label="Amount"
-              value={`${transaction.currency.toUpperCase()} ${amountNumber.toLocaleString()}`}
-            />
-            <DetailItem
-              label="Status"
-              value={
-                <Badge
-                  text={transaction.status || "-"}
-                  color={getStatusColor(transaction.status || "")}
-                />
-              }
-            />
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-b border-gray-100 pb-4">
-            <DetailItem
-              label="Category"
-              value={
-                <Badge
-                  text={transaction.category}
-                  color={getCategoryColor() as keyof typeof colorClasses}
-                />
-              }
-            />
-            <DetailItem label="User Name" value={user.fullname || "-"} />
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-b border-gray-100 pb-4">
-            <DetailItem label="Email" value={user.email || "-"} />
-            <DetailItem label="Phone" value={user.phone || "-"} />
+            {user.email && <DetailItem label="Email" value={user.email} />}
+            {user.phone && <DetailItem label="Phone" value={user.phone} />}
           </div>
 
           {transaction.reference && (
@@ -133,7 +144,7 @@ export default function TransactionDetails({
                     <span>{transaction.reference}</span>
                     <Copy
                       className="w-4 h-4 cursor-pointer text-gray-400 hover:text-gray-600"
-                      onClick={() => copyToClipboard(transaction.reference!)}
+                      onClick={() => copyToClipboard(transaction.reference)}
                     />
                   </div>
                 }
@@ -143,25 +154,30 @@ export default function TransactionDetails({
 
           {(transaction.provider || transaction.channel) && (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-b border-gray-100 pb-4">
-              <DetailItem
-                label="Provider"
-                value={transaction.provider || "-"}
-              />
-              <DetailItem label="Channel" value={transaction.channel || "-"} />
+              {transaction.provider && (
+                <DetailItem label="Provider" value={transaction.provider} />
+              )}
+              {transaction.channel && (
+                <DetailItem label="Channel" value={transaction.channel} />
+              )}
             </div>
           )}
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-b border-gray-100 pb-4">
-            <DetailItem
-              label="Created At"
-              value={formatDateTime(transaction.createdAt)}
-            />
-            <DetailItem
-              label="Completed At"
-              value={formatDateTime(
-                transaction.updatedAt || transaction.createdAt,
-              )}
-            />
+            {transaction.createdAt && (
+              <DetailItem
+                label="Created At"
+                value={formatDateTime(transaction.createdAt)}
+              />
+            )}
+            {(transaction.updatedAt || transaction.createdAt) && (
+              <DetailItem
+                label="Completed At"
+                value={formatDateTime(
+                  transaction.updatedAt || transaction.createdAt,
+                )}
+              />
+            )}
           </div>
 
           {transaction.narration && (
@@ -170,12 +186,50 @@ export default function TransactionDetails({
             </div>
           )}
 
-          {transaction.meta?.data?.orderNo && (
+          {transaction.internalRef && (
             <div className="grid grid-cols-1 gap-4 border-b border-gray-100 pb-4">
               <DetailItem
-                label="Order No"
-                value={transaction.meta.data.orderNo}
+                label="Internal Ref"
+                value={transaction.internalRef}
               />
+            </div>
+          )}
+
+          {transaction.usdValue && (
+            <div className="grid grid-cols-1 gap-4 border-b border-gray-100 pb-4">
+              <DetailItem
+                label="USD Value"
+                value={formatCurrency(transaction.usdValue, {
+                  currency: "USD",
+                  locale: "en-US",
+                })}
+              />
+            </div>
+          )}
+
+          {transaction.rate && (
+            <div className="grid grid-cols-1 gap-4 border-b border-gray-100 pb-4">
+              <DetailItem
+                label="Rate"
+                value={formatCurrency(Number(transaction.rate), {
+                  currency: "NGN",
+                })}
+              />
+            </div>
+          )}
+
+          {transaction.transactionValue && (
+            <div className="grid grid-cols-1 gap-4 border-b border-gray-100 pb-4">
+              <DetailItem
+                label="Transaction Value"
+                value={transaction.transactionValue}
+              />
+            </div>
+          )}
+
+          {transaction.txHash && (
+            <div className="grid grid-cols-1 gap-4 border-b border-gray-100 pb-4">
+              <DetailItem label="Tx Hash" value={transaction.txHash} />
             </div>
           )}
         </div>

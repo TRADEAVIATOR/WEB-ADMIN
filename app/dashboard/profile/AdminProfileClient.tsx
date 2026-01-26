@@ -273,67 +273,104 @@ export default function AdminProfileClient({
           </form>
         </div>
 
-        <div className="border border-gray-200 rounded-xl p-6 space-y-4">
-          <h3 className="text-lg font-semibold text-gray-900">
-            User Notification Preferences
+        <div className="border border-gray-200 rounded-xl p-6 space-y-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">
+            Notification Preferences
           </h3>
 
-          <div className="space-y-2">
-            <label className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                checked={prefs.enableInApp}
-                onChange={() => handleToggle("enableInApp")}
-              />
-              Enable In-App Notifications
-            </label>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <span className="text-gray-700 font-medium">
+                In-App Notifications
+              </span>
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={prefs.enableInApp}
+                  onChange={() => handleToggle("enableInApp")}
+                  className="sr-only peer"
+                />
+                <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:bg-primary peer-focus:ring-2 peer-focus:ring-primary transition-all"></div>
+                <div className="absolute left-1 top-1 w-4 h-4 bg-white rounded-full shadow transform transition-all peer-checked:translate-x-5"></div>
+              </label>
+            </div>
 
-            <label className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                checked={prefs.enablePush}
-                onChange={() => handleToggle("enablePush")}
-              />
-              Enable Push Notifications
-            </label>
+            <div className="flex items-center justify-between">
+              <span className="text-gray-700 font-medium">
+                Push Notifications
+              </span>
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={prefs.enablePush}
+                  onChange={() => handleToggle("enablePush")}
+                  className="sr-only peer"
+                />
+                <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:bg-primary peer-focus:ring-2 peer-focus:ring-primary transition-all"></div>
+                <div className="absolute left-1 top-1 w-4 h-4 bg-white rounded-full shadow transform transition-all peer-checked:translate-x-5"></div>
+              </label>
+            </div>
 
-            <label className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                checked={prefs.enableEmail}
-                onChange={() => handleToggle("enableEmail")}
-              />
-              Enable Email Notifications
-            </label>
-
-            <label className="flex flex-col gap-1">
-              Muted Types (comma-separated)
-              <input
-                type="text"
-                className="border rounded px-2 py-1"
-                value={prefs.mutedTypes.join(",")}
-                onChange={(e) =>
-                  setPrefs((prev) => ({
-                    ...prev,
-                    mutedTypes: e.target.value.split(",").map((t) => t.trim()),
-                  }))
-                }
-              />
-            </label>
-
-            <label className="flex flex-col gap-1">
-              Muted Until
-              <input
-                type="datetime-local"
-                value={prefs.mutedUntil ? prefs.mutedUntil.slice(0, 16) : ""}
-                onChange={(e) =>
-                  setPrefs((prev) => ({ ...prev, mutedUntil: e.target.value }))
-                }
-              />
-            </label>
+            <div className="flex items-center justify-between">
+              <span className="text-gray-700 font-medium">
+                Email Notifications
+              </span>
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={prefs.enableEmail}
+                  onChange={() => handleToggle("enableEmail")}
+                  className="sr-only peer"
+                />
+                <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:bg-primary peer-focus:ring-2 peer-focus:ring-primary transition-all"></div>
+                <div className="absolute left-1 top-1 w-4 h-4 bg-white rounded-full shadow transform transition-all peer-checked:translate-x-5"></div>
+              </label>
+            </div>
           </div>
 
-          <Button onClick={handleSubmit} disabled={loading} isLoading={loading}>
+          <div className="space-y-2">
+            <label className="block text-gray-700 font-medium">
+              Muted Types
+            </label>
+            <p className="text-gray-500 text-sm">
+              Enter types of notifications to mute, separated by commas.
+            </p>
+            <input
+              type="text"
+              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
+              value={prefs.mutedTypes.join(", ")}
+              onChange={(e) =>
+                setPrefs((prev) => ({
+                  ...prev,
+                  mutedTypes: e.target.value.split(",").map((t) => t.trim()),
+                }))
+              }
+              placeholder="e.g., marketing, updates"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <label className="block text-gray-700 font-medium">
+              Muted Until
+            </label>
+            <p className="text-gray-500 text-sm">
+              Optional: Notifications will be muted until this date and time.
+            </p>
+            <input
+              type="datetime-local"
+              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
+              value={prefs.mutedUntil ? prefs.mutedUntil.slice(0, 16) : ""}
+              onChange={(e) =>
+                setPrefs((prev) => ({ ...prev, mutedUntil: e.target.value }))
+              }
+            />
+          </div>
+
+          <Button
+            onClick={handleSubmit}
+            isLoading={loading}
+            className="w-full sm:w-auto"
+            variant="primary">
             Save Preferences
           </Button>
         </div>
