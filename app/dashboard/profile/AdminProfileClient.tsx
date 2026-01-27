@@ -12,6 +12,7 @@ import { toast } from "react-hot-toast";
 import { useSession } from "next-auth/react";
 import { updateNotificationPreferences } from "@/lib/api/notifications";
 import { handleApiError } from "@/lib/utils/errorHandler";
+import SelectField, { SelectOption } from "@/components/ui/SelectField";
 
 interface AdminNotificationPreferencesClientProps {
   admin: any;
@@ -32,6 +33,9 @@ export default function AdminProfileClient({
   const isActive = admin.status === "Active";
   const { data: session } = useSession();
   const token = session?.accessToken;
+
+  const [passwordLoading, setPasswordLoading] = useState(false);
+  const [prefsLoading, setPrefsLoading] = useState(false);
 
   const [passwordForm, setPasswordForm] = useState({
     currentPassword: "",
@@ -66,7 +70,7 @@ export default function AdminProfileClient({
       return;
     }
 
-    setLoading(true);
+    setPasswordLoading(true);
 
     try {
       await changeAdminPasswordClient(passwordForm);
@@ -79,7 +83,7 @@ export default function AdminProfileClient({
     } catch (error: any) {
       handleApiError(error);
     } finally {
-      setLoading(false);
+      setPasswordLoading(true);
     }
   };
 
@@ -91,23 +95,34 @@ export default function AdminProfileClient({
     mutedUntil: initialPreferences?.mutedUntil || "",
   });
 
-  const [loading, setLoading] = useState(false);
-
   const handleToggle = (field: keyof typeof prefs) => {
     setPrefs((prev) => ({ ...prev, [field]: !prev[field] }));
   };
 
   const handleSubmit = async () => {
-    setLoading(true);
+    setPrefsLoading(true);
     try {
-      await updateNotificationPreferences(admin.userId, prefs);
+      await updateNotificationPreferences(admin.id, prefs);
       toast.success("Notification preferences updated!");
     } catch (error: any) {
       handleApiError(error);
     } finally {
-      setLoading(false);
+      setPrefsLoading(true);
     }
   };
+
+  const notificationOptions: SelectOption[] = [
+    { label: "Transaction", value: "TRANSACTION" },
+    { label: "Wallet", value: "WALLET" },
+    { label: "Giftcard", value: "GIFTCARD" },
+    { label: "Dispute", value: "DISPUTE" },
+    { label: "Security", value: "SECURITY" },
+    { label: "Promo", value: "PROMO" },
+    { label: "System", value: "SYSTEM" },
+    { label: "Reward", value: "REWARD" },
+    { label: "Ticket Purchase", value: "TICKET_PURCHASE" },
+    { label: "Marketing", value: "MARKETING" },
+  ];
 
   return (
     <div className="bg-white rounded-2xl p-6 w-full">
@@ -267,8 +282,11 @@ export default function AdminProfileClient({
               placeholder="Confirm new password"
               required
             />
-            <Button type="submit" className="ml-auto block" disabled={loading}>
-              {loading ? "Updating..." : "Update Password"}
+            <Button
+              type="submit"
+              className="ml-auto block"
+              disabled={passwordLoading}>
+              {passwordLoading ? "Updating..." : "Update Password"}
             </Button>
           </form>
         </div>
@@ -327,27 +345,22 @@ export default function AdminProfileClient({
               </label>
             </div>
           </div>
-
-          <div className="space-y-2">
-            <label className="block text-gray-700 font-medium">
-              Muted Types
-            </label>
-            <p className="text-gray-500 text-sm">
-              Enter types of notifications to mute, separated by commas.
-            </p>
-            <input
-              type="text"
-              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
-              value={prefs.mutedTypes.join(", ")}
-              onChange={(e) =>
-                setPrefs((prev) => ({
-                  ...prev,
-                  mutedTypes: e.target.value.split(",").map((t) => t.trim()),
-                }))
-              }
-              placeholder="e.g., marketing, updates"
-            />
-          </div>
+          <SelectField
+            id="mutedTypes"
+            label="Muted Types"
+            placeholder="Select notification types to mute"
+            isMulti
+            value={notificationOptions.filter((opt) =>
+              prefs.mutedTypes.includes(opt.value),
+            )}
+            onChange={(selectedOptions) =>
+              setPrefs((prev) => ({
+                ...prev,
+                mutedTypes: selectedOptions.map((opt) => opt.value),
+              }))
+            }
+            options={notificationOptions}
+          />
 
           <div className="space-y-2">
             <label className="block text-gray-700 font-medium">
@@ -368,7 +381,7 @@ export default function AdminProfileClient({
 
           <Button
             onClick={handleSubmit}
-            isLoading={loading}
+            isLoading={prefsLoading}
             className="w-full sm:w-auto"
             variant="primary">
             Save Preferences

@@ -218,7 +218,7 @@ export const updateNotificationPreferences = async (
   },
 ) => {
   const res = await clientApi.patch(
-    `/api/v1/admin/notifications/preferences/${userId}`,
+    `/admin/notifications/preferences/${userId}`,
     payload,
   );
   return res.data;
