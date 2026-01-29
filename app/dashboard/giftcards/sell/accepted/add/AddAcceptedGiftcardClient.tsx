@@ -28,7 +28,7 @@ export default function AddAcceptedGiftcardClient() {
 
       toast.success(
         res?.data?.message || "Accepted giftcard created successfully!",
-        { id: toastId }
+        { id: toastId },
       );
 
       router.push("/dashboard/giftcards/sell/accepted");

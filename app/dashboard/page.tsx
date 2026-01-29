@@ -11,10 +11,14 @@ import PieChartCard from "./components/PieChartCard";
 import ActionRequiredCard from "./components/ActionRequiredCard";
 import { formatCurrency } from "@/lib/utils/format";
 import CryptoTicker from "./components/CryptoTicker";
+import { auth } from "@/lib/auth/session";
 
 export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
+  const data = await auth();
+  const userName = data?.user.name || "User";
+
   const results = await Promise.allSettled([
     getDashboardMetrics(),
     getDashboardGrowth(),
@@ -22,7 +26,7 @@ export default async function DashboardPage() {
   ]);
 
   const hasError = results.some(
-    (r) => r.status === "rejected" || r.value?.error
+    (r) => r.status === "rejected" || r.value?.error,
   );
 
   if (hasError) {
@@ -80,18 +84,18 @@ export default async function DashboardPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between w-full gap-6">
-        <div className="flex flex-col gap-1 md:max-w-md whitespace-nowrap">
+      <div className="flex flex-col w-full gap-4">
+        <div className="flex flex-col gap-1.5">
           <h1 className="text-2xl md:text-3xl font-semibold text-secondary">
-            Welcome back, <span className="text-primary">Big Brain</span>
+            Welcome back, <span className="text-primary">{userName}</span>
           </h1>
           <p className="text-gray-500 text-sm md:text-base">
-            Here’s what’s happening today on{" "}
+            Here&apos;s what&apos;s happening today on{" "}
             <span className="font-medium text-secondary">TradeAviator</span>
           </p>
         </div>
 
-        <div className="flex-1 md:flex-none md:ml-auto min-w-0">
+        <div className="w-full">
           <CryptoTicker cryptos={cryptoData} />
         </div>
       </div>

@@ -11,12 +11,10 @@ interface UserNotification {
   title: string;
   message: string;
   type: string;
-  isRead: boolean;
+  priority: string;
+  totalSent: number;
+  totalRead: number;
   createdAt: string;
-  user: {
-    fullname: string;
-    email: string;
-  };
 }
 
 interface Props {
@@ -35,37 +33,34 @@ export default function DataTableClient({
   const columns = [
     { key: "title", label: "Title" },
     { key: "type", label: "Type" },
-    { key: "user", label: "User" },
+    { key: "priority", label: "Priority" },
+    { key: "totalSent", label: "Sent" },
+    { key: "totalRead", label: "Read" },
     { key: "message", label: "Message" },
-    { key: "status", label: "Status" },
     { key: "createdAt", label: "Date" },
   ];
 
   const rows: RowData[] = initialData.map((notification) => ({
     id: notification.id,
-
     title: notification.title,
-
     type: <Badge text={notification.type} color="blue" />,
-
-    user: (
-      <div className="flex flex-col">
-        <span className="font-medium">{notification.user.fullname}</span>
-        <span className="text-xs text-gray-500">{notification.user.email}</span>
-      </div>
+    priority: (
+      <Badge
+        text={notification.priority.toUpperCase()}
+        color={
+          notification.priority === "high"
+            ? "red"
+            : notification.priority === "medium"
+              ? "orange"
+              : "green"
+        }
+      />
     ),
-
+    totalSent: notification.totalSent,
+    totalRead: notification.totalRead,
     message: (
       <span className="line-clamp-2 max-w-xs">{notification.message}</span>
     ),
-
-    status: (
-      <Badge
-        text={notification.isRead ? "Read" : "Unread"}
-        color={notification.isRead ? "green" : "gray"}
-      />
-    ),
-
     createdAt: new Date(notification.createdAt).toLocaleDateString("en-US", {
       day: "numeric",
       month: "short",

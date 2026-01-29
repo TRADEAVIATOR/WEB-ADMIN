@@ -27,8 +27,8 @@ export default function LoginForm() {
 
     const res = await signIn("credentials", {
       redirect: false,
-      email,
-      password,
+      email: email.trim(),
+      password: password.trim(),
     });
 
     setLoading(false);
