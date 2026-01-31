@@ -19,6 +19,7 @@ interface ResultStateProps {
   icon?: ReactNode;
   showRefresh?: boolean;
   children?: ReactNode;
+  className?: string;
 }
 
 export default function ResultState({
@@ -30,6 +31,7 @@ export default function ResultState({
   icon,
   showRefresh,
   children,
+  className = "",
 }: ResultStateProps) {
   const icons = {
     empty: <Inbox className="w-10 h-10 text-gray-400" />,
@@ -39,7 +41,8 @@ export default function ResultState({
   };
 
   return (
-    <div className="flex flex-col items-center justify-center text-center py-14 px-4 space-y-4">
+    <div
+      className={`flex flex-col items-center justify-center text-center py-14 px-4 space-y-4 ${className}`}>
       <div>{icon || icons[type]}</div>
 
       {title && (

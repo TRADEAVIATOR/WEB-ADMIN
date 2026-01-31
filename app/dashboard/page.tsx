@@ -2,34 +2,35 @@ import ResultState from "@/components/ui/ResultState";
 import StatCard from "./components/StatCard";
 import { Activity, DashboardGrowth, DashboardMetrics } from "@/types/models";
 import { getDashboardMetrics, getDashboardGrowth } from "@/lib/api/dashboard";
-import { getAllCryptoPairRates } from "@/lib/api/crypto";
+import { getAllCryptoPairRates, getMarketInsights } from "@/lib/api/crypto";
 import { calculateChange, extractSparklineData } from "@/lib/utils/dashboard";
 import ChartCard from "./components/ChartCard";
 import ActivityTable from "./components/ActivityTable";
-import LeaderboardCard from "./components/LeaderboardCard";
 import PieChartCard from "./components/PieChartCard";
 import ActionRequiredCard from "./components/ActionRequiredCard";
 import { formatCurrency } from "@/lib/utils/format";
 import CryptoTicker from "./components/CryptoTicker";
+import MarketInsightsCard from "./components/MarketInsightsCard";
 import { auth } from "@/lib/auth/session";
 
 export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
-  const data = await auth();
-  const userName = data?.user.name || "User";
+  const session = await auth();
+  const userName = session?.user.name || "User";
 
   const results = await Promise.allSettled([
     getDashboardMetrics(),
     getDashboardGrowth(),
     getAllCryptoPairRates(),
+    getMarketInsights(),
   ]);
 
-  const hasError = results.some(
-    (r) => r.status === "rejected" || r.value?.error,
-  );
+  const metricsRes =
+    results[0].status === "fulfilled" ? results[0].value : null;
+  const growthRes = results[1].status === "fulfilled" ? results[1].value : null;
 
-  if (hasError) {
+  if (!metricsRes || !growthRes || metricsRes.error || growthRes.error) {
     return (
       <ResultState
         type="error"
@@ -39,22 +40,26 @@ export default async function DashboardPage() {
     );
   }
 
-  const metricsRes =
-    results[0].status === "fulfilled" ? results[0].value : null;
-  const growthRes = results[1].status === "fulfilled" ? results[1].value : null;
-  const cryptoRes = results[2].status === "fulfilled" ? results[2].value : [];
-
-  if (!metricsRes || !growthRes) {
-    return (
-      <ResultState
-        type="error"
-        message="Unable to load dashboard data. Please try again."
-      />
-    );
-  }
-
   const metrics: DashboardMetrics = metricsRes.data.data;
   const growth: DashboardGrowth = growthRes.data.data;
+
+  const cryptoRes = results[2].status === "fulfilled" ? results[2].value : null;
+
+  const cryptoData =
+    cryptoRes && "data" in cryptoRes && Array.isArray(cryptoRes.data)
+      ? cryptoRes.data
+      : [];
+
+  const marketInsightsRes =
+    results[3].status === "fulfilled" ? results[3].value : null;
+
+  const marketInsights =
+    marketInsightsRes &&
+    marketInsightsRes.error === null &&
+    marketInsightsRes.data &&
+    Array.isArray(marketInsightsRes.data.data)
+      ? marketInsightsRes.data.data
+      : [];
 
   const statCards = [
     {
@@ -80,12 +85,10 @@ export default async function DashboardPage() {
     },
   ];
 
-  const cryptoData = cryptoRes && "data" in cryptoRes ? cryptoRes.data : [];
-
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-col w-full gap-4">
-        <div className="flex flex-col gap-1.5">
+      <div className="flex flex-col gap-4">
+        <div>
           <h1 className="text-2xl md:text-3xl font-semibold text-secondary">
             Welcome back, <span className="text-primary">{userName}</span>
           </h1>
@@ -95,15 +98,14 @@ export default async function DashboardPage() {
           </p>
         </div>
 
-        <div className="w-full">
-          <CryptoTicker cryptos={cryptoData} />
-        </div>
+        <CryptoTicker cryptos={cryptoData} />
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {statCards.map((stat) => (
           <StatCard key={stat.label} {...stat} />
         ))}
+
         <ActionRequiredCard
           giftcards={metrics.actionRequired.giftcardRequests}
           pending={metrics.actionRequired.pendingTransactions}
@@ -125,7 +127,20 @@ export default async function DashboardPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        <LeaderboardCard title="Leaderboard" className="lg:col-span-8" />
+        {marketInsights.length > 0 ? (
+          <MarketInsightsCard
+            title="Market Insights"
+            data={marketInsights}
+            className="lg:col-span-8"
+          />
+        ) : (
+          <ResultState
+            type="empty"
+            title="Market Insights Unavailable"
+            message="Crypto market data is temporarily unavailable."
+            className="lg:col-span-8"
+          />
+        )}
 
         <PieChartCard
           title="Virtual Card Analytics"

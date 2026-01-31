@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import { useModal } from "@/context/ModalContext";
 import { formatCurrency } from "@/lib/utils/format";
 import { RecentActivitiesProps } from "@/types/props";
 import clsx from "clsx";
+import { Inbox } from "lucide-react";
 
 export default function RecentActivities({
   title = "Recent Activities",
@@ -13,7 +13,6 @@ export default function RecentActivities({
   className,
 }: RecentActivitiesProps) {
   const { openModal } = useModal();
-  const [showAll, setShowAll] = useState(false);
 
   const truncate = (text: string, maxLength = 25) =>
     text.length > maxLength ? text.slice(0, maxLength) + "…" : text;
@@ -25,6 +24,8 @@ export default function RecentActivities({
     return new Date(`${year}-${month}-${day}T${timePart}`);
   };
 
+  const hasActivities = Array.isArray(data) && data.length > 0;
+
   return (
     <div
       className={clsx(
@@ -33,46 +34,60 @@ export default function RecentActivities({
       )}>
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-semibold text-secondary">{title}</h2>
-        <Link
-          href="/dashboard/transactions"
-          className="text-sm text-primary hover:underline">
-          View All
-        </Link>
+
+        {hasActivities && (
+          <Link
+            href="/dashboard/transactions"
+            className="text-sm text-primary hover:underline">
+            View All
+          </Link>
+        )}
       </div>
 
-      <div className="flex flex-col divide-y divide-gray-200">
-        {(showAll ? data : data.slice(0, 8)).map((activity) => (
-          <button
-            key={activity.id}
-            onClick={() => openModal("view-activity-details", activity)}
-            className="text-left w-full flex flex-col sm:flex-row sm:items-center sm:justify-between py-3 hover:bg-gray-50 transition rounded-lg px-2">
-            <div className="flex flex-col gap-0.5">
-              <p className="text-sm font-medium text-gray-800">
-                {truncate(activity.description)}
-              </p>
-              <p className="text-sm text-gray-500">
-                {truncate(
-                  `${activity.type} - ${formatCurrency(activity.amount)}`,
-                  30,
-                )}
-              </p>
-            </div>
-            <div className="flex flex-col sm:items-end text-right">
-              <p className="text-xs text-gray-400">{activity.timeAgo}</p>
-              <p className="text-xs text-gray-400">
-                {parseBackendDate(activity.createdAt).toLocaleString([], {
-                  year: "numeric",
-                  month: "short",
-                  day: "numeric",
-                  hour: "numeric",
-                  minute: "2-digit",
-                  hour12: true,
-                })}
-              </p>
-            </div>
-          </button>
-        ))}
-      </div>
+      {hasActivities ? (
+        <div className="flex flex-col divide-y divide-gray-200">
+          {data.slice(0, 8).map((activity) => (
+            <button
+              key={activity.id}
+              onClick={() => openModal("view-activity-details", activity)}
+              className="text-left w-full flex flex-col sm:flex-row sm:items-center sm:justify-between py-3 hover:bg-gray-50 transition rounded-lg px-2">
+              <div className="flex flex-col gap-0.5">
+                <p className="text-sm font-medium text-gray-800">
+                  {truncate(activity.description)}
+                </p>
+                <p className="text-sm text-gray-500">
+                  {truncate(
+                    `${activity.type} - ${formatCurrency(activity.amount)}`,
+                    30,
+                  )}
+                </p>
+              </div>
+
+              <div className="flex flex-col sm:items-end text-right">
+                <p className="text-xs text-gray-400">{activity.timeAgo}</p>
+                <p className="text-xs text-gray-400">
+                  {parseBackendDate(activity.createdAt).toLocaleString([], {
+                    year: "numeric",
+                    month: "short",
+                    day: "numeric",
+                    hour: "numeric",
+                    minute: "2-digit",
+                    hour12: true,
+                  })}
+                </p>
+              </div>
+            </button>
+          ))}
+        </div>
+      ) : (
+        <div className="flex flex-col items-center justify-center py-10 text-center gap-2">
+          <Inbox className="w-10 h-10 text-gray-400" />
+          <p className="text-sm text-gray-500">No recent activity yet</p>
+          <p className="text-xs text-gray-400">
+            Your transactions will appear here once you start.
+          </p>
+        </div>
+      )}
     </div>
   );
 }

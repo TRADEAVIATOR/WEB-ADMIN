@@ -41,7 +41,7 @@ export default function ActionRequiredCard({
         className={clsx(
           "flex items-center justify-between rounded-xl p-3 transition",
           "hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary/20",
-          giftcards > 0 && "bg-red-50/40"
+          giftcards > 0 && "bg-red-50/40",
         )}>
         <div className="flex items-center gap-3">
           <Image src={GiftIcon} alt="Giftcard" width={20} height={20} />
@@ -65,7 +65,7 @@ export default function ActionRequiredCard({
         className={clsx(
           "flex items-center justify-between rounded-xl p-3 transition",
           "hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary/20",
-          pending > 0 && "bg-red-50/40"
+          pending > 0 && "bg-red-50/40",
         )}>
         <div className="flex items-center gap-3">
           <Image

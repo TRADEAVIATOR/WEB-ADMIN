@@ -1,5 +1,5 @@
 import { tryServer } from "../utils/errorHandler";
-import { clientApi, getServerApi } from "./config/client";
+import { clientApi, getServerApi, publicApi } from "./config/client";
 
 export const setCryptoRateClient = async (payload: {
   valueNGN: number;
@@ -23,4 +23,10 @@ export const getAllCryptoPairRates = async () => {
 
 export const getAllCryptoPairRatesClient = async () => {
   return clientApi.get("/admin/crypto").then((res) => res.data);
+};
+
+export const getMarketInsights = async () => {
+  return tryServer(
+    publicApi.get("/crypto/market-insights").then((r) => r.data),
+  );
 };
