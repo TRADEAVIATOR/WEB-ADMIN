@@ -19,44 +19,43 @@ type Props = {
 export default function MarketInsightsCard({ title, data, className }: Props) {
   return (
     <div className={`bg-white rounded-xl p-4 ${className}`}>
-      <h3 className="font-semibold text-lg mb-4">{title}</h3>
-
-      <div className="space-y-3">
+      <h3 className="font-semibold text-xl mb-4">{title}</h3>{" "}
+      <div className="space-y-4">
         {data.map((coin) => {
           const isNegative = coin.priceChange24h < 0;
 
           return (
             <div
               key={coin.symbol}
-              className="flex items-center justify-between gap-3">
-              <div className="flex items-center gap-3">
+              className="flex items-center justify-between gap-4">
+              <div className="flex items-center gap-4">
                 <Image
                   src={coin.image}
                   alt={coin.name}
-                  width={32}
-                  height={32}
+                  width={36}
+                  height={36}
                   className="rounded-full"
                   priority={false}
                 />
                 <div>
-                  <p className="font-medium text-sm">
+                  <p className="font-medium text-base">
                     {coin.name}
-                    <span className="text-gray-400 ml-1 text-xs">
+                    <span className="text-gray-400 ml-1 text-sm">
                       ({coin.symbol})
                     </span>
                   </p>
-                  <p className="text-xs text-gray-500">
+                  <p className="text-sm text-gray-500">
                     MCap: {formatCurrency(coin.marketCap)}
                   </p>
                 </div>
               </div>
 
               <div className="text-right">
-                <p className="font-semibold text-sm">
+                <p className="font-semibold text-base">
                   {formatCurrency(coin.currentPrice)}
                 </p>
                 <p
-                  className={`text-xs ${
+                  className={`text-sm ${
                     isNegative ? "text-red-500" : "text-green-500"
                   }`}>
                   {isNegative ? "" : "+"}
