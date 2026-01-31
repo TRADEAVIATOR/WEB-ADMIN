@@ -16,23 +16,31 @@ export default async function EventsPage({
 
   const res = await getEvents(page, 50);
 
+  let content;
+
   if (!res || res.error) {
-    return <ResultState type="error" message="Unable to fetch events." />;
-  }
+    content = <ResultState type="error" message="Unable to fetch events." />;
+  } else {
+    const payload = res.data;
 
-  const payload = res.data;
-
-  if (!payload || !payload.results) {
-    return (
-      <ResultState
-        type="error"
-        message="Invalid server response. Please try again later."
-      />
-    );
-  }
-
-  if (payload.results.length === 0) {
-    return <ResultState type="empty" message="No events found." />;
+    if (!payload || !payload.results) {
+      content = (
+        <ResultState
+          type="error"
+          message="Invalid server response. Please try again later."
+        />
+      );
+    } else if (payload.results.length === 0) {
+      content = <ResultState type="empty" message="No events found." />;
+    } else {
+      content = (
+        <DataTableClient
+          initialData={payload.results}
+          initialPage={payload.pagination.currentPage}
+          totalPages={payload.pagination.totalPages}
+        />
+      );
+    }
   }
 
   return (
@@ -44,12 +52,7 @@ export default async function EventsPage({
         buttonText="Add New Event"
         buttonHref="/dashboard/events/add"
       />
-
-      <DataTableClient
-        initialData={payload.results}
-        initialPage={payload.pagination.currentPage}
-        totalPages={payload.pagination.totalPages}
-      />
+      {content}
     </>
   );
 }

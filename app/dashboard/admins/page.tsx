@@ -16,20 +16,30 @@ export default async function AdminsPage({
 
   const res = await getAdmins(page, 50);
 
+  let content;
+
   if (!res || res.error) {
-    return (
+    content = (
       <ResultState
         type="error"
         message="Unable to fetch administrators."
         showRefresh
       />
     );
-  }
+  } else {
+    const admins = res.data?.admins;
 
-  const admins = res.data?.admins;
-
-  if (!admins || admins.length === 0) {
-    return <ResultState type="empty" message="No administrators found." />;
+    if (!admins || admins.length === 0) {
+      content = <ResultState type="empty" message="No administrators found." />;
+    } else {
+      content = (
+        <DataTableClient
+          initialData={admins}
+          initialPage={page}
+          totalPages={res.data?.pagination?.totalPages || 1}
+        />
+      );
+    }
   }
 
   return (
@@ -41,11 +51,7 @@ export default async function AdminsPage({
         buttonText="Add new administrator"
         modalTypeToOpen="add-new-administrator"
       />
-      <DataTableClient
-        initialData={admins}
-        initialPage={page}
-        totalPages={res.data?.pagination?.totalPages || 1}
-      />
+      {content}
     </>
   );
 }

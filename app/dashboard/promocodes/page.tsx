@@ -15,24 +15,32 @@ export default async function PromoCodesPage({
 
   const res = await getPromoCodes({ page, limit: 50 });
 
+  let content;
+
   if (!res || res.error) {
-    return (
+    content = (
       <ResultState
         type="error"
         message="Unable to fetch promo codes."
         showRefresh
       />
     );
-  }
+  } else {
+    const payload = res.data?.data;
 
-  const payload = res.data?.data;
-
-  if (!payload || !payload.results) {
-    return <ResultState type="error" message="Invalid server response." />;
-  }
-
-  if (payload.results.length === 0) {
-    return <ResultState type="empty" message="No promo codes found." />;
+    if (!payload || !payload.results) {
+      content = <ResultState type="error" message="Invalid server response." />;
+    } else if (payload.results.length === 0) {
+      content = <ResultState type="empty" message="No promo codes found." />;
+    } else {
+      content = (
+        <DataTableClient
+          initialData={payload.results}
+          initialPage={payload.pagination.currentPage}
+          totalPages={payload.pagination.totalPages}
+        />
+      );
+    }
   }
 
   return (
@@ -43,12 +51,7 @@ export default async function PromoCodesPage({
         buttonHref="/dashboard/promocodes/create"
         buttonText="Add Promo Code"
       />
-
-      <DataTableClient
-        initialData={payload.results}
-        initialPage={payload.pagination.currentPage}
-        totalPages={payload.pagination.totalPages}
-      />
+      {content}
     </>
   );
 }

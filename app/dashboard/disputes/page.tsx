@@ -2,7 +2,6 @@ import PageHeader from "@/components/ui/PageHeader";
 import ResultState from "@/components/ui/ResultState";
 import DataTableClient from "./DataTableClient";
 import { getDisputes } from "@/lib/api/disputes";
-import { DisputesResponse } from "@/types/api";
 
 export const dynamic = "force-dynamic";
 
@@ -16,29 +15,37 @@ export default async function DisputesPage({
 
   const res = await getDisputes(page, 50);
 
+  let content;
+
   if (!res || res.error) {
-    return (
+    content = (
       <ResultState
         type="error"
         message="Unable to fetch disputes."
         showRefresh
       />
     );
-  }
+  } else {
+    const payload = res.data?.data;
 
-  const payload = res.data?.data as DisputesResponse | undefined;
-
-  if (!payload || !payload.transactions) {
-    return (
-      <ResultState
-        type="error"
-        message="Invalid server response. Please try again later."
-      />
-    );
-  }
-
-  if (payload.transactions.length === 0) {
-    return <ResultState type="empty" message="No disputes found." />;
+    if (!payload || !payload.transactions) {
+      content = (
+        <ResultState
+          type="error"
+          message="Invalid server response. Please try again later."
+        />
+      );
+    } else if (payload.transactions.length === 0) {
+      content = <ResultState type="empty" message="No disputes found." />;
+    } else {
+      content = (
+        <DataTableClient
+          initialData={payload.transactions}
+          initialPage={payload.pagination.currentPage}
+          totalPages={payload.pagination.totalPages}
+        />
+      );
+    }
   }
 
   return (
@@ -47,11 +54,7 @@ export default async function DisputesPage({
         title="Disputes"
         description="View and manage all user disputes"
       />
-      <DataTableClient
-        initialData={payload.transactions}
-        initialPage={payload.pagination.currentPage}
-        totalPages={payload.pagination.totalPages}
-      />
+      {content}
     </>
   );
 }

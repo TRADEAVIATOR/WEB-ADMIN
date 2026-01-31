@@ -8,20 +8,28 @@ export const dynamic = "force-dynamic";
 export default async function RecurringPatternsPage() {
   const res = await getRecurringPatterns();
 
+  let content;
+
   if (!res || res.error) {
-    return (
+    content = (
       <ResultState
         type="error"
         message="Unable to fetch recurring patterns."
         showRefresh
       />
     );
-  }
+  } else {
+    const data = res.data?.data;
 
-  const data = res.data.data;
-
-  if (!data || data.length === 0) {
-    return <ResultState type="empty" message="No recurring patterns found." />;
+    if (!data || data.length === 0) {
+      content = (
+        <ResultState type="empty" message="No recurring patterns found." />
+      );
+    } else {
+      content = (
+        <DataTableClient initialData={data} initialPage={1} totalPages={1} />
+      );
+    }
   }
 
   return (
@@ -31,7 +39,7 @@ export default async function RecurringPatternsPage() {
         description="Manage available recurring notification patterns"
         showBackButton
       />
-      <DataTableClient initialData={data} initialPage={1} totalPages={1} />
+      {content}
     </>
   );
 }

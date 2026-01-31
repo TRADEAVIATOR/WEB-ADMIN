@@ -3,10 +3,10 @@
 import { SessionProvider } from "next-auth/react";
 import { ReactNode } from "react";
 
-export interface AuthProviderProps {
-  children: ReactNode;
-}
-
-export default function AuthProvider({ children }: AuthProviderProps) {
-  return <SessionProvider>{children}</SessionProvider>;
+export default function AuthProvider({ children }: { children: ReactNode }) {
+  return (
+    <SessionProvider refetchInterval={5 * 60} refetchOnWindowFocus={true}>
+      {children}
+    </SessionProvider>
+  );
 }

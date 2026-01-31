@@ -24,12 +24,14 @@ export default function NewTemplateClient() {
       });
 
       router.push("/dashboard/notifications/templates");
+
+      router.refresh(); 
     } catch (error: any) {
       toast.error(
         error?.response?.data?.message || "Failed to create template",
         {
           id: toastId,
-        }
+        },
       );
       handleApiError(error);
     }

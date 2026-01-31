@@ -1,8 +1,8 @@
-import { publicApi } from "../api/config/client";
+import axios from "axios";
 
 const BASE_URL =
   process.env.NEXT_PUBLIC_API_URL ||
-  "https://tradeaviatorbackend-8n6i.onrender.com/api/v1";
+  "https://api-staging.usetradeaviator.com/api/v1";
 
 interface RefreshResponse {
   accessToken: string;
@@ -11,18 +11,27 @@ interface RefreshResponse {
 
 export async function refreshAccessToken(refreshToken: string) {
   try {
-    const response = await publicApi.post<RefreshResponse>(
-      `${BASE_URL}/auth/refresh-token`,
-      { refreshToken }
+    const response = await axios.post<RefreshResponse>(
+      `${BASE_URL}/admin/auth/refresh-token`,
+      { refreshToken },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      },
     );
+
+    if (!response.data.accessToken || !response.data.refreshToken) {
+      throw new Error("Invalid refresh response");
+    }
 
     return {
       accessToken: response.data.accessToken,
       refreshToken: response.data.refreshToken,
-      accessTokenExpires: Date.now() + 60 * 60 * 1000,
+      accessTokenExpires: Date.now() + 55 * 60 * 1000,
     };
   } catch (error) {
-    console.error("Refresh token failed", error);
+    console.error("Failed to refresh access token:", error);
     throw error;
   }
 }

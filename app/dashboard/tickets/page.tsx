@@ -16,29 +16,37 @@ export default async function TicketsPage({
 
   const res = await getTickets(page, 50);
 
+  let content;
+
   if (!res || res.error) {
-    return (
+    content = (
       <ResultState
         type="error"
         message="Unable to fetch tickets."
         showRefresh
       />
     );
-  }
+  } else {
+    const payload = res.data as TicketsResponse | undefined;
 
-  const payload = res.data as TicketsResponse | undefined;
-
-  if (!payload) {
-    return (
-      <ResultState
-        type="error"
-        message="Invalid server response. Please try again later."
-      />
-    );
-  }
-
-  if (!payload.results || payload.results.length === 0) {
-    return <ResultState type="empty" message="No tickets found." />;
+    if (!payload) {
+      content = (
+        <ResultState
+          type="error"
+          message="Invalid server response. Please try again later."
+        />
+      );
+    } else if (!payload.results || payload.results.length === 0) {
+      content = <ResultState type="empty" message="No tickets found." />;
+    } else {
+      content = (
+        <DataTableClient
+          initialData={payload.results}
+          initialPage={payload.pagination.currentPage}
+          totalPages={payload.pagination.totalPages}
+        />
+      );
+    }
   }
 
   return (
@@ -47,11 +55,7 @@ export default async function TicketsPage({
         title="Tickets"
         description="View and manage event tickets, sales, and availability"
       />
-      <DataTableClient
-        initialData={payload.results}
-        initialPage={payload.pagination.currentPage}
-        totalPages={payload.pagination.totalPages}
-      />
+      {content}
     </>
   );
 }

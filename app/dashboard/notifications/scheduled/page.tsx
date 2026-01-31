@@ -15,40 +15,45 @@ export default async function ScheduledNotificationsPage({
 
   const res = await getScheduledNotifications(page, 50);
 
+  let content;
+
   if (!res || res.error) {
-    return (
+    content = (
       <ResultState
         type="error"
         message="Unable to fetch scheduled notifications."
         showRefresh
       />
     );
-  }
+  } else {
+    const payload = res.data;
 
-  const payload = res.data;
-
-  if (!payload?.data || payload.data.length === 0) {
-    return (
-      <ResultState type="empty" message="No scheduled notifications found." />
-    );
+    if (!payload?.data || payload.data.length === 0) {
+      content = (
+        <ResultState type="empty" message="No scheduled notifications found." />
+      );
+    } else {
+      content = (
+        <DataTableClient
+          initialData={payload.data}
+          initialPage={payload.pagination.currentPage}
+          totalPages={payload.pagination.totalPages}
+        />
+      );
+    }
   }
 
   return (
     <>
       <PageHeader
         title="Scheduled Notifications"
-        buttonHref="/dashboard/notifications/scheduled/new"
-        backHref="/dashboard/notifications"
         description="Manage all scheduled notifications and broadcasts"
         buttonText="Create Notification"
+        buttonHref="/dashboard/notifications/scheduled/new"
+        backHref="/dashboard/notifications"
         showBackButton
       />
-
-      <DataTableClient
-        initialData={payload.data}
-        initialPage={payload.pagination.currentPage}
-        totalPages={payload.pagination.totalPages}
-      />
+      {content}
     </>
   );
 }

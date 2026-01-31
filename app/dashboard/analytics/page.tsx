@@ -28,7 +28,7 @@ export default async function AnalyticsPage() {
 
   const cryptoMonthlyData = charts?.cryptoVolumeByMonth || [];
   const cryptoValues = cryptoMonthlyData.map((item: any) =>
-    parseFloat(item.value || 0)
+    parseFloat(item.value || 0),
   );
 
   let cryptoChange = "0";
@@ -47,7 +47,8 @@ export default async function AnalyticsPage() {
     charts?.transactionsByType
       ?.filter(
         (t: any) =>
-          t.type && ["DATA", "ELECTRICITY", "CABLE", "AIRTIME"].includes(t.type)
+          t.type &&
+          ["DATA", "ELECTRICITY", "CABLE", "AIRTIME"].includes(t.type),
       )
       .reduce((acc: number, curr: any) => acc + (curr.count || 0), 0) || 0;
 

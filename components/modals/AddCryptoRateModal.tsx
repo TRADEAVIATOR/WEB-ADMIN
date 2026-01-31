@@ -132,8 +132,8 @@ export default function AddCryptoRateModal({
             loadingAssets
               ? "Loading assets..."
               : error
-              ? "Unable to load assets"
-              : "Select crypto"
+                ? "Unable to load assets"
+                : "Select crypto"
           }
           onChange={(val) =>
             setFormData((prev) => ({

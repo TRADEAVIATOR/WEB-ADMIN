@@ -1,10 +1,10 @@
-import axios, { AxiosInstance } from "axios";
-import { getSession } from "next-auth/react";
+import { getSession, signOut } from "next-auth/react";
+import axios, { AxiosInstance, AxiosError } from "axios";
 import { auth } from "../../auth/session";
 
 const BASE_URL =
   process.env.NEXT_PUBLIC_API_URL ||
-  "https://tradeaviatorbackend-8n6i.onrender.com/api/v1";
+  "https://api-staging.usetradeaviator.com/api/v1";
 
 export const publicApi = axios.create({
   baseURL: BASE_URL,
@@ -24,19 +24,24 @@ clientApi.interceptors.request.use(
   async (config) => {
     const session = await getSession();
 
+    if (session?.error === "RefreshAccessTokenError") {
+      await signOut({ redirect: true, callbackUrl: "/login" });
+      return Promise.reject(new Error("Session expired"));
+    }
+
     if (session?.accessToken) {
       config.headers.Authorization = `Bearer ${session.accessToken}`;
     }
 
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => Promise.reject(error),
 );
 
 clientApi.interceptors.response.use(
   (response) => response,
-  async (error) => {
-    const originalRequest = error.config;
+  async (error: AxiosError) => {
+    const originalRequest = error.config as any;
 
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
@@ -44,20 +49,25 @@ clientApi.interceptors.response.use(
       try {
         const session = await getSession();
 
+        if (session?.error === "RefreshAccessTokenError") {
+          await signOut({ redirect: true, callbackUrl: "/login" });
+          return Promise.reject(error);
+        }
+
         if (session?.accessToken) {
           originalRequest.headers.Authorization = `Bearer ${session.accessToken}`;
           return clientApi(originalRequest);
         }
       } catch (refreshError) {
         if (typeof window !== "undefined") {
-          window.location.href = "/login";
+          await signOut({ redirect: true, callbackUrl: "/login" });
         }
         return Promise.reject(refreshError);
       }
     }
 
     return Promise.reject(error);
-  }
+  },
 );
 
 export async function getServerApi(): Promise<AxiosInstance> {

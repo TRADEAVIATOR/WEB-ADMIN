@@ -1,6 +1,8 @@
+import PageHeader from "@/components/ui/PageHeader";
 import DataTableClient from "./DataTableClient";
 import ResultState from "@/components/ui/ResultState";
 import { getTaglines } from "@/lib/api/taglines";
+import { FiPlus } from "react-icons/fi";
 
 export const dynamic = "force-dynamic";
 
@@ -14,25 +16,36 @@ export default async function TaglinesPage({
 
   const res = await getTaglines();
 
+  let content;
+
   if (!res || res.error || !res.data) {
-    return (
+    content = (
       <ResultState
         type="error"
         message="Unable to fetch taglines."
         showRefresh
       />
     );
-  }
+  } else {
+    const taglines = res.data.data.taglines || [];
 
-  const taglines = res.data.data.taglines || [];
-
-  if (!taglines || taglines.length === 0) {
-    return <ResultState type="empty" message="No taglines found." />;
+    if (taglines.length === 0) {
+      content = <ResultState type="empty" message="No taglines found." />;
+    } else {
+      content = <DataTableClient initialData={taglines} initialPage={page} />;
+    }
   }
 
   return (
     <>
-      <DataTableClient initialData={taglines} initialPage={page} />
+      <PageHeader
+        buttonIcon={<FiPlus size={16} />}
+        buttonText="Add new tagline"
+        description="Manage and create reusable taglines for notifications or campaigns"
+        modalTypeToOpen="create-tagline"
+        title="Taglines"
+      />
+      {content}
     </>
   );
 }

@@ -15,30 +15,38 @@ export default async function AdminSupportPage({
 
   const res = await getSupportConversations(page, 50);
 
+  let content;
+
   if (!res || res.error) {
-    return (
+    content = (
       <ResultState
         type="error"
         message="Unable to fetch support conversations."
       />
     );
-  }
+  } else {
+    const payload = res.data;
 
-  const payload = res.data;
-
-  if (!payload) {
-    return (
-      <ResultState
-        type="error"
-        message="Invalid server response. Please try again later."
-      />
-    );
-  }
-
-  if (!payload.results || payload.results.length === 0) {
-    return (
-      <ResultState type="empty" message="No support conversations found." />
-    );
+    if (!payload) {
+      content = (
+        <ResultState
+          type="error"
+          message="Invalid server response. Please try again later."
+        />
+      );
+    } else if (!payload.results || payload.results.length === 0) {
+      content = (
+        <ResultState type="empty" message="No support conversations found." />
+      );
+    } else {
+      content = (
+        <DataTableClient
+          initialData={payload.results}
+          initialPage={payload.pagination.currentPage}
+          totalPages={payload.pagination.totalPages}
+        />
+      );
+    }
   }
 
   return (
@@ -47,12 +55,7 @@ export default async function AdminSupportPage({
         title="Admin Support"
         description="Manage and respond to customer support conversations"
       />
-
-      <DataTableClient
-        initialData={payload.results}
-        initialPage={payload.pagination.currentPage}
-        totalPages={payload.pagination.totalPages}
-      />
+      {content}
     </>
   );
 }

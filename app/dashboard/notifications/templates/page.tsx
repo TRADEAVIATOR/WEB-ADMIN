@@ -15,22 +15,32 @@ export default async function NotificationTemplatesPage({
 
   const res = await getNotificationTemplates(page, 50);
 
+  let content;
+
   if (!res || res.error) {
-    return (
+    content = (
       <ResultState
         type="error"
         message="Unable to fetch notification templates."
         showRefresh
       />
     );
-  }
+  } else {
+    const payload = res.data;
 
-  const payload = res.data;
-
-  if (!payload?.data || payload.data.length === 0) {
-    return (
-      <ResultState type="empty" message="No notification templates found." />
-    );
+    if (!payload?.data || payload.data.length === 0) {
+      content = (
+        <ResultState type="empty" message="No notification templates found." />
+      );
+    } else {
+      content = (
+        <DataTableClient
+          initialData={payload.data}
+          initialPage={payload.pagination.currentPage}
+          totalPages={payload.pagination.totalPages}
+        />
+      );
+    }
   }
 
   return (
@@ -43,11 +53,7 @@ export default async function NotificationTemplatesPage({
         backHref="/dashboard/notifications"
         showBackButton
       />
-      <DataTableClient
-        initialData={payload.data}
-        initialPage={payload.pagination.currentPage}
-        totalPages={payload.pagination.totalPages}
-      />
+      {content}
     </>
   );
 }

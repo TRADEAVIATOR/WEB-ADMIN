@@ -6,9 +6,7 @@ import { DataTableClientProps } from "@/types/props";
 import toast from "react-hot-toast";
 import { deleteTaglineClient } from "@/lib/api/taglines";
 import { useModal } from "@/context/ModalContext";
-import PageHeader from "@/components/ui/PageHeader";
 import { handleApiError } from "@/lib/utils/errorHandler";
-import { FiPlus } from "react-icons/fi";
 
 export default function DataTableClient({
   initialData = [],
@@ -59,13 +57,6 @@ export default function DataTableClient({
 
   return (
     <>
-      <PageHeader
-        buttonIcon={<FiPlus size={16} />}
-        buttonText="Add new tagline"
-        description="Manage and create reusable taglines for notifications or campaigns"
-        modalTypeToOpen="create-tagline"
-        title="Taglines"
-      />
       <DataTable columns={columns} data={rows} menuItems={menuItems} />
     </>
   );

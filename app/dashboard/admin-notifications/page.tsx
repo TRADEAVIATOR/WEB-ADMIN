@@ -15,20 +15,30 @@ export default async function AdminNotificationsPage({
 
   const res = await getAllAdminNotifications(page, 50);
 
+  let content;
+
   if (!res || res.error) {
-    return (
+    content = (
       <ResultState
         type="error"
         message="Unable to fetch admin notifications."
         showRefresh
       />
     );
-  }
+  } else {
+    const payload = res.data;
 
-  const payload = res.data;
-
-  if (!payload?.data || payload.data.length === 0) {
-    return <ResultState type="empty" message="No notifications found." />;
+    if (!payload?.data || payload.data.length === 0) {
+      content = <ResultState type="empty" message="No notifications found." />;
+    } else {
+      content = (
+        <DataTableClient
+          initialData={payload.data}
+          initialPage={payload.pagination.page}
+          totalPages={payload.pagination.totalPages}
+        />
+      );
+    }
   }
 
   return (
@@ -37,11 +47,7 @@ export default async function AdminNotificationsPage({
         title="Admin Notifications"
         description="System alerts, activities, and important updates"
       />
-      <DataTableClient
-        initialData={payload.data}
-        initialPage={payload.pagination.page}
-        totalPages={payload.pagination.totalPages}
-      />
+      {content}
     </>
   );
 }

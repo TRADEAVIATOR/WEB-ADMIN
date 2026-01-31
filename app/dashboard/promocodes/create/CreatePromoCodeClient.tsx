@@ -27,6 +27,7 @@ export default function CreatePromoCodeClient() {
 
       toast.success(res?.data?.message || "Promo code created successfully!");
       router.push("/dashboard/promocodes");
+      router.refresh();
     } catch (error: any) {
       handleApiError(error);
     } finally {

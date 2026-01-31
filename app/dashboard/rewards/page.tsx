@@ -16,33 +16,37 @@ export default async function RewardsPage({
 
   const res = await getRewards(page, 50);
 
+  let content;
+
   if (!res || res.error) {
-    return (
+    content = (
       <ResultState
         type="error"
         message="Unable to fetch rewards."
         showRefresh
       />
     );
-  }
+  } else {
+    const payload = res.data as RewardsResponse | undefined;
 
-  const payload = res.data as RewardsResponse | undefined;
-
-  if (!payload) {
-    return (
-      <ResultState
-        type="error"
-        message="Invalid server response. Please try again later."
-      />
-    );
-  }
-
-  if (!payload || payload.results.length === 0) {
-    return (
-      <>
-        <ResultState type="empty" message="No rewards found." />
-      </>
-    );
+    if (!payload) {
+      content = (
+        <ResultState
+          type="error"
+          message="Invalid server response. Please try again later."
+        />
+      );
+    } else if (!payload.results || payload.results.length === 0) {
+      content = <ResultState type="empty" message="No rewards found." />;
+    } else {
+      content = (
+        <DataTableClient
+          initialData={payload.results}
+          initialPage={payload.pagination.currentPage}
+          totalPages={payload.pagination.totalPages}
+        />
+      );
+    }
   }
 
   return (
@@ -51,11 +55,7 @@ export default async function RewardsPage({
         title="Rewards"
         description="Manage user rewards and their details"
       />
-      <DataTableClient
-        initialData={payload.results}
-        initialPage={payload.pagination.currentPage}
-        totalPages={payload.pagination.totalPages}
-      />
+      {content}
     </>
   );
 }

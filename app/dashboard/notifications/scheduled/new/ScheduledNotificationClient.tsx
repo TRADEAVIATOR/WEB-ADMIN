@@ -24,6 +24,7 @@ export default function ScheduledNotificationClient() {
       });
 
       router.push("/dashboard/notifications/scheduled");
+      router.refresh();
     } catch (error: any) {
       toast.error(
         error?.response?.data?.message || "Failed to schedule notification",

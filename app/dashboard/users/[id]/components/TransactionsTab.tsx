@@ -22,21 +22,26 @@ export default function TransactionsTab({ customer }: { customer: Customer }) {
   ];
 
   const data =
-    customer.transactions?.map((tx) => ({
-      id: tx.id,
-      type: <Badge text={tx.type} color="teal" />,
-      category: <Badge text={tx.category} color="blue" />,
-      amount: formatCurrency(tx.amount || 0),
-      status: <Badge text={tx.status} color="green" />,
-      method: tx.channel,
-      timeframe: new Date(tx.createdAt).toLocaleString("en-US", {
-        month: "short",
-        day: "numeric",
-        year: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-      }),
-    })) || [];
+    customer.transactions?.map((tx) => {
+      const typeColor =
+        tx.type === "CREDIT" ? "green" : tx.type === "DEBIT" ? "red" : "gray";
+
+      return {
+        id: tx.id,
+        type: <Badge text={tx.type} color={typeColor} />,
+        category: <Badge text={tx.category} color="blue" />,
+        amount: formatCurrency(tx.amount || 0),
+        status: <Badge text={tx.status} color="green" />,
+        method: tx.channel,
+        timeframe: new Date(tx.createdAt).toLocaleString("en-US", {
+          month: "short",
+          day: "numeric",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+        }),
+      };
+    }) || [];
 
   return (
     <div className="space-y-4">

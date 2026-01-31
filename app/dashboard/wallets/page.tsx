@@ -9,82 +9,90 @@ export const dynamic = "force-dynamic";
 export default async function WalletsPage() {
   const res = await getWallets();
 
+  let content;
+
   if (!res || res.error) {
-    return (
+    content = (
       <ResultState
         type="error"
         message="Unable to fetch wallets."
         showRefresh
       />
     );
+  } else {
+    const payload = res.data?.data?.data;
+
+    if (!payload) {
+      content = (
+        <ResultState
+          type="error"
+          message="Invalid server response. Please try again later."
+        />
+      );
+    } else {
+      content = (
+        <>
+          <section className="mb-12 p-6 bg-white rounded-lg shadow-md">
+            <PageHeader
+              title="GiftBills Wallet"
+              description="View GiftBills account balance and earnings"
+            />
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
+              <StatCard
+                title="Balance"
+                value={formatCurrency(payload.balance)}
+                color="blue"
+              />
+              <StatCard
+                title="Earnings"
+                value={formatCurrency(payload.earning)}
+                color="green"
+              />
+              <StatCard
+                title="Cashback"
+                value={formatCurrency(payload.cashback)}
+                color="orange"
+              />
+              <StatCard title="Points" value={payload.point} color="purple" />
+              <StatCard
+                title="SMS Units"
+                value={payload.sms_units}
+                color="teal"
+              />
+              <StatCard
+                title="MTN CG"
+                value={formatCurrency(payload.mtn_cg)}
+                color="yellow"
+              />
+              <StatCard
+                title="MTN SME"
+                value={formatCurrency(payload.mtn_sme)}
+                color="red"
+              />
+              <StatCard
+                title="Airtel CG"
+                value={formatCurrency(payload.airtel_cg)}
+                color="indigo"
+              />
+            </div>
+          </section>
+
+          <hr className="my-12 border-gray-300" />
+
+          <section className="p-6 bg-gray-50 rounded-lg shadow-md">
+            <PageHeader
+              title="Admin Wallet Actions"
+              description="Manage system wallets and perform administrative actions"
+            />
+            <AdminWalletActions />
+          </section>
+        </>
+      );
+    }
   }
 
-  const payload = res.data?.data?.data;
-
-  if (!payload) {
-    return (
-      <ResultState
-        type="error"
-        message="Invalid server response. Please try again later."
-      />
-    );
-  }
-
-  return (
-    <>
-      <section className="mb-12 p-6 bg-white rounded-lg shadow-md">
-        <PageHeader
-          title="GiftBills Wallet"
-          description="View GiftBills account balance and earnings"
-        />
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
-          <StatCard
-            title="Balance"
-            value={formatCurrency(payload.balance)}
-            color="blue"
-          />
-          <StatCard
-            title="Earnings"
-            value={formatCurrency(payload.earning)}
-            color="green"
-          />
-          <StatCard
-            title="Cashback"
-            value={formatCurrency(payload.cashback)}
-            color="orange"
-          />
-          <StatCard title="Points" value={payload.point} color="purple" />
-          <StatCard title="SMS Units" value={payload.sms_units} color="teal" />
-          <StatCard
-            title="MTN CG"
-            value={formatCurrency(payload.mtn_cg)}
-            color="yellow"
-          />
-          <StatCard
-            title="MTN SME"
-            value={formatCurrency(payload.mtn_sme)}
-            color="red"
-          />
-          <StatCard
-            title="Airtel CG"
-            value={formatCurrency(payload.airtel_cg)}
-            color="indigo"
-          />
-        </div>
-      </section>
-
-      <hr className="my-12 border-gray-300" />
-
-      <section className="p-6 bg-gray-50 rounded-lg shadow-md">
-        <PageHeader
-          title="Admin Wallet Actions"
-          description="Manage system wallets and perform administrative actions"
-        />
-        <AdminWalletActions />
-      </section>
-    </>
-  );
+  return <>{content}</>;
 }
 
 function StatCard({

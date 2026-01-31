@@ -41,6 +41,7 @@ export default function BroadcastNotificationClient() {
       );
 
       router.push("/dashboard/notifications/broadcast");
+      router.refresh();
     } catch (error: any) {
       toast.error(
         error?.response?.data?.message ||

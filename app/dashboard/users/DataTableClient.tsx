@@ -55,7 +55,7 @@ export default function DataTableClient({
       year: "numeric",
     }),
   }));
-  
+
   const handleToggleCustomerStatus = async (customerId: string) => {
     const toastId = toast.loading("Updating customer status...");
 

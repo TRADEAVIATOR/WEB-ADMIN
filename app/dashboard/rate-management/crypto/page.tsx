@@ -9,33 +9,31 @@ export const dynamic = "force-dynamic";
 export default async function CryptoRatesPage() {
   const res = await getAllCryptoPairRates();
 
+  let content;
+
   if (!res || res.error) {
-    return (
+    content = (
       <ResultState
         type="error"
         message="Unable to fetch crypto rates."
         showRefresh
       />
     );
-  }
+  } else {
+    const payload = res.data as any[] | undefined;
 
-  const payload = res.data as any[] | undefined;
-
-  if (!payload) {
-    return (
-      <ResultState
-        type="error"
-        message="Invalid server response. Please try again later."
-      />
-    );
-  }
-
-  if (payload.length === 0) {
-    return (
-      <>
-        <ResultState type="empty" message="No crypto rates found." />
-      </>
-    );
+    if (!payload) {
+      content = (
+        <ResultState
+          type="error"
+          message="Invalid server response. Please try again later."
+        />
+      );
+    } else if (payload.length === 0) {
+      content = <ResultState type="empty" message="No crypto rates found." />;
+    } else {
+      content = <DataTableClient initialData={payload} />;
+    }
   }
 
   return (
@@ -47,8 +45,7 @@ export default async function CryptoRatesPage() {
         buttonText="Add new crypto rate"
         modalTypeToOpen="add-crypto-rate"
       />
-
-      <DataTableClient initialData={payload} />
+      {content}
     </>
   );
 }

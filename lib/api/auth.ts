@@ -3,7 +3,9 @@ import { tryServer } from "../utils/errorHandler";
 
 export const adminLogin = async (email: string, password: string) => {
   return tryServer(
-    publicApi.post("/admin/auth/login", { email, password }).then((r) => r.data)
+    publicApi
+      .post("/admin/auth/login", { email, password })
+      .then((r) => r.data),
   );
 };
 
@@ -39,6 +41,40 @@ export const createAdminUserClient = async (payload: {
 export const getAdmins = async (page = 1, limit = 10) => {
   const api = await getServerApi();
   return tryServer(
-    api.get(`/admin/auth?page=${page}&limit=${limit}`).then((r) => r.data)
+    api.get(`/admin/auth?page=${page}&limit=${limit}`).then((r) => r.data),
+  );
+};
+
+export const refreshAdminToken = async (refreshToken: string) => {
+  const api = await getServerApi();
+  return tryServer(
+    api
+      .post("/admin/auth/refresh-token", { refreshToken })
+      .then((res) => res.data),
+  );
+};
+
+export const suspendAdmin = async (adminId: string, isActive: boolean) => {
+  return tryServer(
+    clientApi
+      .patch(`/admin/auth/suspend/${adminId}`, { isActive })
+      .then((res) => res.data),
+  );
+};
+
+export const deleteAdmin = async (adminId: string) => {
+  return tryServer(
+    clientApi.delete(`/admin/auth/delete/${adminId}`).then((res) => res.data),
+  );
+};
+
+export const resetAdminPassword = async (
+  adminId: string,
+  newPassword: string,
+) => {
+  return tryServer(
+    clientApi
+      .patch(`/admin/auth/reset-password/${adminId}`, { newPassword })
+      .then((res) => res.data),
   );
 };

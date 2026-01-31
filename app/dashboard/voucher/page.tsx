@@ -15,20 +15,30 @@ export default async function VoucherPage({
 
   const res = await getVouchers(page, 50);
 
+  let content;
+
   if (!res || res.error) {
-    return (
+    content = (
       <ResultState
         type="error"
         message="Unable to fetch vouchers."
         showRefresh
       />
     );
-  }
+  } else {
+    const payload = res.data;
 
-  const payload = res.data;
-
-  if (!payload) {
-    return <ResultState type="empty" message="No vouchers found." />;
+    if (!payload || payload.length === 0) {
+      content = <ResultState type="empty" message="No vouchers found." />;
+    } else {
+      content = (
+        <DataTableClient
+          initialData={payload}
+          initialPage={payload.pagination?.currentPage || 1}
+          totalPages={payload.pagination?.totalPages || 1}
+        />
+      );
+    }
   }
 
   return (
@@ -39,11 +49,7 @@ export default async function VoucherPage({
         buttonText="Create Bulk Vouchers"
         modalTypeToOpen={"create-bulk-vouchers"}
       />
-      <DataTableClient
-        initialData={payload}
-        initialPage={payload.pagination?.currentPage || 1}
-        totalPages={payload.pagination?.totalPages || 1}
-      />
+      {content}
     </>
   );
 }
