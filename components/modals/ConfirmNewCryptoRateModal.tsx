@@ -29,7 +29,7 @@ export default function ConfirmNewCryptoRateModal({
 
   if (!data || !data.baseAsset || !data.valueNGN) {
     toast.error(
-      "Missing required fields. Please complete the crypto rate form."
+      "Missing required fields. Please complete the crypto rate form.",
     );
     openModal("add-crypto-rate");
     return null;
@@ -52,9 +52,7 @@ export default function ConfirmNewCryptoRateModal({
       });
 
       toast.success("Crypto rate set successfully!");
-
       router.refresh();
-
       onClose();
     } catch (error: any) {
       handleApiError(error);

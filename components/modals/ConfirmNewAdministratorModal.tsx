@@ -7,6 +7,7 @@ import { useModal } from "@/context/ModalContext";
 import { createAdminUserClient } from "@/lib/api/auth";
 import toast from "react-hot-toast";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 interface ConfirmNewAdministratorModalProps {
   isOpen: boolean;
@@ -17,6 +18,8 @@ export default function ConfirmNewAdministratorModal({
   isOpen,
   onClose,
 }: ConfirmNewAdministratorModalProps) {
+  const router = useRouter();
+
   const { openModal, modalData } = useModal();
   const [loading, setLoading] = useState(false);
 
@@ -50,6 +53,8 @@ export default function ConfirmNewAdministratorModal({
       });
 
       toast.success("Administrator created successfully!");
+      router.refresh();
+
       onClose();
     } catch (error: any) {
       handleApiError(error);
