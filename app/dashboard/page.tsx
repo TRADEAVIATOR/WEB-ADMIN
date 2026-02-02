@@ -2,7 +2,11 @@ import ResultState from "@/components/ui/ResultState";
 import StatCard from "./components/StatCard";
 import { Activity, DashboardGrowth, DashboardMetrics } from "@/types/models";
 import { getDashboardMetrics, getDashboardGrowth } from "@/lib/api/dashboard";
-import { getAllCryptoPairRates, getMarketInsights } from "@/lib/api/crypto";
+import {
+  getAllCryptoPairRates,
+  getMarketInsights,
+  getNgnRate,
+} from "@/lib/api/crypto";
 import { calculateChange, extractSparklineData } from "@/lib/utils/dashboard";
 import ChartCard from "./components/ChartCard";
 import ActivityTable from "./components/ActivityTable";
@@ -12,6 +16,7 @@ import { formatCurrency } from "@/lib/utils/format";
 import CryptoTicker from "./components/CryptoTicker";
 import MarketInsightsCard from "./components/MarketInsightsCard";
 import { auth } from "@/lib/auth/session";
+import DashboardHeader from "./components/Dashboardheader";
 
 export const dynamic = "force-dynamic";
 
@@ -24,6 +29,7 @@ export default async function DashboardPage() {
     getDashboardGrowth(),
     getAllCryptoPairRates(),
     getMarketInsights(),
+    getNgnRate(),
   ]);
 
   const metricsRes =
@@ -61,6 +67,16 @@ export default async function DashboardPage() {
       ? marketInsightsRes.data.data
       : [];
 
+  const ngnRateRes =
+    results[4].status === "fulfilled" ? results[4].value : null;
+
+  const ngnRate =
+    ngnRateRes &&
+    ngnRateRes.error === null &&
+    typeof ngnRateRes.data === "number"
+      ? ngnRateRes.data
+      : null;
+
   const statCards = [
     {
       label: "Total Users",
@@ -88,17 +104,9 @@ export default async function DashboardPage() {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-4">
-        <div>
-          <h1 className="text-2xl md:text-3xl font-semibold text-secondary">
-            Welcome back, <span className="text-primary">{userName}</span>
-          </h1>
-          <p className="text-gray-500 text-sm md:text-base">
-            Here&apos;s what&apos;s happening today on{" "}
-            <span className="font-medium text-secondary">TradeAviator</span>
-          </p>
-        </div>
+        <DashboardHeader userName={userName} ngnRate={ngnRate} />
 
-        <CryptoTicker cryptos={cryptoData} />
+        <CryptoTicker cryptos={cryptoData} ngnRate={ngnRate} />
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

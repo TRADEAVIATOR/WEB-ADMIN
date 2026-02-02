@@ -30,3 +30,8 @@ export const getMarketInsights = async () => {
     publicApi.get("/crypto/market-insights").then((r) => r.data),
   );
 };
+
+export const getNgnRate = async () => {
+  const api = await getServerApi();
+  return tryServer(api.get("/admin/crypto/ngn").then((res) => res.data));
+};
