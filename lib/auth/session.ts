@@ -16,11 +16,11 @@ export async function requireAuth() {
   return session;
 }
 
-export async function requireRole(role: "intern" | "employer") {
+export async function requireRole(role: "admin" | "superAdmin") {
   const session = await requireAuth();
 
   if (session.user.role !== role) {
-    redirect("/unauthorized");
+    redirect("/");
   }
 
   return session;

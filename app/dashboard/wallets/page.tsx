@@ -3,11 +3,14 @@ import ResultState from "@/components/ui/ResultState";
 import { getWallets } from "@/lib/api/wallets";
 import AdminWalletActions from "./AdminWalletActions";
 import { formatCurrency } from "@/lib/utils/format";
+import { auth } from "@/lib/auth/session";
 
 export const dynamic = "force-dynamic";
 
 export default async function WalletsPage() {
   const res = await getWallets();
+
+  const session = await auth();
 
   let content;
 
@@ -78,15 +81,18 @@ export default async function WalletsPage() {
             </div>
           </section>
 
-          <hr className="my-12 border-gray-300" />
-
-          <section className="p-6 bg-gray-50 rounded-lg shadow-md">
-            <PageHeader
-              title="Admin Wallet Actions"
-              description="Manage system wallets and perform administrative actions"
-            />
-            <AdminWalletActions />
-          </section>
+          {session?.user.role === "superAdmin" && (
+            <>
+              <hr className="my-12 border-gray-300" />
+              <section className="p-6 bg-gray-50 rounded-lg shadow-md">
+                <PageHeader
+                  title="Admin Wallet Actions"
+                  description="Manage system wallets and perform administrative actions"
+                />
+                <AdminWalletActions />
+              </section>
+            </>
+          )}
         </>
       );
     }

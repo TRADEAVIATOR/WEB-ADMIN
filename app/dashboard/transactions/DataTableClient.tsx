@@ -6,7 +6,6 @@ import Pagination from "@/components/ui/Pagination";
 import { MenuItem, RowData } from "@/types/common";
 import { DataTableClientProps } from "@/types/props";
 import { formatCurrency, formatDateTime } from "@/lib/utils/format";
-import PageHeader from "@/components/ui/PageHeader";
 import { Transaction } from "@/types/models";
 import Badge from "@/components/ui/Badge";
 import { TransactionCategory } from "@/types/enums";
@@ -76,8 +75,8 @@ export default function DataTableClient({
           tx.status === "SUCCESS"
             ? "green"
             : tx.status === "PENDING"
-            ? "yellow"
-            : "red"
+              ? "yellow"
+              : "red"
         }
       />
     ),
@@ -100,23 +99,6 @@ export default function DataTableClient({
 
   return (
     <>
-      <PageHeader
-        title="Transactions"
-        description="View and manage all user transactions"
-        filterFields={[
-          {
-            label: "Transaction Status",
-            name: "status",
-            type: "checkbox",
-            options: [
-              { label: "Successful", value: "SUCCESS" },
-              { label: "Failed", value: "FAILED" },
-              { label: "Pending", value: "PENDING" },
-            ],
-          },
-        ]}
-      />
-
       <DataTable
         columns={columns}
         data={rows}

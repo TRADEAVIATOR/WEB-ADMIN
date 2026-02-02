@@ -5,52 +5,50 @@ import { Search, Calendar, ChevronLeft } from "lucide-react";
 import { PageHeaderProps } from "@/types/props";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useModal } from "@/context/ModalContext";
+import { useState, useEffect } from "react";
 import Button from "./Button";
 
 export default function PageHeader({
   title,
   description,
-
-  onSearch,
   onDateSelect,
-
   showBackButton = false,
   backHref,
-
   buttonText,
   buttonIcon,
   buttonHref,
   filterFields,
   modalTypeToOpen,
   buttonAction,
-}: PageHeaderProps) {
+  enableSearch = false,
+}: PageHeaderProps & { enableSearch?: boolean }) {
   const { openModal } = useModal();
   const router = useRouter();
   const searchParams = useSearchParams();
+  const initialSearch = searchParams.get("search") ?? "";
+  const [searchValue, setSearchValue] = useState(initialSearch);
 
   const handleFilterClick = () => {
-    if (filterFields?.length) {
-      openModal("generic-filter", filterFields);
-    }
+    if (filterFields?.length) openModal("generic-filter", filterFields);
   };
 
-  const handleSearchChange = (value: string) => {
-    if (!onSearch) return;
+  useEffect(() => {
+    if (!enableSearch) return;
 
-    const params = new URLSearchParams(searchParams.toString());
+    const handler = setTimeout(() => {
+      const params = new URLSearchParams(searchParams.toString());
 
-    if (value) {
-      params.set("search", value);
-    } else {
-      params.delete("search");
-    }
+      if (searchValue) params.set("search", searchValue);
+      else params.delete("search");
 
-    router.push(`?${params.toString()}`);
-    onSearch(value);
-  };
+      router.push(`?${params.toString()}`);
+    }, 200);
+
+    return () => clearTimeout(handler);
+  }, [searchValue, router, searchParams, enableSearch]);
 
   const renderActionButton = () => {
-    if (buttonHref) {
+    if (buttonHref)
       return (
         <Link href={buttonHref}>
           <Button className="flex items-center gap-2 text-white text-sm px-5 py-2.5 rounded-full">
@@ -59,26 +57,21 @@ export default function PageHeader({
           </Button>
         </Link>
       );
-    }
 
-    if (buttonText) {
+    if (buttonText)
       return (
         <Button
           onClick={() => {
-            if (buttonAction) {
-              buttonAction();
-            } else if (modalTypeToOpen) {
-              openModal(modalTypeToOpen);
-            }
+            if (buttonAction) buttonAction();
+            else if (modalTypeToOpen) openModal(modalTypeToOpen);
           }}
           className="flex items-center gap-2 text-white text-sm px-5 py-2.5 rounded-full">
           {buttonIcon}
           <span>{buttonText}</span>
         </Button>
       );
-    }
 
-    if (onDateSelect) {
+    if (onDateSelect)
       return (
         <button
           onClick={onDateSelect}
@@ -87,7 +80,6 @@ export default function PageHeader({
           <span>Select Dates</span>
         </button>
       );
-    }
 
     return null;
   };
@@ -97,13 +89,7 @@ export default function PageHeader({
       {showBackButton && (
         <div className="mb-4">
           <button
-            onClick={() => {
-              if (backHref) {
-                router.push(backHref);
-              } else {
-                router.back();
-              }
-            }}
+            onClick={() => (backHref ? router.push(backHref) : router.back())}
             className="flex items-center gap-1 text-sm text-gray-600 hover:text-gray-800 transition">
             <ChevronLeft size={18} />
             <span>Back</span>
@@ -122,10 +108,10 @@ export default function PageHeader({
         </div>
       )}
 
-      {(onSearch || filterFields?.length || renderActionButton()) && (
+      {(enableSearch || filterFields?.length || buttonText || onDateSelect) && (
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 w-full md:w-auto">
-            {onSearch && (
+            {enableSearch && (
               <div className="relative w-full sm:w-72 bg-white rounded-full">
                 <Search
                   size={18}
@@ -134,14 +120,14 @@ export default function PageHeader({
                 <input
                   type="text"
                   placeholder="Search..."
-                  defaultValue={searchParams.get("search") ?? ""}
-                  onChange={(e) => handleSearchChange(e.target.value)}
+                  value={searchValue}
+                  onChange={(e) => setSearchValue(e.target.value)}
                   className="w-full pl-11 pr-4 py-2.5 border border-gray-200 rounded-full text-sm bg-white text-gray-700 focus:ring-2 focus:ring-[#FE7F32] focus:outline-none"
                 />
               </div>
             )}
 
-            {filterFields?.length && (
+            {(filterFields?.length ?? 0) > 0 && (
               <button
                 onClick={handleFilterClick}
                 className="flex items-center gap-2 px-4 py-2.5 border border-gray-200 rounded-full text-sm text-gray-700 bg-white hover:bg-gray-50 transition">

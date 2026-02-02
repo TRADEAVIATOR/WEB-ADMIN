@@ -6,14 +6,20 @@ import ResultState from "@/components/ui/ResultState";
 export default async function TransactionsPage({
   searchParams,
 }: {
-  searchParams?: Promise<{ page?: string; limit?: string; status?: string }>;
+  searchParams?: Promise<{
+    page?: string;
+    limit?: string;
+    status?: string;
+    search?: string;
+  }>;
 }) {
   const params = await searchParams;
   const page = params?.page ? Number(params.page) : 1;
   const limit = params?.limit ? Number(params.limit) : 50;
   const status = params?.status || "";
+  const search = params?.search || "";
 
-  const res = await getTransactions(page, limit, status);
+  const res = await getTransactions(page, limit, status, search);
 
   let content;
 
@@ -52,7 +58,20 @@ export default async function TransactionsPage({
     <>
       <PageHeader
         title="Transactions"
-        description="View and manage all transactions"
+        description="View and manage all user transactions"
+        enableSearch
+        filterFields={[
+          {
+            label: "Transaction Status",
+            name: "status",
+            type: "checkbox",
+            options: [
+              { label: "Successful", value: "SUCCESS" },
+              { label: "Failed", value: "FAILED" },
+              { label: "Pending", value: "PENDING" },
+            ],
+          },
+        ]}
       />
       {content}
     </>

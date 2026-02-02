@@ -1,10 +1,18 @@
 import { clientApi, getServerApi } from "./config/client";
 import { tryServer } from "../utils/errorHandler";
 
-export const getCustomers = async (page = 1, limit = 10) => {
+export const getCustomers = async (page = 1, limit = 10, search?: string) => {
   const api = await getServerApi();
+
+  const query = new URLSearchParams({
+    page: String(page),
+    limit: String(limit),
+  });
+
+  if (search) query.append("search", search);
+
   return tryServer(
-    api.get(`/admin/customers?page=${page}&limit=${limit}`).then((r) => r.data),
+    api.get(`/admin/customers?${query.toString()}`).then((r) => r.data),
   );
 };
 

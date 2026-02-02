@@ -26,11 +26,17 @@ export const authOptions: NextAuthOptions = {
             return null;
           }
 
+          let role: "superAdmin" | "admin" | null = null;
+          if (admin.isSuper && admin.isAdmin) role = "superAdmin";
+          else if (!admin.isSuper && admin.isAdmin) role = "admin";
+
+          if (!role) return null;
+
           return {
             id: admin.id,
             name: admin.name,
             email: admin.email,
-            role: "admin",
+            role,
             accessToken,
             refreshToken,
           };

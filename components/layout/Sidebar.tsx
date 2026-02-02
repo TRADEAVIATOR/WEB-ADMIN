@@ -8,8 +8,11 @@ import { ChevronDown, ChevronRight } from "lucide-react";
 import { useModal } from "@/context/ModalContext";
 import { useState, useRef, useEffect } from "react";
 import Logo from "@/assets/logo.svg";
+import { useSession } from "next-auth/react";
 
 export default function Sidebar() {
+  const { data: session } = useSession();
+  const role = session?.user?.role;
   const pathname = usePathname();
   const [openMenus, setOpenMenus] = useState<string[]>([]);
   const { openModal } = useModal();
@@ -17,14 +20,14 @@ export default function Sidebar() {
 
   const toggleMenu = (label: string) => {
     setOpenMenus((prev) =>
-      prev.includes(label) ? prev.filter((l) => l !== label) : [...prev, label]
+      prev.includes(label) ? prev.filter((l) => l !== label) : [...prev, label],
     );
   };
 
   const renderLink = (
     link: (typeof sidebarLinks)[0],
     isChild = false,
-    index: number
+    index: number,
   ) => {
     const isActive =
       pathname === link.href ||
@@ -99,22 +102,36 @@ export default function Sidebar() {
   useEffect(() => {
     if (!navRef.current) return;
     const activeEl = navRef.current.querySelector<HTMLElement>(
-      "[data-active='true']"
+      "[data-active='true']",
     );
-    if (activeEl) {
+    if (activeEl)
       activeEl.scrollIntoView({ block: "nearest", behavior: "smooth" });
-    }
   }, [pathname, openMenus]);
 
+  const superAdminOnly = [
+    "/dashboard/promocodes",
+    "/dashboard/voucher",
+    "/dashboard/admins",
+  ];
+
+  const filteredLinks = sidebarLinks
+    .map((link) => {
+      if (link.children) {
+        const children = link.children.filter(
+          (child) =>
+            !superAdminOnly.includes(child.href || "") || role === "superAdmin",
+        );
+        if (children.length > 0) return { ...link, children };
+        return null;
+      }
+      if (superAdminOnly.includes(link.href || "") && role !== "superAdmin")
+        return null;
+      return link;
+    })
+    .filter(Boolean) as typeof sidebarLinks;
+
   return (
-    <aside
-      className="
-        fixed md:static z-40
-        h-screen
-        bg-white border-r border-gray-200
-        flex flex-col justify-between
-        w-64
-      ">
+    <aside className="fixed md:static z-40 h-screen bg-white border-r border-gray-200 flex flex-col justify-between w-64">
       <div className="flex flex-col h-full overflow-hidden">
         <div className="px-6 py-6 flex items-center justify-center flex-shrink-0">
           <Image
@@ -130,15 +147,13 @@ export default function Sidebar() {
           <nav
             ref={navRef}
             className="h-full overflow-y-auto px-0 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent py-4 space-y-2">
-            {sidebarLinks.map((link, index) => {
+            {filteredLinks.map((link, index) => {
               if (link.children) {
                 const isOpenMenu = openMenus.includes(link.label);
                 const isAnyChildActive = link.children.some(
                   (c) =>
                     pathname === c.href ||
-                    (c.href &&
-                      c.href !== "/dashboard" &&
-                      pathname.startsWith(c.href))
+                    (c.href && pathname.startsWith(c.href)),
                 );
                 return (
                   <div key={index} className="px-6">
@@ -169,14 +184,13 @@ export default function Sidebar() {
                     {isOpenMenu && (
                       <div className="pl-10 space-y-1.5 mt-1">
                         {link.children.map((child, idx) =>
-                          renderLink(child, true, idx)
+                          renderLink(child, true, idx),
                         )}
                       </div>
                     )}
                   </div>
                 );
               }
-
               return (
                 <div key={index} className="px-6">
                   {renderLink(link, false, index)}

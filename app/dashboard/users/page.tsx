@@ -8,12 +8,18 @@ export const dynamic = "force-dynamic";
 export default async function UsersPage({
   searchParams,
 }: {
-  searchParams?: Promise<{ page?: string }>;
+  searchParams?: Promise<{
+    page?: string;
+    limit?: string;
+    search?: string;
+  }>;
 }) {
   const params = await searchParams;
   const page = params?.page ? Number(params.page) : 1;
+  const limit = params?.limit ? Number(params.limit) : 50;
+  const search = params?.search || "";
 
-  const res = await getCustomers(page, 50);
+  const res = await getCustomers(page, limit, search);
 
   let content;
 
@@ -53,6 +59,7 @@ export default async function UsersPage({
       <PageHeader
         title="Users"
         description="Manage all registered users and their details"
+        enableSearch
       />
       {content}
     </>
