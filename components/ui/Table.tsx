@@ -245,42 +245,46 @@ export default function DataTable<T extends RowData>({
             }}
             onClick={(e) => e.stopPropagation()}>
             <ul className="py-2 text-base text-gray-700">
-              {menuItems.map((item, i) => {
-                const baseClasses = `block px-4 py-3 active:bg-gray-100 cursor-pointer transition-colors touch-manipulation ${
-                  item.color || "text-gray-700"
-                }`;
+              {menuItems
+                .filter(
+                  (item) => !(item.hidden && item.hidden(data[openMenuIndex])),
+                )
+                .map((item, i) => {
+                  const baseClasses = `block px-4 py-3 active:bg-gray-100 cursor-pointer transition-colors touch-manipulation ${
+                    item.color || "text-gray-700"
+                  }`;
 
-                if (item.href) {
+                  if (item.href) {
+                    return (
+                      <li key={i}>
+                        <Link
+                          href={item.href}
+                          className={baseClasses}
+                          onClick={() => {
+                            setOpenMenuIndex(null);
+                            setMenuPosition(null);
+                          }}>
+                          {item.label}
+                        </Link>
+                      </li>
+                    );
+                  }
+
                   return (
                     <li key={i}>
-                      <Link
-                        href={item.href}
-                        className={baseClasses}
-                        onClick={() => {
-                          setOpenMenuIndex(null);
-                          setMenuPosition(null);
-                        }}>
+                      <div
+                        onClick={(e) =>
+                          handleMenuItemClick(item, data[openMenuIndex], e)
+                        }
+                        onTouchStart={(e) =>
+                          handleMenuItemClick(item, data[openMenuIndex], e)
+                        }
+                        className={baseClasses}>
                         {item.label}
-                      </Link>
+                      </div>
                     </li>
                   );
-                }
-
-                return (
-                  <li key={i}>
-                    <div
-                      onClick={(e) =>
-                        handleMenuItemClick(item, data[openMenuIndex], e)
-                      }
-                      onTouchStart={(e) =>
-                        handleMenuItemClick(item, data[openMenuIndex], e)
-                      }
-                      className={baseClasses}>
-                      {item.label}
-                    </div>
-                  </li>
-                );
-              })}
+                })}
             </ul>
           </div>
         </div>
@@ -366,37 +370,43 @@ export default function DataTable<T extends RowData>({
                             ref={menuRef}
                             className="absolute right-0 mt-2 w-44 bg-white border border-gray-100 rounded-lg shadow-lg z-50 animate-fadeIn">
                             <ul className="py-2 text-base text-gray-700">
-                              {menuItems.map((item, i) => {
-                                const baseClasses = `block px-4 py-2 hover:bg-gray-50 cursor-pointer transition-colors ${
-                                  item.color || "text-gray-700"
-                                }`;
+                              {menuItems
+                                .filter(
+                                  (item) => !(item.hidden && item.hidden(row)),
+                                )
+                                .map((item, i) => {
+                                  const baseClasses = `block px-4 py-2 hover:bg-gray-50 cursor-pointer transition-colors ${
+                                    item.color || "text-gray-700"
+                                  }`;
 
-                                if (item.href) {
+                                  if (item.href) {
+                                    return (
+                                      <li key={i}>
+                                        <Link
+                                          href={item.href}
+                                          className={baseClasses}
+                                          onClick={() =>
+                                            setOpenMenuIndex(null)
+                                          }>
+                                          {item.label}
+                                        </Link>
+                                      </li>
+                                    );
+                                  }
+
                                   return (
                                     <li key={i}>
-                                      <Link
-                                        href={item.href}
-                                        className={baseClasses}
-                                        onClick={() => setOpenMenuIndex(null)}>
+                                      <div
+                                        onClick={() => {
+                                          item.onClick?.(row);
+                                          setOpenMenuIndex(null);
+                                        }}
+                                        className={baseClasses}>
                                         {item.label}
-                                      </Link>
+                                      </div>
                                     </li>
                                   );
-                                }
-
-                                return (
-                                  <li key={i}>
-                                    <div
-                                      onClick={() => {
-                                        item.onClick?.(row);
-                                        setOpenMenuIndex(null);
-                                      }}
-                                      className={baseClasses}>
-                                      {item.label}
-                                    </div>
-                                  </li>
-                                );
-                              })}
+                                })}
                             </ul>
                           </div>
                         )}

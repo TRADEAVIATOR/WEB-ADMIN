@@ -29,6 +29,7 @@ export interface MenuItem<T = RowData> {
   href?: string;
   color?: string;
   onClick?: (row: T) => void;
+  hidden?: (row: T) => boolean;
 }
 
 export interface Pagination {

@@ -23,7 +23,9 @@ export default function CreateTaglineModal({
   const router = useRouter();
 
   const handleCreate = async () => {
-    if (!tagline.trim()) {
+    const trimmedTagline = tagline.trim();
+
+    if (!trimmedTagline) {
       toast.error("Tagline cannot be empty");
       return;
     }
@@ -32,12 +34,11 @@ export default function CreateTaglineModal({
     const toastId = toast.loading("Creating tagline...");
 
     try {
-      const res = await createTaglineClient({ tagline: tagline.trim() });
+      const res = await createTaglineClient({ tagline: trimmedTagline });
 
-      if (!res || !res.success) {
-        toast.error(res?.message || "Failed to create tagline", {
-          id: toastId,
-        });
+      if (!res?.success) {
+        toast.dismiss(toastId);
+        toast.error(res?.message || "Failed to create tagline");
         return;
       }
 
@@ -46,6 +47,7 @@ export default function CreateTaglineModal({
       onClose();
       router.refresh();
     } catch (error: any) {
+      toast.dismiss(toastId);
       handleApiError(error);
     } finally {
       setLoading(false);

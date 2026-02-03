@@ -78,6 +78,7 @@ export default function DataTableClient({
           `Admin ${isActive ? "activated" : "suspended"} successfully!`,
           { id: toastId },
         );
+        router.refresh();
       } else {
         toast.error(res?.message || "Failed to update admin status.", {
           id: toastId,
@@ -113,9 +114,22 @@ export default function DataTableClient({
 
   const adminMenuItems: MenuItem<RowData>[] = [
     {
-      label: "Suspend / Activate",
+      label: "Suspend Admin",
       color: "text-red-600",
-      onClick: (row) => handleSuspendAdmin(String(row.id), !row.isActive),
+      onClick: (row) => {
+        if (confirm("Are you sure you want to suspend this admin?")) {
+          handleSuspendAdmin(String(row.id), false);
+        }
+      },
+      hidden: (row) => !row.isActive,
+    },
+    {
+      label: "Activate Admin",
+      color: "text-green-600",
+      onClick: (row) => {
+        handleSuspendAdmin(String(row.id), true);
+      },
+      hidden: (row) => Boolean(row.isActive),
     },
     {
       label: "Reset Password",

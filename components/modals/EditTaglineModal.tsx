@@ -29,7 +29,9 @@ export default function EditTaglineModal({
   }, [initialTagline]);
 
   const handleSave = async () => {
-    if (!tagline.trim()) {
+    const trimmedTagline = tagline.trim();
+
+    if (!trimmedTagline) {
       toast.error("Tagline cannot be empty");
       return;
     }
@@ -39,13 +41,12 @@ export default function EditTaglineModal({
 
     try {
       const res = await updateTaglineClient(initialTagline.index, {
-        tagline: tagline.trim(),
+        tagline: trimmedTagline,
       });
 
-      if (!res || !res.success) {
-        toast.error(res?.message || "Failed to update tagline", {
-          id: toastId,
-        });
+      if (!res?.success) {
+        toast.dismiss(toastId);
+        toast.error(res?.message || "Failed to update tagline");
         return;
       }
 
@@ -53,6 +54,7 @@ export default function EditTaglineModal({
       onClose();
       router.refresh();
     } catch (error: any) {
+      toast.dismiss(toastId);
       handleApiError(error);
     } finally {
       setLoading(false);
