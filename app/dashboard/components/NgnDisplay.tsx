@@ -4,7 +4,7 @@ import { useState } from "react";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 
 export default function NgnDisplay({ rate }: { rate: number }) {
-  const [showNgn, setShowNgn] = useState(true);
+  const [showNgn, setShowNgn] = useState(false);
 
   return (
     <div className="flex items-center gap-3">
