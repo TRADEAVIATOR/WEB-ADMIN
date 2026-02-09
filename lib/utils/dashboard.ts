@@ -30,7 +30,7 @@ export function extractSparklineData(chartData: any): number[] {
 
 export function calculateChange(
   chartData: any,
-  type: "users" | "balance" | "crypto" | "transactions"
+  type: "users" | "balance" | "crypto" | "transactions",
 ): string {
   if (!chartData || !Array.isArray(chartData) || chartData.length === 0) {
     return "0%";
@@ -40,7 +40,7 @@ export function calculateChange(
     case "users": {
       const totalTransactions = chartData.reduce(
         (sum: number, item: any) => sum + (item.count || 0),
-        0
+        0,
       );
       const growthRate = totalTransactions > 0 ? 5 : 0;
       return `+${growthRate}%`;
@@ -48,10 +48,10 @@ export function calculateChange(
     case "balance": {
       if (chartData.length > 1) {
         const current = parseFloat(
-          chartData[chartData.length - 1]?.value || "0"
+          chartData[chartData.length - 1]?.value || "0",
         );
         const previous = parseFloat(
-          chartData[chartData.length - 2]?.value || "0"
+          chartData[chartData.length - 2]?.value || "0",
         );
         const change = current - previous;
         return change >= 0
@@ -64,14 +64,14 @@ export function calculateChange(
     case "crypto": {
       const totalBalance = chartData.reduce(
         (sum: number, item: any) => sum + parseFloat(item.balance || "0"),
-        0
+        0,
       );
       return totalBalance > 0 ? `+₦${totalBalance.toFixed(2)}` : "0 wallets";
     }
     case "transactions": {
       const count = chartData.reduce(
         (sum: number, item: any) => sum + (item.count || 0),
-        0
+        0,
       );
       return count > 0 ? `+${count}` : "0";
     }

@@ -34,8 +34,8 @@ export default async function AdminNotificationsPage({
       content = (
         <DataTableClient
           initialData={payload.data}
-          initialPage={payload.pagination.page}
-          totalPages={payload.pagination.totalPages}
+          initialPage={payload.meta.page}
+          totalPages={payload.meta.totalPages}
         />
       );
     }

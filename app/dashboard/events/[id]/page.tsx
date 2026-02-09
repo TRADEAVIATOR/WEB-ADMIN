@@ -1,7 +1,6 @@
 import EventDetails from "./EventDetails";
 import ResultState from "@/components/ui/ResultState";
 import { getEvent } from "@/lib/api/events";
-import { Event } from "@/types/models";
 
 export const dynamic = "force-dynamic";
 
@@ -12,17 +11,17 @@ export default async function EventDetailsPage({
 }) {
   const { id } = await params;
 
-  const res = await getEvent(id);
+  const response = await getEvent(id);
 
-  if (!res || res.error) {
+  if (!response || response.error) {
     return (
       <ResultState type="error" message="Unable to fetch event details." />
     );
   }
 
-  const event = res.data?.event as Event | undefined;
+  const { data } = response.data;
 
-  if (!event) {
+  if (!data) {
     return (
       <ResultState
         type="error"
@@ -31,5 +30,5 @@ export default async function EventDetailsPage({
     );
   }
 
-  return <EventDetails event={event} />;
+  return <EventDetails event={data} />;
 }

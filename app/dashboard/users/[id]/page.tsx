@@ -20,38 +20,40 @@ export default async function UserDetailsPage({
     return <ResultState type="error" message="Invalid user ID." showRefresh />;
   }
 
-  const res = await getCustomer(id);
+  const response = await getCustomer(id);
 
-  if (res.error) {
+  if (response.error) {
     const message =
-      typeof res.error === "string" ? res.error : "Failed to fetch customer.";
+      typeof response.error === "string"
+        ? response.error
+        : "Failed to fetch customer.";
     return <ResultState type="error" message={message} />;
   }
 
-  const customer = res.data?.customer;
+  const { data } = response.data;
 
-  if (!customer) {
+  if (!data) {
     return <ResultState type="empty" message="Customer not found." />;
   }
 
-  const statsRes = await getCustomerStats(customer.id);
+  const statsRes = await getCustomerStats(data.id);
   const customerStats = statsRes.error ? null : statsRes.data.data;
 
   const tabs = [
     {
       key: "personal",
       label: "Personal Details",
-      content: <PersonalDetailsTab customer={customer} />,
+      content: <PersonalDetailsTab customer={data} />,
     },
     {
       key: "banking",
       label: "Banking Details",
-      content: <BankingDetailsTab customer={customer} />,
+      content: <BankingDetailsTab customer={data} />,
     },
     {
       key: "transactions",
       label: "Transactions",
-      content: <TransactionsTab customer={customer} />,
+      content: <TransactionsTab customer={data} />,
     },
     {
       key: "statistics",
@@ -64,10 +66,10 @@ export default async function UserDetailsPage({
     <DetailLayout
       header={
         <UserDetailsHeader
-          userId={customer.id}
-          kycStatus={customer.isKycVerified ? "Successful" : "Pending"}
-          profilePicture={customer.profilePicture}
-          name={customer.fullname}
+          userId={data.id}
+          kycStatus={data.isKycVerified ? "Successful" : "Pending"}
+          profilePicture={data.profilePicture}
+          name={data.fullname}
         />
       }
       tabs={tabs}

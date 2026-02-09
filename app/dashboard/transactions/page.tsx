@@ -32,7 +32,7 @@ export default async function TransactionsPage({
       />
     );
   } else {
-    const payload = res.data?.data;
+    const payload = res.data;
 
     if (!payload) {
       content = (
@@ -41,14 +41,14 @@ export default async function TransactionsPage({
           message="Invalid server response. Please try again later."
         />
       );
-    } else if (!payload.transactions || payload.transactions.length === 0) {
+    } else if (!payload.data || payload.data.length === 0) {
       content = <ResultState type="empty" message="No transactions found." />;
     } else {
       content = (
         <DataTableClient
-          initialData={payload.transactions}
-          initialPage={payload.pagination.currentPage}
-          totalPages={payload.pagination.totalPages}
+          initialData={payload.data}
+          initialPage={payload.meta.page}
+          totalPages={payload.meta.totalPages}
         />
       );
     }

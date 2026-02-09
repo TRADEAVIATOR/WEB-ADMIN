@@ -42,9 +42,7 @@ export const createEvent = async (data: EventFormValues) => {
   const formData = buildFormData(data);
 
   return tryServer(
-    clientApi
-      .post("/admin/events/create", formData, {})
-      .then((res) => res.data),
+    clientApi.post("/admin/events", formData, {}).then((res) => res.data),
   );
 };
 

@@ -1,49 +1,42 @@
 import { Customer, Dispute, Reward, Ticket, Transaction } from "./models";
-import { Pagination } from "./common";
+import { Meta } from "./common";
 
 export interface CustomersResponse {
-  customers: Customer[];
-  pagination: Pagination;
+  data: Customer[];
+  meta: Meta;
 }
 
 export interface RewardsResponse {
   success: boolean;
   message: string;
-  results: Reward[];
-  pagination: Pagination;
+  data: Reward[];
+  meta: Meta;
 }
 
 export interface TicketsResponse {
-  results: Ticket[];
-  pagination: Pagination;
+  data: Ticket[];
+  meta: Meta;
 }
 
 export interface TransactionsResponse {
-  transactions: Transaction[];
-  pagination: Pagination;
+  data: Transaction[];
+  meta: Meta;
 }
 
 export interface DisputesResponse {
-  transactions: Dispute[];
-  pagination: {
-    currentPage: number;
-    totalPages: number;
-    totalItems: number;
-    limit: number;
-    hasMore: boolean;
-  };
+  data: Dispute[];
+  meta: Meta;
 }
 
 export interface EventsResponse {
   message: string;
-  results: Event[];
-  pagination: Pagination;
+  data: Event[];
+  meta: Meta;
 }
 
 export interface SendNotificationPayload {
   userIds: string[];
   notificationType: string;
-  priority: string;
   templateId?: string;
   templateVariables?: Record<string, string>;
   title?: string;
@@ -54,7 +47,6 @@ export interface SendNotificationPayload {
 
 export type BroadcastNotificationPayload = {
   notificationType: string;
-  priority: string;
   title?: string;
   message?: string;
   metadata?: Record<string, any>;

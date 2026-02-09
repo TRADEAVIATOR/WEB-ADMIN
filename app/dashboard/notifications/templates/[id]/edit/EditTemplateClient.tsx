@@ -22,7 +22,7 @@ export default function EditTemplateClient({
 
   const handleEditTemplate = async (
     id: string,
-    values: NotificationTemplatePayload
+    values: NotificationTemplatePayload,
   ) => {
     const toastId = toast.loading("Updating template...");
 
@@ -61,7 +61,6 @@ export default function EditTemplateClient({
             title: template.title,
             message: template.message,
             type: template.type,
-            priority: template.priority,
             variables: template.variables,
           }}
           onSubmit={(data) => handleEditTemplate(id, data)}

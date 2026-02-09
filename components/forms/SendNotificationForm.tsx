@@ -4,22 +4,21 @@ import { useState, useRef, useEffect } from "react";
 import FormField from "@/components/ui/FormField";
 import Button from "@/components/ui/Button";
 import { SendNotificationPayload } from "@/types/api";
-import { NotificationPriority, NotificationType } from "@/types/enums";
+import { NotificationType } from "@/types/enums";
 import { MultiUserSelect } from "../shared/MultiUserSelect";
 import SelectField, { SelectOption } from "../ui/SelectField";
+import { getNotificationTemplatesClient } from "@/lib/api/notifications";
 import { handleApiError } from "@/lib/utils/errorHandler";
 import EmojiPicker from "emoji-picker-react";
 import { Smile } from "lucide-react";
-import { getNotificationTemplatesClient } from "@/lib/api/notifications";
 
 interface NotificationTemplate {
   id: string;
   name: string;
   title: string;
   message: string;
-  type: string;
-  priority: string;
   variables: string[];
+  type: string;
 }
 
 interface SendNotificationFormProps {
@@ -55,7 +54,6 @@ export default function SendNotificationForm({
   const [formData, setFormData] = useState({
     userIds: initialData?.userIds?.join(", ") || "",
     notificationType: initialData?.notificationType || "",
-    priority: initialData?.priority || "",
     templateId: initialData?.templateId || "",
     title: initialData?.title || "",
     message: initialData?.message || "",
@@ -116,7 +114,6 @@ export default function SendNotificationForm({
         ...formData,
         templateId: template.id,
         notificationType: template.type,
-        priority: template.priority,
       });
 
       const initialVars: Record<string, string> = {};
@@ -190,7 +187,6 @@ export default function SendNotificationForm({
       const payload: SendNotificationPayload = {
         userIds: multiUsers.map((u) => u.value),
         notificationType: formData.notificationType,
-        priority: formData.priority,
         deliveryChannels: formData.deliveryChannels,
         metadata: {},
       };
@@ -354,48 +350,27 @@ export default function SendNotificationForm({
         </>
       )}
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <SelectField
-          id="notification-type"
-          label="Notification Type"
-          value={{
-            label: formData.notificationType,
-            value: formData.notificationType,
-          }}
-          onChange={(option) =>
-            setFormData({
-              ...formData,
-              notificationType: (option as { label: string; value: string })
-                .value as NotificationType,
-            })
-          }
-          options={Object.values(NotificationType).map((type) => ({
-            label: type,
-            value: type,
-          }))}
-          required
-          disabled={useTemplate && selectedTemplate !== null}
-        />
-
-        <SelectField
-          id="priority"
-          label="Priority"
-          value={{ label: formData.priority, value: formData.priority }}
-          onChange={(option) =>
-            setFormData({
-              ...formData,
-              priority: (option as { label: string; value: string })
-                .value as NotificationPriority,
-            })
-          }
-          options={Object.values(NotificationPriority).map((priority) => ({
-            label: priority,
-            value: priority,
-          }))}
-          required
-          disabled={useTemplate && selectedTemplate !== null}
-        />
-      </div>
+      <SelectField
+        id="notification-type"
+        label="Notification Type"
+        value={{
+          label: formData.notificationType,
+          value: formData.notificationType,
+        }}
+        onChange={(option) =>
+          setFormData({
+            ...formData,
+            notificationType: (option as { label: string; value: string })
+              .value as NotificationType,
+          })
+        }
+        options={Object.values(NotificationType).map((type) => ({
+          label: type,
+          value: type,
+        }))}
+        required
+        disabled={useTemplate && selectedTemplate !== null}
+      />
 
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">

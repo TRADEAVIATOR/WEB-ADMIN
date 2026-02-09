@@ -40,33 +40,41 @@ export default function DataTableClient({
     { key: "createdAt", label: "Date" },
   ];
 
-  const rows: RowData[] = initialData.map((notification) => ({
-    id: notification.id,
-    title: notification.title,
-    type: <Badge text={notification.type} color="blue" />,
-    priority: (
-      <Badge
-        text={notification.priority.toUpperCase()}
-        color={
-          notification.priority === "high"
-            ? "red"
-            : notification.priority === "medium"
-              ? "orange"
-              : "green"
-        }
-      />
-    ),
-    totalSent: notification.totalSent,
-    totalRead: notification.totalRead,
-    message: (
-      <span className="line-clamp-2 max-w-xs">{notification.message}</span>
-    ),
-    createdAt: new Date(notification.createdAt).toLocaleDateString("en-US", {
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-    }),
-  }));
+  const rows: RowData[] = initialData.map((notification) => {
+    const priority = notification.priority ?? "low";
+
+    return {
+      id: notification.id,
+      title: notification.title,
+      type: <Badge text={notification.type} color="blue" />,
+
+      priority: (
+        <Badge
+          text={priority.toUpperCase()}
+          color={
+            priority === "high"
+              ? "red"
+              : priority === "medium"
+                ? "orange"
+                : "green"
+          }
+        />
+      ),
+
+      totalSent: notification.totalSent ?? 0,
+      totalRead: notification.totalRead ?? 0,
+
+      message: (
+        <span className="line-clamp-2 max-w-xs">{notification.message}</span>
+      ),
+
+      createdAt: new Date(notification.createdAt).toLocaleDateString("en-US", {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+      }),
+    };
+  });
 
   const handlePageChange = (page: number) => {
     router.push(`/dashboard/notifications/user-specific?page=${page}`);

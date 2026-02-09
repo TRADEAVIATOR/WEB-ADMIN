@@ -25,7 +25,7 @@ export function SingleUserSelect({
 
       const res: any = await getCustomersClient(pageToFetch, 50);
       const newOptions: SelectOption[] =
-        res?.data?.customers?.map((c: any) => ({
+        res?.data?.map((c: any) => ({
           value: c.id,
           label: `${c.fullname} (${c.email})`,
         })) || [];

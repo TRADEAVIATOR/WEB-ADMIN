@@ -3,7 +3,7 @@
 import { useState, useRef } from "react";
 import Button from "@/components/ui/Button";
 import { handleApiError } from "@/lib/utils/errorHandler";
-import { NotificationPriority, NotificationType } from "@/types/enums";
+import { NotificationType } from "@/types/enums";
 import FormField from "@/components/ui/FormField";
 import { useRouter } from "next/navigation";
 import SelectField from "../ui/SelectField";
@@ -15,7 +15,6 @@ export interface NotificationTemplateFormProps {
     title: string;
     message: string;
     type: NotificationType;
-    priority: NotificationPriority;
     variables?: string[];
   };
   onSubmit: (data: {
@@ -23,7 +22,6 @@ export interface NotificationTemplateFormProps {
     title: string;
     message: string;
     type: NotificationType;
-    priority: NotificationPriority;
     variables: string[];
   }) => Promise<void>;
 }
@@ -34,7 +32,7 @@ export default function NotificationTemplateForm({
 }: NotificationTemplateFormProps) {
   const router = useRouter();
   const [variables, setVariables] = useState<string[]>(
-    initialData?.variables || []
+    initialData?.variables || [],
   );
   const [newVariable, setNewVariable] = useState("");
   const [formData, setFormData] = useState({
@@ -42,7 +40,6 @@ export default function NotificationTemplateForm({
     title: initialData?.title || "",
     message: initialData?.message || "",
     type: initialData?.type || NotificationType.SYSTEM,
-    priority: initialData?.priority || NotificationPriority.MEDIUM,
   });
   const [isLoading, setIsLoading] = useState(false);
   const titleInputRef = useRef<HTMLInputElement>(null);
@@ -62,7 +59,7 @@ export default function NotificationTemplateForm({
 
   const insertVariableAtCursor = (
     varName: string,
-    field: "title" | "message"
+    field: "title" | "message",
   ) => {
     const placeholder = `{{${varName}}}`;
 
@@ -79,7 +76,7 @@ export default function NotificationTemplateForm({
           input.focus();
           input.setSelectionRange(
             cursorPos + placeholder.length,
-            cursorPos + placeholder.length
+            cursorPos + placeholder.length,
           );
         }, 0);
       }
@@ -96,7 +93,7 @@ export default function NotificationTemplateForm({
           textarea.focus();
           textarea.setSelectionRange(
             cursorPos + placeholder.length,
-            cursorPos + placeholder.length
+            cursorPos + placeholder.length,
           );
         }, 0);
       }
@@ -240,43 +237,23 @@ export default function NotificationTemplateForm({
         )}
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <SelectField
-          id="notification-type"
-          label="Notification Type"
-          value={{ label: formData.type, value: formData.type }}
-          onChange={(option) =>
-            setFormData({
-              ...formData,
-              type: (option as { label: string; value: string })
-                .value as NotificationType,
-            })
-          }
-          options={Object.values(NotificationType).map((type) => ({
-            label: type,
-            value: type,
-          }))}
-          required
-        />
-
-        <SelectField
-          id="priority"
-          label="Priority"
-          value={{ label: formData.priority, value: formData.priority }}
-          onChange={(option) =>
-            setFormData({
-              ...formData,
-              priority: (option as { label: string; value: string })
-                .value as NotificationPriority,
-            })
-          }
-          options={Object.values(NotificationPriority).map((priority) => ({
-            label: priority,
-            value: priority,
-          }))}
-          required
-        />
-      </div>
+      <SelectField
+        id="notification-type"
+        label="Notification Type"
+        value={{ label: formData.type, value: formData.type }}
+        onChange={(option) =>
+          setFormData({
+            ...formData,
+            type: (option as { label: string; value: string })
+              .value as NotificationType,
+          })
+        }
+        options={Object.values(NotificationType).map((type) => ({
+          label: type,
+          value: type,
+        }))}
+        required
+      />
 
       <div className="flex flex-col md:flex-row gap-4 pt-4">
         <Button

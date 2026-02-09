@@ -36,11 +36,44 @@ export default function PersonalDetailsTab({
         <DetailItem label="Referral Code" value={customer.referralCode} />
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-b border-gray-100 pb-4">
+        <DetailItem
+          label="Date of Birth"
+          value={
+            customer.dateOfBirth
+              ? new Date(customer.dateOfBirth).toLocaleDateString()
+              : "-"
+          }
+        />
+        <DetailItem label="Tier" value={customer.tier || "-"} />
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-b border-gray-100 pb-4">
         <DetailItem
           label="Date Joined"
           value={new Date(customer.createdAt).toLocaleDateString()}
         />
+      </div>
+
+      <div className="grid grid-cols-1 gap-4">
+        <h3 className="font-semibold text-gray-900">Device Sessions</h3>
+        {(customer.deviceSessions ?? []).length > 0 ? (
+          (customer.deviceSessions ?? []).map((session, idx) => (
+            <div
+              key={idx}
+              className="flex justify-between items-center p-3 border border-gray-200 rounded-md">
+              <div>
+                <p className="text-sm text-gray-500">{session.deviceType}</p>
+                <p className="text-sm text-gray-700">{session.ipAddress}</p>
+              </div>
+              <p className="text-sm text-gray-500">
+                {new Date(session.lastLoginAt).toLocaleString()}
+              </p>
+            </div>
+          ))
+        ) : (
+          <p className="text-gray-500">No sessions available</p>
+        )}
       </div>
     </div>
   );

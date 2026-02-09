@@ -9,7 +9,6 @@ import toast from "react-hot-toast";
 
 interface BroadcastNotificationPayload {
   notificationType: string;
-  priority: string;
   title?: string;
   message?: string;
   metadata?: Record<string, any>;

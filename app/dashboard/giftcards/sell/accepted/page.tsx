@@ -47,12 +47,12 @@ export default async function AcceptedGiftCardsPage({
       stats = [
         {
           label: "Total Sales",
-          value: payload.pagination.totalItems,
+          value: payload.meta.total,
           icon: OrdersIcon,
         },
         {
           label: "Total Pages",
-          value: payload.pagination.totalPages,
+          value: payload.meta.totalPages,
           icon: SuccessRateIcon,
         },
       ];
@@ -82,8 +82,8 @@ export default async function AcceptedGiftCardsPage({
 
           <DataTableClient
             initialData={payload.data}
-            initialPage={payload.pagination.currentPage}
-            totalPages={payload.pagination.totalPages}
+            initialPage={payload.meta.page}
+            totalPages={payload.meta.totalPages}
           />
         </>
       );

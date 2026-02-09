@@ -25,24 +25,23 @@ export default async function DisputesPage({
         showRefresh
       />
     );
-  } else {
-    const payload = res.data?.data;
+    const payload = res.data;
 
-    if (!payload || !payload.transactions) {
+    if (!payload || !payload.data) {
       content = (
         <ResultState
           type="error"
           message="Invalid server response. Please try again later."
         />
       );
-    } else if (payload.transactions.length === 0) {
+    } else if (payload.data.length === 0) {
       content = <ResultState type="empty" message="No disputes found." />;
     } else {
       content = (
         <DataTableClient
-          initialData={payload.transactions}
-          initialPage={payload.pagination.currentPage}
-          totalPages={payload.pagination.totalPages}
+          initialData={payload.data}
+          initialPage={payload.meta.page}
+          totalPages={payload.meta.totalPages}
         />
       );
     }

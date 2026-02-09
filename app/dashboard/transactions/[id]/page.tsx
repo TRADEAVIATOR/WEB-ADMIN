@@ -1,7 +1,6 @@
 import ResultState from "@/components/ui/ResultState";
 import TransactionDetails from "./TransactionDetails";
 import { getTransaction } from "@/lib/api/transactions";
-import { Transaction } from "@/types/models";
 
 export const dynamic = "force-dynamic";
 
@@ -23,7 +22,7 @@ export default async function TransactionDetailsPage({
     );
   }
 
-  const transaction = res.data?.data?.transaction as Transaction | undefined;
+  const transaction = res.data?.data;
 
   if (!transaction) {
     return (

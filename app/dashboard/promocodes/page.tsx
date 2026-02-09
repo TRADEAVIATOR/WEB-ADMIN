@@ -8,10 +8,9 @@ export const dynamic = "force-dynamic";
 export default async function PromoCodesPage({
   searchParams,
 }: {
-  searchParams?: Promise<{ page?: string }>;
+  searchParams?: { page?: string };
 }) {
-  const params = await searchParams;
-  const page = params?.page ? Number(params.page) : 1;
+  const page = searchParams?.page ? Number(searchParams.page) : 1;
 
   const res = await getPromoCodes({ page, limit: 50 });
 
@@ -26,18 +25,18 @@ export default async function PromoCodesPage({
       />
     );
   } else {
-    const payload = res.data?.data;
+    const payload = res.data;
 
-    if (!payload || !payload.results) {
+    if (!payload || !payload.data || !payload.meta) {
       content = <ResultState type="error" message="Invalid server response." />;
-    } else if (payload.results.length === 0) {
+    } else if (payload.data.length === 0) {
       content = <ResultState type="empty" message="No promo codes found." />;
     } else {
       content = (
         <DataTableClient
-          initialData={payload.results}
-          initialPage={payload.pagination.currentPage}
-          totalPages={payload.pagination.totalPages}
+          initialData={payload.data}
+          initialPage={payload.meta.page}
+          totalPages={payload.meta.totalPages}
         />
       );
     }

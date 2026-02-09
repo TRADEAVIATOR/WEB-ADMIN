@@ -27,7 +27,7 @@ export default async function AdminsPage({
       />
     );
   } else {
-    const admins = res.data?.admins;
+    const admins = res.data?.data;
 
     if (!admins || admins.length === 0) {
       content = <ResultState type="empty" message="No administrators found." />;
@@ -36,7 +36,7 @@ export default async function AdminsPage({
         <DataTableClient
           initialData={admins}
           initialPage={page}
-          totalPages={res.data?.pagination?.totalPages || 1}
+          totalPages={res.data?.meta?.totalPages || 1}
         />
       );
     }

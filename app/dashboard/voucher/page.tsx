@@ -28,14 +28,14 @@ export default async function VoucherPage({
   } else {
     const payload = res.data;
 
-    if (!payload || payload.length === 0) {
+    if (!payload?.data || payload.data.length === 0) {
       content = <ResultState type="empty" message="No vouchers found." />;
     } else {
       content = (
         <DataTableClient
-          initialData={payload}
-          initialPage={payload.pagination?.currentPage || 1}
-          totalPages={payload.pagination?.totalPages || 1}
+          initialData={payload.data}
+          initialPage={payload.meta?.page || 1}
+          totalPages={payload.meta?.totalPages || 1}
         />
       );
     }

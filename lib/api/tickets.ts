@@ -6,6 +6,6 @@ export const getTickets = async (page = 1, limit = 10) => {
   return tryServer(
     api
       .get(`/admin/tickets?page=${page}&limit=${limit}`)
-      .then((res) => res.data)
+      .then((res) => res.data),
   );
 };

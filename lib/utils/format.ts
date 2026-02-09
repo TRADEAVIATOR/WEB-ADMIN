@@ -4,7 +4,7 @@ export const formatCurrency = (
     compact?: boolean;
     currency?: string;
     locale?: string;
-  }
+  },
 ) => {
   if (amount == null || amount === "" || isNaN(Number(amount))) return "0";
 

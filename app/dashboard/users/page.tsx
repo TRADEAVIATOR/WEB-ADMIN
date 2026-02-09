@@ -19,11 +19,11 @@ export default async function UsersPage({
   const limit = params?.limit ? Number(params.limit) : 50;
   const search = params?.search || "";
 
-  const res = await getCustomers(page, limit, search);
+  const response = await getCustomers(page, limit, search);
 
   let content;
 
-  if (!res || res.error) {
+  if (!response || response.error) {
     content = (
       <ResultState
         type="error"
@@ -32,23 +32,23 @@ export default async function UsersPage({
       />
     );
   } else {
-    const payload = res.data?.data;
+    const { data, meta } = response.data;
 
-    if (!payload) {
+    if (!data) {
       content = (
         <ResultState
           type="error"
           message="Invalid server response. Please try again later."
         />
       );
-    } else if (!payload.customers || payload.customers.length === 0) {
+    } else if (!data || data.length === 0) {
       content = <ResultState type="empty" message="No customers found." />;
     } else {
       content = (
         <DataTableClient
-          initialData={payload.customers}
-          initialPage={payload.pagination.currentPage}
-          totalPages={payload.pagination.totalPages}
+          initialData={data}
+          totalPages={meta.totalPages}
+          initialPage={meta.page}
         />
       );
     }

@@ -61,7 +61,7 @@ export interface TryServerResult<T> {
 }
 
 export async function tryServer<T>(
-  promise: Promise<T>
+  promise: Promise<T>,
 ): Promise<TryServerResult<T>> {
   try {
     const data = await promise;

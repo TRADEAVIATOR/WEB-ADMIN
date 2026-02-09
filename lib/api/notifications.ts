@@ -62,9 +62,8 @@ export type NotificationTemplatePayload = {
   name: string;
   title: string;
   message: string;
-  type: string;
-  priority: string;
   variables: string[];
+  type: string;
 };
 
 export const createNotificationTemplate = async (
@@ -101,7 +100,7 @@ export interface ScheduledNotificationPayload {
 export const createScheduledNotification = async (
   payload: ScheduledNotificationPayload,
 ) => {
-  const res = await clientApi.post("/admin/notifications/scheduled", payload);
+  const res = await clientApi.post("/admin/notifications/schedule", payload);
   return res.data;
 };
 

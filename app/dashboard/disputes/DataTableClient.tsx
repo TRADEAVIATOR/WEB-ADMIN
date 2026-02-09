@@ -94,7 +94,7 @@ export default function DataTableClient({
 
   const handleUpdateDisputeStatus = async (
     transactionId: string,
-    status: string
+    status: string,
   ) => {
     const toastId = toast.loading("Updating dispute status...");
 

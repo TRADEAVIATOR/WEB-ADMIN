@@ -14,11 +14,11 @@ export default async function TaglinesPage({
   const params = await searchParams;
   const page = params?.page ? Number(params.page) : 1;
 
-  const res = await getTaglines();
+  const response = await getTaglines();
 
   let content;
 
-  if (!res || res.error || !res.data) {
+  if (!response || response.error || !response.data) {
     content = (
       <ResultState
         type="error"
@@ -27,12 +27,12 @@ export default async function TaglinesPage({
       />
     );
   } else {
-    const taglines = res.data.data.taglines || [];
+    const { data } = response.data;
 
-    if (taglines.length === 0) {
+    if (data.length === 0) {
       content = <ResultState type="empty" message="No taglines found." />;
     } else {
-      content = <DataTableClient initialData={taglines} initialPage={page} />;
+      content = <DataTableClient initialData={data} initialPage={page} />;
     }
   }
 

@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import FormField from "@/components/ui/FormField";
-import { NotificationPriority, NotificationType } from "@/types/enums";
+import { NotificationType } from "@/types/enums";
 import Button from "@/components/ui/Button";
 import SelectField, { SelectOption } from "../ui/SelectField";
 import EmojiPicker from "emoji-picker-react";
@@ -22,7 +22,6 @@ interface NotificationTemplate {
 
 interface BroadcastNotificationFormData {
   notificationType: string;
-  priority: string;
   title?: string;
 
   message?: string;
@@ -64,7 +63,6 @@ export default function BroadcastNotificationForm({
 
   const [formData, setFormData] = useState<BroadcastNotificationFormData>({
     notificationType: initialData?.notificationType || "",
-    priority: initialData?.priority || "",
     title: initialData?.title || "",
     message: initialData?.message || "",
     deliveryChannels: initialData?.deliveryChannels || [],
@@ -137,7 +135,6 @@ export default function BroadcastNotificationForm({
         ...formData,
         templateId: template.id,
         notificationType: template.type,
-        priority: template.priority,
       });
 
       const initialVars: Record<string, string> = {};
@@ -204,7 +201,6 @@ export default function BroadcastNotificationForm({
     try {
       const payload: BroadcastNotificationFormData = {
         notificationType: formData.notificationType,
-        priority: formData.priority,
         deliveryChannels: formData.deliveryChannels,
       };
 
@@ -421,48 +417,27 @@ export default function BroadcastNotificationForm({
         </>
       )}
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <SelectField
-          id="notification-type"
-          label="Notification Type"
-          value={{
-            label: formData.notificationType,
-            value: formData.notificationType,
-          }}
-          onChange={(option) =>
-            setFormData({
-              ...formData,
-              notificationType: (option as { label: string; value: string })
-                .value as NotificationType,
-            })
-          }
-          options={Object.values(NotificationType).map((type) => ({
-            label: type,
-            value: type,
-          }))}
-          required
-          disabled={useTemplate && selectedTemplate !== null}
-        />
-
-        <SelectField
-          id="priority"
-          label="Priority"
-          value={{ label: formData.priority, value: formData.priority }}
-          onChange={(option) =>
-            setFormData({
-              ...formData,
-              priority: (option as { label: string; value: string })
-                .value as NotificationPriority,
-            })
-          }
-          options={Object.values(NotificationPriority).map((priority) => ({
-            label: priority,
-            value: priority,
-          }))}
-          required
-          disabled={useTemplate && selectedTemplate !== null}
-        />
-      </div>
+      <SelectField
+        id="notification-type"
+        label="Notification Type"
+        value={{
+          label: formData.notificationType,
+          value: formData.notificationType,
+        }}
+        onChange={(option) =>
+          setFormData({
+            ...formData,
+            notificationType: (option as { label: string; value: string })
+              .value as NotificationType,
+          })
+        }
+        options={Object.values(NotificationType).map((type) => ({
+          label: type,
+          value: type,
+        }))}
+        required
+        disabled={useTemplate && selectedTemplate !== null}
+      />
 
       <div>
         <label className="block text-sm font-medium mb-2">

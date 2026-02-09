@@ -12,23 +12,24 @@ export default async function EditEventPage({
 }) {
   const { id } = await params;
 
-  const res = await getEvent(id);
-  const event = res?.data?.event;
+  const response = await getEvent(id);
 
-  if (!res || res.error) {
+  if (!response || response.error) {
     return (
       <ResultState type="error" message="Unable to fetch event details." />
     );
   }
 
+  const { data } = response.data;
+
   const initialValues: EventFormValues = {
-    title: event.title,
-    description: event.description || "",
-    location: event.location,
-    eventImages: event.eventImages,
-    date: event.date.split("T")[0],
-    time: event.date.split("T")[1]?.slice(0, 5) || "",
-    ticketTiers: event.ticketTiers.map((t: any) => ({
+    title: data.title,
+    description: data.description || "",
+    location: data.location,
+    eventImages: data.eventImages,
+    date: data.date.split("T")[0],
+    time: data.date.split("T")[1]?.slice(0, 5) || "",
+    ticketTiers: data.ticketTiers.map((t: any) => ({
       name: t.name,
       quantity: t.quantity,
       currency: t.currency,

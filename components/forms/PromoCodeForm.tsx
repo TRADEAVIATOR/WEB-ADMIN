@@ -15,7 +15,6 @@ export type PromoCodeFormValues = {
   maxUses?: string;
   validFrom: string;
   validUntil?: string;
-  isActive?: boolean;
 };
 
 interface PromoCodeFormProps {
@@ -43,7 +42,6 @@ export default function PromoCodeForm({
     maxUses: initialValues?.maxUses?.toString() || "",
     validFrom: initialValues?.validFrom || "",
     validUntil: initialValues?.validUntil || "",
-    isActive: initialValues?.isActive ?? true,
   });
 
   const handleChange = (field: keyof PromoCodeFormValues, value: any) => {
@@ -154,15 +152,6 @@ export default function PromoCodeForm({
           value={values.validUntil}
           onChange={(e) => handleChange("validUntil", e.target.value)}
         />
-      </div>
-
-      <div className="flex items-center gap-2">
-        <input
-          type="checkbox"
-          checked={values.isActive}
-          onChange={(e) => handleChange("isActive", e.target.checked)}
-        />
-        <span className="text-sm">Active</span>
       </div>
 
       <Button type="submit" isLoading={isLoading} disabled={isLoading}>

@@ -14,30 +14,30 @@ export default async function EventsPage({
   const params = await searchParams;
   const page = params?.page ? Number(params.page) : 1;
 
-  const res = await getEvents(page, 50);
+  const response = await getEvents(page, 50);
 
   let content;
 
-  if (!res || res.error) {
+  if (!response || response.error) {
     content = <ResultState type="error" message="Unable to fetch events." />;
   } else {
-    const payload = res.data;
+    const { data, meta } = response.data;
 
-    if (!payload || !payload.results) {
+    if (!data || !data) {
       content = (
         <ResultState
           type="error"
           message="Invalid server response. Please try again later."
         />
       );
-    } else if (payload.results.length === 0) {
+    } else if (data.length === 0) {
       content = <ResultState type="empty" message="No events found." />;
     } else {
       content = (
         <DataTableClient
-          initialData={payload.results}
-          initialPage={payload.pagination.currentPage}
-          totalPages={payload.pagination.totalPages}
+          initialData={data}
+          initialPage={meta.page}
+          totalPages={meta.totalPages}
         />
       );
     }

@@ -34,16 +34,16 @@ export default async function AdminSupportPage({
           message="Invalid server response. Please try again later."
         />
       );
-    } else if (!payload.results || payload.results.length === 0) {
+    } else if (!payload.data || payload.data.length === 0) {
       content = (
         <ResultState type="empty" message="No support conversations found." />
       );
     } else {
       content = (
         <DataTableClient
-          initialData={payload.results}
-          initialPage={payload.pagination.currentPage}
-          totalPages={payload.pagination.totalPages}
+          initialData={payload.data}
+          initialPage={payload.meta.page}
+          totalPages={payload.meta.totalPages}
         />
       );
     }

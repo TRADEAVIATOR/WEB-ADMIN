@@ -11,18 +11,18 @@ export const setCryptoRateClient = async (payload: {
 };
 
 export const deleteCryptoRateClient = async (baseAsset: string) => {
-  const res = await clientApi.delete(`/admin/crypto/${baseAsset}`);
+  const res = await clientApi.delete(`/admin/crypto/${baseAsset}/rate`);
 
   return res.data;
 };
 
 export const getAllCryptoPairRates = async () => {
   const api = await getServerApi();
-  return tryServer(api.get("/admin/crypto").then((res) => res.data));
+  return tryServer(api.get("/admin/crypto/rates").then((res) => res.data));
 };
 
 export const getAllCryptoPairRatesClient = async () => {
-  return clientApi.get("/admin/crypto").then((res) => res.data);
+  return clientApi.get("/admin/crypto/rates").then((res) => res.data);
 };
 
 export const getMarketInsights = async () => {

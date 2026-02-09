@@ -39,8 +39,8 @@ export default async function UserSpecificNotificationsPage({
       content = (
         <DataTableClient
           initialData={payload.data}
-          initialPage={payload.pagination.currentPage}
-          totalPages={payload.pagination.totalPages}
+          initialPage={payload.meta.page}
+          totalPages={payload.meta.totalPages}
         />
       );
     }

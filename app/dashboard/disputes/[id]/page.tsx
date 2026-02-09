@@ -19,7 +19,7 @@ export default async function DisputeDetailsPage({
     );
   }
 
-  const dispute = res.data?.data?.transaction as Dispute | undefined;
+  const dispute = res.data?.data as Dispute | undefined;
 
   if (!dispute) {
     return (

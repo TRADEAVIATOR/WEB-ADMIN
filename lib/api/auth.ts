@@ -9,11 +9,6 @@ export const adminLogin = async (email: string, password: string) => {
   );
 };
 
-export const getAdminProfile = async () => {
-  const api = await getServerApi();
-  return tryServer(api.get("/admin/auth/profile").then((res) => res.data));
-};
-
 export const logoutAdmin = async () => {
   return tryServer(clientApi.post("/admin/auth/logout"));
 };
@@ -41,7 +36,7 @@ export const createAdminUserClient = async (payload: {
 export const getAdmins = async (page = 1, limit = 10) => {
   const api = await getServerApi();
   return tryServer(
-    api.get(`/admin/auth?page=${page}&limit=${limit}`).then((r) => r.data),
+    api.get(`/admin/auth/all?page=${page}&limit=${limit}`).then((r) => r.data),
   );
 };
 

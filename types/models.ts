@@ -13,6 +13,12 @@ export interface VirtualAccount {
   balance: number | string;
 }
 
+export interface DeviceSession {
+  deviceType: string;
+  ipAddress: string;
+  lastLoginAt: string;
+}
+
 export interface Customer {
   id: string;
   fullname: string;
@@ -22,12 +28,14 @@ export interface Customer {
   tier: string;
   createdAt: string;
   referralCode: string;
+  dateOfBirth?: string | null;
   isVerified: boolean;
   isKycVerified: boolean;
   isActive: boolean;
   wallets: Wallet[];
   virtualAccounts: VirtualAccount[];
   transactions?: Transaction[];
+  deviceSessions?: DeviceSession[];
 }
 
 export interface Transaction {

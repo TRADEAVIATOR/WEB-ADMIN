@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import Button from "@/components/ui/Button";
-import { NotificationPriority, NotificationType } from "@/types/enums";
+import { NotificationType } from "@/types/enums";
 import FormField from "@/components/ui/FormField";
 import SelectField, { SelectOption } from "../ui/SelectField";
 import { MultiUserSelect } from "../shared/MultiUserSelect";
@@ -28,7 +28,6 @@ export interface ScheduledNotificationFormProps {
     title: string;
     message: string;
     type: string;
-    priority: string;
     scheduledFor: string;
     isRecurring: boolean;
     recurringPattern?: string;
@@ -71,7 +70,6 @@ export default function ScheduledNotificationForm({
     title: initialData?.title || "",
     message: initialData?.message || "",
     type: initialData?.type || "",
-    priority: initialData?.priority || "",
     scheduledFor: initialData?.scheduledFor
       ? initialData.scheduledFor.split("T")[0]
       : "",
@@ -153,7 +151,6 @@ export default function ScheduledNotificationForm({
         ...formData,
         templateId: template.id,
         type: template.type,
-        priority: template.priority,
       });
 
       const initialVars: Record<string, string> = {};
@@ -230,7 +227,6 @@ export default function ScheduledNotificationForm({
 
       const payload: any = {
         type: formData.type,
-        priority: formData.priority,
         scheduledFor: scheduledDate,
         isRecurring: formData.isRecurring,
         recurringPattern: formData.recurringPattern,
@@ -401,45 +397,24 @@ export default function ScheduledNotificationForm({
         </>
       )}
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <SelectField
-          id="notification-type"
-          label="Notification Type"
-          value={{ label: formData.type, value: formData.type }}
-          onChange={(option) =>
-            setFormData({
-              ...formData,
-              type: (option as { label: string; value: string })
-                .value as NotificationType,
-            })
-          }
-          options={Object.values(NotificationType).map((type) => ({
-            label: type,
-            value: type,
-          }))}
-          required
-          disabled={useTemplate && selectedTemplate !== null}
-        />
-
-        <SelectField
-          id="priority"
-          label="Priority"
-          value={{ label: formData.priority, value: formData.priority }}
-          onChange={(option) =>
-            setFormData({
-              ...formData,
-              priority: (option as { label: string; value: string })
-                .value as NotificationPriority,
-            })
-          }
-          options={Object.values(NotificationPriority).map((priority) => ({
-            label: priority,
-            value: priority,
-          }))}
-          required
-          disabled={useTemplate && selectedTemplate !== null}
-        />
-      </div>
+      <SelectField
+        id="notification-type"
+        label="Notification Type"
+        value={{ label: formData.type, value: formData.type }}
+        onChange={(option) =>
+          setFormData({
+            ...formData,
+            type: (option as { label: string; value: string })
+              .value as NotificationType,
+          })
+        }
+        options={Object.values(NotificationType).map((type) => ({
+          label: type,
+          value: type,
+        }))}
+        required
+        disabled={useTemplate && selectedTemplate !== null}
+      />
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <FormField

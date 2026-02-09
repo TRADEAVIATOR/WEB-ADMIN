@@ -1,7 +1,7 @@
 import ResultState from "@/components/ui/ResultState";
 import AdminProfileClient from "./AdminProfileClient";
-import { getAdminProfile } from "@/lib/api/auth";
 import { getNotificationPreferences } from "@/lib/api/notifications";
+import { getAdminProfile } from "@/lib/api/dashboard";
 
 export const dynamic = "force-dynamic";
 

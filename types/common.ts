@@ -40,6 +40,13 @@ export interface Pagination {
   hasMore: boolean;
 }
 
+export interface Meta {
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
 export type FilterField = {
   label: string;
   name: string;
