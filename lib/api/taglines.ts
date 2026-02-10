@@ -12,7 +12,7 @@ export const getTaglinesClient = async () => {
 };
 
 export const createTaglineClient = async (payload: { tagline: string }) => {
-  const res = await clientApi.patch("/admin/tags", payload);
+  const res = await clientApi.post("/admin/tags", payload);
   return res.data;
 };
 
@@ -20,7 +20,7 @@ export const updateTaglineClient = async (
   index: number,
   payload: { tagline: string },
 ) => {
-  const res = await clientApi.put(`/admin/tags/${index}`, payload);
+  const res = await clientApi.patch(`/admin/tags/${index}`, payload);
   return res.data;
 };
 

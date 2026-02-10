@@ -15,6 +15,6 @@ export interface BulkVoucherPayload {
 
 export const postBulkVouchers = async (payload: BulkVoucherPayload) => {
   return clientApi
-    .post("/admin/vouchers/bulks", payload)
+    .post("/admin/vouchers/bulk", payload)
     .then((res) => res.data);
 };

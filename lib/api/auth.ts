@@ -28,7 +28,7 @@ export const createAdminUserClient = async (payload: {
   email: string;
   password: string;
 }) => {
-  const res = await clientApi.post("/admin/auth/create", payload);
+  const res = await clientApi.post("/admin/auth/register", payload);
 
   return res.data;
 };
@@ -52,14 +52,14 @@ export const refreshAdminToken = async (refreshToken: string) => {
 export const suspendAdmin = async (adminId: string, isActive: boolean) => {
   return tryServer(
     clientApi
-      .patch(`/admin/auth/suspend/${adminId}`, { isActive })
+      .patch(`/admin/auth/${adminId}/suspend`, { isActive })
       .then((res) => res.data),
   );
 };
 
 export const deleteAdmin = async (adminId: string) => {
   return tryServer(
-    clientApi.delete(`/admin/auth/delete/${adminId}`).then((res) => res.data),
+    clientApi.delete(`/admin/auth/${adminId}`).then((res) => res.data),
   );
 };
 
@@ -69,7 +69,7 @@ export const resetAdminPassword = async (
 ) => {
   return tryServer(
     clientApi
-      .patch(`/admin/auth/reset-password/${adminId}`, { newPassword })
+      .patch(`/admin/auth/${adminId}/reset-password`, { newPassword })
       .then((res) => res.data),
   );
 };

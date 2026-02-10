@@ -40,7 +40,7 @@ export default function EventForm({
       price: string;
       currency: string;
     },
-    value: any
+    value: any,
   ) => {
     const updatedTickets = [...values.ticketTiers];
     updatedTickets[index] = { ...updatedTickets[index], [field]: value };

@@ -18,6 +18,7 @@ export type PromoCodeFormValues = {
 };
 
 interface PromoCodeFormProps {
+  mode: "create" | "edit";
   initialValues?: Partial<PromoCodeFormValues>;
   onSubmit: (values: PromoCodeFormValues) => void;
   isLoading?: boolean;
@@ -29,19 +30,22 @@ const BONUS_TYPE_OPTIONS = [
 ];
 
 export default function PromoCodeForm({
-  initialValues,
+  mode,
   onSubmit,
   isLoading = false,
+  initialValues,
 }: PromoCodeFormProps) {
   const [values, setValues] = useState<PromoCodeFormValues>({
-    code: initialValues?.code || "",
-    description: initialValues?.description || "",
-    bonusAmount: initialValues?.bonusAmount?.toString() || "",
-    bonusType: initialValues?.bonusType || "FIXED",
-    minSaleAmount: initialValues?.minSaleAmount?.toString() || "",
-    maxUses: initialValues?.maxUses?.toString() || "",
-    validFrom: initialValues?.validFrom || "",
-    validUntil: initialValues?.validUntil || "",
+    code: mode === "edit" ? initialValues?.code || "" : "",
+    description: mode === "edit" ? initialValues?.description || "" : "",
+    bonusAmount:
+      mode === "edit" ? initialValues?.bonusAmount?.toString() || "" : "",
+    bonusType: mode === "edit" ? initialValues?.bonusType || "FIXED" : "FIXED",
+    minSaleAmount:
+      mode === "edit" ? initialValues?.minSaleAmount?.toString() || "" : "",
+    maxUses: mode === "edit" ? initialValues?.maxUses?.toString() || "" : "",
+    validFrom: mode === "edit" ? initialValues?.validFrom || "" : "",
+    validUntil: mode === "edit" ? initialValues?.validUntil || "" : "",
   });
 
   const handleChange = (field: keyof PromoCodeFormValues, value: any) => {
@@ -61,15 +65,27 @@ export default function PromoCodeForm({
       return;
     }
 
-    const payload = {
-      ...values,
+    const basePayload = {
+      description: values.description,
+      bonusAmount: values.bonusAmount,
+      bonusType: values.bonusType,
+      minSaleAmount: values.minSaleAmount,
+      maxUses: values.maxUses,
       validFrom: new Date(values.validFrom).toISOString(),
       validUntil: values.validUntil
         ? new Date(values.validUntil).toISOString()
         : undefined,
     };
 
-    onSubmit(payload);
+    const payload =
+      mode === "create"
+        ? {
+            ...basePayload,
+            code: values.code,
+          }
+        : basePayload;
+
+    onSubmit(payload as PromoCodeFormValues);
   };
 
   return (
@@ -95,7 +111,7 @@ export default function PromoCodeForm({
           type="number"
           min={0}
           value={values.bonusAmount}
-          onChange={(e) => handleChange("bonusAmount", Number(e.target.value))}
+          onChange={(e) => handleChange("bonusAmount", e.target.value)}
           required
         />
 
@@ -123,9 +139,7 @@ export default function PromoCodeForm({
           type="number"
           min={0}
           value={values.minSaleAmount}
-          onChange={(e) =>
-            handleChange("minSaleAmount", Number(e.target.value))
-          }
+          onChange={(e) => handleChange("minSaleAmount", e.target.value)}
         />
 
         <FormField
@@ -133,7 +147,7 @@ export default function PromoCodeForm({
           type="number"
           min={0}
           value={values.maxUses}
-          onChange={(e) => handleChange("maxUses", Number(e.target.value))}
+          onChange={(e) => handleChange("maxUses", e.target.value)}
         />
       </div>
 
@@ -155,7 +169,7 @@ export default function PromoCodeForm({
       </div>
 
       <Button type="submit" isLoading={isLoading} disabled={isLoading}>
-        Save Promo Code
+        {mode === "edit" ? "Save Promo Code" : "Create Promo Code"}
       </Button>
     </form>
   );

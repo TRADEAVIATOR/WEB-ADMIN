@@ -25,6 +25,7 @@ export default async function DisputesPage({
         showRefresh
       />
     );
+  } else {
     const payload = res.data;
 
     if (!payload || !payload.data) {

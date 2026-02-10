@@ -44,13 +44,18 @@ export default function EditTaglineModal({
         tagline: trimmedTagline,
       });
 
-      if (!res?.success) {
+      console.log(res);
+
+      if (!res?.newValue) {
         toast.dismiss(toastId);
-        toast.error(res?.message || "Failed to update tagline");
+        toast.error("Failed to update tagline");
         return;
       }
 
-      toast.success("Tagline updated successfully", { id: toastId });
+      toast.success(
+        `Tagline updated successfully: "${res.oldValue}" → "${res.newValue}"`,
+        { id: toastId },
+      );
       onClose();
       router.refresh();
     } catch (error: any) {

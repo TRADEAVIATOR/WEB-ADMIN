@@ -54,6 +54,7 @@ export default function EditPromoCodeClient({
           onSubmit={handleUpdate}
           initialValues={initialValues}
           isLoading={isLoading}
+          mode="edit"
         />
       </div>
     </div>

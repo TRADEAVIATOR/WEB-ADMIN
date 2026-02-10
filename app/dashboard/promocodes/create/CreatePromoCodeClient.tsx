@@ -46,7 +46,11 @@ export default function CreatePromoCodeClient() {
       </button>
 
       <div className="max-w-4xl mx-auto">
-        <PromoCodeForm onSubmit={handleCreate} isLoading={isLoading} />
+        <PromoCodeForm
+          mode="create"
+          onSubmit={handleCreate}
+          isLoading={isLoading}
+        />
       </div>
     </div>
   );

@@ -23,7 +23,7 @@ export default async function WalletsPage() {
       />
     );
   } else {
-    const payload = res.data?.data;
+    const payload = res.data?.data.data;
 
     if (!payload) {
       content = (

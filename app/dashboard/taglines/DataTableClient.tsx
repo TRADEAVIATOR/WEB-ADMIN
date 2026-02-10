@@ -7,11 +7,14 @@ import toast from "react-hot-toast";
 import { deleteTaglineClient } from "@/lib/api/taglines";
 import { useModal } from "@/context/ModalContext";
 import { handleApiError } from "@/lib/utils/errorHandler";
+import { useRouter } from "next/navigation";
 
 export default function DataTableClient({
   initialData = [],
 }: DataTableClientProps<string>) {
   const { openModal } = useModal();
+
+  const router = useRouter();
 
   const columns = [{ key: "tagline", label: "Tagline" }];
 
@@ -26,12 +29,13 @@ export default function DataTableClient({
     try {
       const res = await deleteTaglineClient(index);
 
-      if (res?.success) {
-        toast.success("Tagline deleted successfully!", { id: toastId });
-      } else {
-        toast.error(res?.message || "Failed to delete tagline.", {
+      if (res?.deleted) {
+        toast.success(`Tagline "${res.deleted}" deleted successfully!`, {
           id: toastId,
         });
+        router.refresh();
+      } else {
+        toast.error("Failed to delete tagline.", { id: toastId });
       }
     } catch (error: any) {
       toast.error("An unexpected error occurred.", { id: toastId });

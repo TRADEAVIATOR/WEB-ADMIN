@@ -30,8 +30,8 @@ export default function StatCard({
   const changeColor = bgColor
     ? "text-white/70"
     : isPositive
-    ? "text-green-600"
-    : "text-red-600";
+      ? "text-green-600"
+      : "text-red-600";
 
   return (
     <div

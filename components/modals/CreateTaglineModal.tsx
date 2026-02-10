@@ -36,9 +36,9 @@ export default function CreateTaglineModal({
     try {
       const res = await createTaglineClient({ tagline: trimmedTagline });
 
-      if (!res?.success) {
+      if (!res?.added?.includes(trimmedTagline)) {
         toast.dismiss(toastId);
-        toast.error(res?.message || "Failed to create tagline");
+        toast.error("Failed to create tagline");
         return;
       }
 
