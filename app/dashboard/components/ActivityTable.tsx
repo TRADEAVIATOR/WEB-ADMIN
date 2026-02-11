@@ -17,13 +17,6 @@ export default function RecentActivities({
   const truncate = (text: string, maxLength = 25) =>
     text.length > maxLength ? text.slice(0, maxLength) + "…" : text;
 
-  const parseBackendDate = (value: string) => {
-    const [datePart, timePart] = value.split(", ");
-    const [day, month, year] = datePart.split("/");
-
-    return new Date(`${year}-${month}-${day}T${timePart}`);
-  };
-
   const hasActivities = Array.isArray(data) && data.length > 0;
 
   return (
@@ -66,7 +59,7 @@ export default function RecentActivities({
               <div className="flex flex-col sm:items-end text-right">
                 <p className="text-xs text-gray-400">{activity.timeAgo}</p>
                 <p className="text-xs text-gray-400">
-                  {parseBackendDate(activity.createdAt).toLocaleString([], {
+                  {new Date(activity.createdAt).toLocaleString([], {
                     year: "numeric",
                     month: "short",
                     day: "numeric",

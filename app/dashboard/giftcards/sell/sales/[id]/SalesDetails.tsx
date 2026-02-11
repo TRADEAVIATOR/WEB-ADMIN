@@ -48,17 +48,14 @@ export default function SalesDetails({ sale }: { sale: any }) {
       </button>
 
       <div className="max-w-4xl mx-auto space-y-8">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-b border-gray-100 pb-4">
-          <DetailItem label="Sale ID" value={sale.id} />
-          <DetailItem label="Sale Reference" value={sale.saleReference} />
-        </div>
+        <DetailItem label="Sale ID" value={sale.id} />
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-b border-gray-100 pb-4">
           <DetailItem label="User ID" value={sale.userId} />
-          <DetailItem label="Full Name" value={sale.user?.fullname || "-"} />
-          <DetailItem label="Email" value={sale.user?.email || "-"} />
-          <DetailItem label="Username" value={sale.user?.username || "-"} />
-          <DetailItem label="Phone" value={sale.user?.phone || "-"} />
+          <DetailItem label="Full Name" value={sale.fullname || "-"} />
+          <DetailItem label="Email" value={sale.email || "-"} />
+          <DetailItem label="Username" value={sale.username || "-"} />
+          <DetailItem label="Phone" value={sale.phone || "-"} />
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-b border-gray-100 pb-4">
@@ -106,8 +103,8 @@ export default function SalesDetails({ sale }: { sale: any }) {
                 onClick={() =>
                   Promise.all(
                     sale.images.map((img, i) =>
-                      downloadImage(img, `card-${sale.id}-${i + 1}.jpg`)
-                    )
+                      downloadImage(img, `card-${sale.id}-${i + 1}.jpg`),
+                    ),
                   )
                 }
                 className="text-xs text-primary hover:underline">

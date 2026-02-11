@@ -38,12 +38,7 @@ export default function OrderDetails({ order }: { order: GiftCardOrder }) {
         });
       }
     } catch (error: unknown) {
-      toast.error(
-        (error as any)?.message ||
-          "An unexpected error occurred while retrying",
-        { id: toastId }
-      );
-
+      toast.dismiss(toastId);
       handleApiError(error);
     }
   };
@@ -62,6 +57,7 @@ export default function OrderDetails({ order }: { order: GiftCardOrder }) {
         toast.error(res.message || "Failed to refund order", { id: toastId });
       }
     } catch (error: any) {
+      toast.dismiss(toastId);
       handleApiError(error);
     } finally {
       setLoading(false);

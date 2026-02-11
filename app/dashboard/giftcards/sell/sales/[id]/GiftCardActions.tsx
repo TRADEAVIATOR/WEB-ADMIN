@@ -10,6 +10,7 @@ import toast from "react-hot-toast";
 import Button from "@/components/ui/Button";
 import SelectField, { SelectOption } from "@/components/ui/SelectField";
 import { handleApiError } from "@/lib/utils/errorHandler";
+import { useRouter } from "next/navigation";
 
 type GiftCardActionsProps = {
   saleId: string;
@@ -31,8 +32,10 @@ export default function GiftCardActions({
 
   const [showRejectInput, setShowRejectInput] = useState(false);
   const [rejectionReason, setRejectionReason] = useState<SelectOption | null>(
-    null
+    null,
   );
+
+  const router = useRouter();
 
   const handleReview = async () => {
     setReviewLoading(true);
@@ -40,6 +43,7 @@ export default function GiftCardActions({
       const res = await reviewGiftCardSale(saleId);
       toast.success(res.message || "Sale reviewed successfully");
       onActionComplete?.();
+      router.refresh();
     } catch (err: any) {
       handleApiError(err);
     } finally {
@@ -53,6 +57,7 @@ export default function GiftCardActions({
       const res = await processGiftCardPayout(saleId);
       toast.success(res.message || "Payout processed successfully");
       onActionComplete?.();
+      router.refresh();
     } catch (err: any) {
       handleApiError(err);
     } finally {
@@ -73,6 +78,7 @@ export default function GiftCardActions({
       setRejectionReason(null);
       setShowRejectInput(false);
       onActionComplete?.();
+      router.refresh();
     } catch (err: any) {
       handleApiError(err);
     } finally {

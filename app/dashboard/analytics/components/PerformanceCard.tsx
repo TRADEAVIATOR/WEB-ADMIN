@@ -65,17 +65,22 @@ export default function PerformanceCard({ data }: PerformanceCardProps) {
   const [selectedView, setSelectedView] = useState("All");
 
   const cryptoMonthlyData = charts?.cryptoVolumeByMonth || [];
-  const labels = cryptoMonthlyData.map((d) => d.month);
+  const paddedData =
+    cryptoMonthlyData.length < 2
+      ? [{ month: "Jan", value: "0" }, ...cryptoMonthlyData]
+      : cryptoMonthlyData;
+
+  const labels = paddedData.map((d) => d.month);
+  const cryptoValues = paddedData.map((d) => parseFloat(d.value || "0"));
 
   const totalDeposits = parseFloat(volumes?.deposits || "0");
   const totalWithdrawals = parseFloat(volumes?.withdrawals || "0");
   const totalGiftcards = parseFloat(volumes?.giftcards || "0");
 
-  const monthCount = labels.length || 1;
+  const monthCount = labels.length;
   const depositsPerMonth = labels.map(() => totalDeposits / monthCount);
   const withdrawalsPerMonth = labels.map(() => totalWithdrawals / monthCount);
   const giftcardsPerMonth = labels.map(() => totalGiftcards / monthCount);
-  const cryptoValues = cryptoMonthlyData.map((d) => parseFloat(d.value || "0"));
 
   const lineChartData = {
     labels,

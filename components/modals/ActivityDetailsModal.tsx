@@ -18,6 +18,19 @@ export default function ActivityDetailsModal({
 }: ActivityDetailsModalProps) {
   if (!activity) return null;
 
+  const getAmountDisplay = () => {
+    if (activity.type === "CRYPTO" && activity.usdValue) {
+      return `${activity.amount} ${activity.currency} (${formatCurrency(
+        activity.usdValue,
+        {
+          currency: "USD",
+          locale: "en-US",
+        },
+      )})`;
+    }
+    return formatCurrency(activity.amount);
+  };
+
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Activity Details">
       <div className="flex flex-col gap-3 text-sm text-gray-700">
@@ -29,7 +42,7 @@ export default function ActivityDetailsModal({
         <div>
           <p className="text-xs text-gray-400 mb-1">Type & Amount</p>
           <p>
-            {activity.type} - {formatCurrency(activity.amount)}
+            {activity.type} - {getAmountDisplay()}
           </p>
         </div>
 
@@ -48,7 +61,7 @@ export default function ActivityDetailsModal({
 
         <div>
           <p className="text-xs text-gray-400 mb-1">Created At</p>
-          <p>{activity.createdAt}</p>
+          <p>{new Date(activity.createdAt).toLocaleString()}</p>
         </div>
 
         <div>

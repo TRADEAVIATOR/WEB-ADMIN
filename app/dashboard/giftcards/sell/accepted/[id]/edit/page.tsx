@@ -12,7 +12,7 @@ export default async function EditAcceptedGiftcardPage({
   const { id } = await params;
 
   const res = await getAcceptedGiftCardById(id);
-  const data = res?.data?.data;
+  const data = res?.data;
 
   if (!res || res.error) {
     return (

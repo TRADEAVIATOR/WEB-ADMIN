@@ -1,7 +1,6 @@
 import { getDispute } from "@/lib/api/disputes";
-import ResultState from "@/components/ui/ResultState";
 import DisputeDetailsClient from "./DisputeDetailsClient";
-import { Dispute } from "@/types/models";
+import ResultState from "@/components/ui/ResultState";
 
 export const dynamic = "force-dynamic";
 
@@ -19,7 +18,7 @@ export default async function DisputeDetailsPage({
     );
   }
 
-  const dispute = res.data?.data as Dispute | undefined;
+  const dispute = res.data?.data;
 
   if (!dispute) {
     return (

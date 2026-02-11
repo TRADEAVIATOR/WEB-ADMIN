@@ -1,6 +1,5 @@
 import ResultState from "@/components/ui/ResultState";
 import { getGiftCardSaleById } from "@/lib/api/giftcards";
-import { GiftCardSale } from "@/types/models";
 import SalesDetails from "./SalesDetails";
 
 export const dynamic = "force-dynamic";
@@ -24,7 +23,7 @@ export default async function SalesDetailsPage({
     );
   }
 
-  const sale = res.data?.data as GiftCardSale | undefined;
+  const sale = res.data;
 
   if (!sale) {
     return (

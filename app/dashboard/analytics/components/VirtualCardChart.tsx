@@ -45,7 +45,7 @@ export default function VirtualCardChart({ cardsData }: VirtualCardChartProps) {
             const value = context.parsed || 0;
             const total = context.dataset.data.reduce(
               (a: number, b: number) => a + b,
-              0
+              0,
             );
             const percentage =
               total > 0 ? ((value / total) * 100).toFixed(1) : "0";

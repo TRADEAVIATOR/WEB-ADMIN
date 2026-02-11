@@ -1,7 +1,6 @@
 import ResultState from "@/components/ui/ResultState";
 import { getAcceptedGiftCardById } from "@/lib/api/giftcards";
 import AcceptedGiftcardDetails from "./AcceptedGiftcardDetails";
-import { AcceptedGiftcard } from "@/types/models";
 
 export const dynamic = "force-dynamic";
 
@@ -23,7 +22,7 @@ export default async function AcceptedGiftcardDetailsPage({
     );
   }
 
-  const giftcard = res.data?.data as AcceptedGiftcard | undefined;
+  const giftcard = res.data;
 
   if (!giftcard) {
     return (

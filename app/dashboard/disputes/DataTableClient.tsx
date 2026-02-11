@@ -100,14 +100,17 @@ export default function DataTableClient({
 
     try {
       const res = await updateDisputeStatusClient(transactionId, status);
+
       if (!res.error) {
         toast.success("Dispute status updated successfully!", { id: toastId });
+        router.refresh();
       } else {
         toast.error(res.message || "Failed to update dispute status.", {
           id: toastId,
         });
       }
     } catch (error: any) {
+      toast.dismiss(toastId);
       handleApiError(error);
     }
   };

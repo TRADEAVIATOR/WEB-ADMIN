@@ -20,12 +20,31 @@ export const clientApi = axios.create({
   },
 });
 
+let isRefreshing = false;
+let failedQueue: Array<{
+  resolve: (value?: unknown) => void;
+  reject: (reason?: any) => void;
+}> = [];
+
+const processQueue = (error: Error | null) => {
+  failedQueue.forEach((prom) => {
+    if (error) {
+      prom.reject(error);
+    } else {
+      prom.resolve();
+    }
+  });
+
+  failedQueue = [];
+};
+
 clientApi.interceptors.request.use(
   async (config) => {
     const session = await getSession();
 
-    if (session?.error === "RefreshAccessTokenError") {
-      await signOut({ redirect: true, callbackUrl: "/login" });
+    if (session?.error === "RefreshAccessTokenError" && !isRefreshing) {
+      console.warn("Session has refresh token error, signing out...");
+      await signOut({ redirect: true, callbackUrl: "/" });
       return Promise.reject(new Error("Session expired"));
     }
 
@@ -44,25 +63,49 @@ clientApi.interceptors.response.use(
     const originalRequest = error.config as any;
 
     if (error.response?.status === 401 && !originalRequest._retry) {
+      if (isRefreshing) {
+        return new Promise((resolve, reject) => {
+          failedQueue.push({ resolve, reject });
+        })
+          .then(() => {
+            return clientApi(originalRequest);
+          })
+          .catch((err) => {
+            return Promise.reject(err);
+          });
+      }
+
       originalRequest._retry = true;
+      isRefreshing = true;
 
       try {
         const session = await getSession();
 
         if (session?.error === "RefreshAccessTokenError") {
-          await signOut({ redirect: true, callbackUrl: "/login" });
+          processQueue(new Error("Session expired"));
+          await signOut({ redirect: true, callbackUrl: "/" });
           return Promise.reject(error);
         }
 
         if (session?.accessToken) {
           originalRequest.headers.Authorization = `Bearer ${session.accessToken}`;
+          processQueue(null);
           return clientApi(originalRequest);
         }
-      } catch (refreshError) {
+
+        processQueue(new Error("No access token"));
         if (typeof window !== "undefined") {
-          await signOut({ redirect: true, callbackUrl: "/login" });
+          await signOut({ redirect: true, callbackUrl: "/" });
+        }
+        return Promise.reject(error);
+      } catch (refreshError) {
+        processQueue(refreshError as Error);
+        if (typeof window !== "undefined") {
+          await signOut({ redirect: true, callbackUrl: "/" });
         }
         return Promise.reject(refreshError);
+      } finally {
+        isRefreshing = false;
       }
     }
 
@@ -82,6 +125,19 @@ export async function getServerApi(): Promise<AxiosInstance> {
       }),
     },
   });
+
+  serverApi.interceptors.response.use(
+    (response) => response,
+    async (error: AxiosError) => {
+      console.error("Server API error:", {
+        status: error.response?.status,
+        url: error.config?.url,
+        message: error.message,
+      });
+
+      return Promise.reject(error);
+    },
+  );
 
   return serverApi;
 }

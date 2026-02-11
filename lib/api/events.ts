@@ -30,8 +30,7 @@ const buildFormData = (data: EventFormValues) => {
 
   formData.append("ticketTiers", JSON.stringify(data.ticketTiers || []));
 
-  const imagesArray = Array.isArray(data.eventImages) ? data.eventImages : [];
-  imagesArray.forEach((file) => {
+  (data.eventImages || []).forEach((file) => {
     formData.append("eventImages", file);
   });
 
@@ -40,16 +39,22 @@ const buildFormData = (data: EventFormValues) => {
 
 export const createEvent = async (data: EventFormValues) => {
   const formData = buildFormData(data);
-
   return tryServer(
-    clientApi.post("/admin/events", formData, {}).then((res) => res.data),
+    clientApi
+      .post("/admin/events", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      })
+      .then((res) => res.data),
   );
 };
 
 export const editEvent = async (data: EventFormValues, eventId: string) => {
   const formData = buildFormData(data);
-
   return tryServer(
-    clientApi.put(`/admin/events/${eventId}`, formData).then((res) => res.data),
+    clientApi
+      .put(`/admin/events/${eventId}`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      })
+      .then((res) => res.data),
   );
 };

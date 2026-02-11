@@ -51,8 +51,8 @@ export default function DataTableClient({
       order.status === "SUCCESS"
         ? "green"
         : order.status === "PENDING"
-        ? "yellow"
-        : "red";
+          ? "yellow"
+          : "red";
 
     const paymentIcon =
       order.channel === "WALLET" ? (

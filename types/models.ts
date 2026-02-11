@@ -189,6 +189,7 @@ export interface Activity {
   };
   createdAt: string;
   timeAgo: string;
+  usdValue: string;
 }
 
 export interface LeaderboardItem {

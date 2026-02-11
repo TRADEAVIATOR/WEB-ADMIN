@@ -68,13 +68,15 @@ export const authOptions: NextAuthOptions = {
       }
 
       try {
+        console.log("Access token expired, attempting refresh...");
         const refreshedTokens = await refreshAccessToken(token.refreshToken);
 
         return {
           ...token,
           accessToken: refreshedTokens.accessToken,
-          refreshToken: refreshedTokens.refreshToken,
+          refreshToken: refreshedTokens.refreshToken ?? token.refreshToken,
           accessTokenExpires: refreshedTokens.accessTokenExpires,
+          error: undefined,
         };
       } catch (error) {
         console.error("Error refreshing access token:", error);

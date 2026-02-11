@@ -1,7 +1,6 @@
 import ResultState from "@/components/ui/ResultState";
 import { getGiftCardOrderById } from "@/lib/api/giftcards";
 import OrderDetails from "./OrderDetails";
-import { GiftCardOrder } from "@/types/models";
 
 export const dynamic = "force-dynamic";
 
@@ -19,7 +18,7 @@ export default async function OrderDetailsPage({
     );
   }
 
-  const order = res.data?.data as GiftCardOrder | undefined;
+  const order = res.data;
 
   if (!order) {
     return (

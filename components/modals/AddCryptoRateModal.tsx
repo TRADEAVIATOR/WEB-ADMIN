@@ -158,6 +158,7 @@ export default function AddCryptoRateModal({
               valueNGN: e.target.value,
             }))
           }
+          required
         />
 
         <Button
