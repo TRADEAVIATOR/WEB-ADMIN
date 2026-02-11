@@ -34,13 +34,14 @@ export default function DataTableClient({
 }: DataTableClientProps) {
   const router = useRouter();
   const [modalOpen, setModalOpen] = useState(false);
-  const [selectedAdminId, setSelectedAdminId] = useState<string>("");
+  const [selectedAdminId, setSelectedAdminId] = useState("");
 
   const columns = [
     { key: "name", label: "Name" },
     { key: "email", label: "Email" },
     { key: "role", label: "Role" },
     { key: "createdAt", label: "Date Added" },
+    { key: "status", label: "Status" },
   ];
 
   const rows: RowData[] = initialData.map((admin) => ({
@@ -58,6 +59,12 @@ export default function DataTableClient({
       month: "short",
       year: "numeric",
     }),
+    status: (
+      <Badge
+        text={admin.isActive ? "Active" : "Suspended"}
+        color={admin.isActive ? "green" : "red"}
+      />
+    ),
     isActive: admin.isActive,
   }));
 
@@ -84,7 +91,7 @@ export default function DataTableClient({
           id: toastId,
         });
       }
-    } catch (error: any) {
+    } catch (error) {
       toast.error("An unexpected error occurred.", { id: toastId });
       handleApiError(error);
     }
@@ -98,10 +105,11 @@ export default function DataTableClient({
 
       if (!res?.error) {
         toast.success("Admin deleted successfully!", { id: toastId });
+        router.refresh();
       } else {
         toast.error(res?.message || "Failed to delete admin.", { id: toastId });
       }
-    } catch (error: any) {
+    } catch (error) {
       toast.error("An unexpected error occurred.", { id: toastId });
       handleApiError(error);
     }
@@ -126,9 +134,7 @@ export default function DataTableClient({
     {
       label: "Activate Admin",
       color: "text-green-600",
-      onClick: (row) => {
-        handleSuspendAdmin(String(row.id), true);
-      },
+      onClick: (row) => handleSuspendAdmin(String(row.id), true),
       hidden: (row) => Boolean(row.isActive),
     },
     {
@@ -149,11 +155,13 @@ export default function DataTableClient({
   return (
     <>
       <DataTable columns={columns} data={rows} menuItems={adminMenuItems} />
+
       <Pagination
         currentPage={initialPage}
         totalPages={totalPages}
         onPageChange={handlePageChange}
       />
+
       <ResetAdminPasswordModal
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
