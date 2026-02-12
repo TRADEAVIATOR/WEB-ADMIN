@@ -104,7 +104,11 @@ export default async function DashboardPage() {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-4">
-        <DashboardHeader userName={userName} ngnRate={ngnRate} />
+        <DashboardHeader
+          userName={userName}
+          ngnRate={ngnRate}
+          isSuperAdmin={session?.user.role === "superAdmin"}
+        />
 
         <CryptoTicker cryptos={cryptoData} ngnRate={ngnRate} />
       </div>
