@@ -10,6 +10,7 @@ import clsx from "clsx";
 interface ActionRequiredCardProps {
   giftcards: number;
   pending: number;
+  className?: string;
 }
 
 function AttentionDot({ show }: { show: boolean }) {
@@ -26,11 +27,16 @@ function AttentionDot({ show }: { show: boolean }) {
 export default function ActionRequiredCard({
   giftcards,
   pending,
+  className,
 }: ActionRequiredCardProps) {
   const router = useRouter();
 
   return (
-    <div className="bg-white rounded-2xl p-5 flex flex-col gap-4 border border-gray-100">
+    <div
+      className={clsx(
+        "bg-white rounded-2xl p-5 flex flex-col gap-4 border border-gray-100",
+        className,
+      )}>
       <h2 className="text-base font-semibold text-gray-800">Action Required</h2>
 
       <button

@@ -16,7 +16,7 @@ import { formatCurrency } from "@/lib/utils/format";
 import CryptoTicker from "./components/CryptoTicker";
 import MarketInsightsCard from "./components/MarketInsightsCard";
 import { auth } from "@/lib/auth/session";
-import DashboardHeader from "./components/Dashboardheader";
+import DashboardHeader from "./components/DashboardHeader";
 
 export const dynamic = "force-dynamic";
 
@@ -99,6 +99,15 @@ export default async function DashboardPage() {
       change: calculateChange(growth.charts.cryptoDistribution, "crypto"),
       data: extractSparklineData(growth.charts.cryptoDistribution),
     },
+    {
+      label: "Total Gift Card Volume",
+      value: formatCurrency(metrics.overview.totalGiftcardVolume, {
+        currency: "NGN",
+        locale: "en-NG",
+      }),
+      change: metrics.actionRequired.giftcardRequests || 0,
+      data: extractSparklineData(growth.charts.cardsDistribution),
+    },
   ];
 
   return (
@@ -113,14 +122,15 @@ export default async function DashboardPage() {
         <CryptoTicker cryptos={cryptoData} ngnRate={ngnRate} />
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4">
         {statCards.map((stat) => (
-          <StatCard key={stat.label} {...stat} />
+          <StatCard key={stat.label} {...stat} className="lg:col-span-1" />
         ))}
 
         <ActionRequiredCard
           giftcards={metrics.actionRequired.giftcardRequests}
           pending={metrics.actionRequired.pendingTransactions}
+          className="lg:col-span-2"
         />
       </div>
 

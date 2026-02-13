@@ -3,6 +3,7 @@
 import { Sparklines, SparklinesLine } from "react-sparklines";
 import { StatCardProps } from "@/types/props";
 import FormField from "@/components/ui/FormField";
+import clsx from "clsx";
 
 export default function StatCard({
   label,
@@ -11,7 +12,8 @@ export default function StatCard({
   data = [],
   bgColor,
   selectOptions,
-}: StatCardProps) {
+  className,
+}: StatCardProps & { className?: string }) {
   const sparklineData = data.length > 0 ? data : [0, 0, 0, 0, 0];
   const hasValidData = data.length > 0 && data.some((val) => val > 0);
 
@@ -35,7 +37,10 @@ export default function StatCard({
 
   return (
     <div
-      className="relative rounded-2xl p-5 flex flex-col gap-3 overflow-hidden border border-gray-100"
+      className={clsx(
+        "relative rounded-2xl p-5 flex flex-col gap-3 overflow-hidden border border-gray-100",
+        className,
+      )}
       style={{ backgroundColor: bgColor || "white" }}>
       <div className="flex justify-between items-center">
         <span
@@ -70,9 +75,7 @@ export default function StatCard({
             {formattedChange}
           </span>
           <span
-            className={`text-xs ${
-              bgColor ? "text-white/60" : "text-gray-400"
-            }`}>
+            className={`text-xs ${bgColor ? "text-white/60" : "text-gray-400"}`}>
             Today
           </span>
         </div>

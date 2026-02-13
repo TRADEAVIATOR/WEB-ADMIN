@@ -58,3 +58,9 @@ export const editEvent = async (data: EventFormValues, eventId: string) => {
       .then((res) => res.data),
   );
 };
+
+export const deleteEvent = async (eventId: string) => {
+  return tryServer(
+    clientApi.delete(`/admin/events/${eventId}`).then((res) => res.data),
+  );
+};

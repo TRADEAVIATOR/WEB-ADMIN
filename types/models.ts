@@ -106,6 +106,7 @@ export interface DashboardMetrics {
     totalTransactions: number;
     pendingTransactions: number;
     totalCryptoVolume: number;
+    totalGiftcardVolume: number;
   };
 
   actionRequired: {

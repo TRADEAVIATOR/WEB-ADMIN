@@ -5,7 +5,10 @@ import DataTable from "@/components/ui/Table";
 import Pagination from "@/components/ui/Pagination";
 import { RowData } from "@/types/common";
 import { DataTableClientProps } from "@/types/props";
+import { handleApiError } from "@/lib/utils/errorHandler";
 import { Event } from "@/types/models";
+import toast from "react-hot-toast";
+import { deleteEvent } from "@/lib/api/events";
 
 export default function EventsDataTableClient({
   initialData = [],
@@ -47,6 +50,29 @@ export default function EventsDataTableClient({
     router.push(`/dashboard/events?page=${page}`);
   };
 
+  const handleDeleteEvent = async (eventId: string) => {
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this event? This action cannot be undone.",
+    );
+    if (!confirmed) return;
+
+    const toastId = toast.loading("Deleting event...");
+
+    try {
+      const res = await deleteEvent(eventId);
+
+      if (!res?.error) {
+        toast.success("Event deleted successfully!", { id: toastId });
+        router.refresh();
+      } else {
+        toast.error(res?.message || "Failed to delete event.", { id: toastId });
+      }
+    } catch (error) {
+      toast.error("An unexpected error occurred.", { id: toastId });
+      handleApiError(error);
+    }
+  };
+
   const menuItems = [
     {
       label: "View",
@@ -55,6 +81,10 @@ export default function EventsDataTableClient({
     {
       label: "Edit",
       onClick: (row: any) => router.push(`/dashboard/events/${row.id}/edit`),
+    },
+    {
+      label: "Delete",
+      onClick: (row: any) => handleDeleteEvent(row.id),
     },
   ];
 
