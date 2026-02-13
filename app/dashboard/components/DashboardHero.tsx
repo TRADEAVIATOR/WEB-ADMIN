@@ -3,17 +3,17 @@
 import { MdVerified } from "react-icons/md";
 import NgnDisplay from "./NgnDisplay";
 
-interface DashboardHeaderProps {
+interface DashboardHeroProps {
   userName: string;
   ngnRate: number | null;
   isSuperAdmin: boolean;
 }
 
-export default function DashboardHeader({
+export default function DashboardHero({
   userName,
   ngnRate,
   isSuperAdmin,
-}: DashboardHeaderProps) {
+}: DashboardHeroProps) {
   return (
     <div className="flex items-start md:items-center justify-between gap-4 flex-col md:flex-row">
       <div>

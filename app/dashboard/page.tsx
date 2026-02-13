@@ -16,7 +16,7 @@ import { formatCurrency } from "@/lib/utils/format";
 import CryptoTicker from "./components/CryptoTicker";
 import MarketInsightsCard from "./components/MarketInsightsCard";
 import { auth } from "@/lib/auth/session";
-import DashboardHeader from "./components/DashboardHeader";
+import DashboardHero from "./components/DashboardHero";
 
 export const dynamic = "force-dynamic";
 
@@ -113,7 +113,7 @@ export default async function DashboardPage() {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-4">
-        <DashboardHeader
+        <DashboardHero
           userName={userName}
           ngnRate={ngnRate}
           isSuperAdmin={session?.user.role === "superAdmin"}
