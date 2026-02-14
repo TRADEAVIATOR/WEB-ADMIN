@@ -25,11 +25,11 @@ export default function DashboardHero({
             {isSuperAdmin && (
               <MdVerified
                 className="
-    ml-2
-    text-yellow-400
-    text-xl md:text-2xl
-    relative top-[2px]
-  "
+      ml-2
+      text-blue-500
+      text-xl md:text-2xl
+      relative top-[2px]
+    "
                 title="Super Admin"
               />
             )}

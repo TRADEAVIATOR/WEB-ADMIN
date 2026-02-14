@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import Button from "@/components/ui/Button";
 import { handleApiError } from "@/lib/utils/errorHandler";
 import { NotificationType } from "@/types/enums";
@@ -8,6 +8,8 @@ import FormField from "@/components/ui/FormField";
 import { useRouter } from "next/navigation";
 import SelectField from "../ui/SelectField";
 import { X, Plus, Code } from "lucide-react";
+import EmojiPicker from "emoji-picker-react";
+import { Smile } from "lucide-react";
 
 export interface NotificationTemplateFormProps {
   initialData?: {
@@ -44,6 +46,65 @@ export default function NotificationTemplateForm({
   const [isLoading, setIsLoading] = useState(false);
   const titleInputRef = useRef<HTMLInputElement>(null);
   const messageInputRef = useRef<HTMLTextAreaElement>(null);
+
+  const [showEmojiPicker, setShowEmojiPicker] = useState<
+    "title" | "message" | null
+  >(null);
+  const emojiPickerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        emojiPickerRef.current &&
+        !emojiPickerRef.current.contains(event.target as Node)
+      ) {
+        setShowEmojiPicker(null);
+      }
+    };
+
+    if (showEmojiPicker) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showEmojiPicker]);
+
+  const handleEmojiClick = (emoji: any) => {
+    const placeholder = emoji.emoji;
+    if (showEmojiPicker === "title" && titleInputRef.current) {
+      const input = titleInputRef.current;
+      const cursorPos = input.selectionStart || formData.title.length;
+      const newTitle =
+        formData.title.slice(0, cursorPos) +
+        placeholder +
+        formData.title.slice(cursorPos);
+      setFormData({ ...formData, title: newTitle });
+      setTimeout(() => {
+        input.focus();
+        input.setSelectionRange(
+          cursorPos + placeholder.length,
+          cursorPos + placeholder.length,
+        );
+      }, 0);
+    } else if (showEmojiPicker === "message" && messageInputRef.current) {
+      const textarea = messageInputRef.current;
+      const cursorPos = textarea.selectionStart || formData.message.length;
+      const newMessage =
+        formData.message.slice(0, cursorPos) +
+        placeholder +
+        formData.message.slice(cursorPos);
+      setFormData({ ...formData, message: newMessage });
+      setTimeout(() => {
+        textarea.focus();
+        textarea.setSelectionRange(
+          cursorPos + placeholder.length,
+          cursorPos + placeholder.length,
+        );
+      }, 0);
+    }
+    setShowEmojiPicker(null);
+  };
 
   const addVariable = () => {
     const trimmedVar = newVariable.trim();
@@ -178,14 +239,34 @@ export default function NotificationTemplateForm({
       </div>
 
       <div className="space-y-2">
-        <FormField
-          label="Title"
-          value={formData.title}
-          ref={titleInputRef}
-          onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-          placeholder="Enter notification title"
-          required
-        />
+        <div className="relative">
+          <FormField
+            label="Title"
+            value={formData.title}
+            ref={titleInputRef}
+            onChange={(e) =>
+              setFormData({ ...formData, title: e.target.value })
+            }
+            placeholder="Enter notification title"
+            required
+          />
+          <button
+            type="button"
+            onClick={() =>
+              setShowEmojiPicker(showEmojiPicker === "title" ? null : "title")
+            }
+            className="absolute right-3 top-9 p-1.5 rounded-lg hover:bg-gray-100 transition-colors text-gray-500 hover:text-gray-700">
+            <Smile size={18} />
+          </button>
+          {showEmojiPicker === "title" && (
+            <div
+              ref={emojiPickerRef}
+              className="absolute right-0 top-full mt-2 z-50 shadow-xl">
+              <EmojiPicker onEmojiClick={handleEmojiClick} />
+            </div>
+          )}
+        </div>
+
         {variables.length > 0 && (
           <div className="flex flex-wrap gap-2">
             <span className="text-xs text-gray-600 self-center">
@@ -204,7 +285,7 @@ export default function NotificationTemplateForm({
         )}
       </div>
 
-      <div className="space-y-2">
+      <div className="relative">
         <label className="block text-sm font-medium text-gray-700 mb-1.5">
           Message <span className="text-red-500">*</span>
         </label>
@@ -217,22 +298,21 @@ export default function NotificationTemplateForm({
           placeholder="Enter notification message"
           required
           rows={4}
-          className="w-full rounded-2xl bg-[#F5F5F5] py-3 px-4 text-base focus:outline-none focus:ring-2 focus:ring-primary resize-none"
+          className="w-full rounded-2xl bg-[#F5F5F5] py-3 px-4 pr-12 text-base focus:outline-none focus:ring-2 focus:ring-primary resize-none"
         />
-        {variables.length > 0 && (
-          <div className="flex flex-wrap gap-2">
-            <span className="text-xs text-gray-600 self-center">
-              Insert variable:
-            </span>
-            {variables.map((variable) => (
-              <button
-                key={variable}
-                type="button"
-                onClick={() => insertVariableAtCursor(variable, "message")}
-                className="text-xs px-2 py-1 bg-primary/10 text-primary rounded hover:bg-primary/20 transition-colors font-mono">
-                {`{{${variable}}}`}
-              </button>
-            ))}
+        <button
+          type="button"
+          onClick={() =>
+            setShowEmojiPicker(showEmojiPicker === "message" ? null : "message")
+          }
+          className="absolute right-3 top-3 p-1.5 rounded-lg hover:bg-gray-100 transition-colors text-gray-500 hover:text-gray-700">
+          <Smile size={18} />
+        </button>
+        {showEmojiPicker === "message" && (
+          <div
+            ref={emojiPickerRef}
+            className="absolute right-0 top-full mt-2 z-50 shadow-xl">
+            <EmojiPicker onEmojiClick={handleEmojiClick} />
           </div>
         )}
       </div>
