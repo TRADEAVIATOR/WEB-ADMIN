@@ -8,10 +8,11 @@ import SelectField, { SelectOption } from "../ui/SelectField";
 import { MultiUserSelect } from "../shared/MultiUserSelect";
 import { handleApiError } from "@/lib/utils/errorHandler";
 import EmojiPicker from "emoji-picker-react";
-import { Smile } from "lucide-react";
+import { Smile, DollarSign } from "lucide-react";
 import { getNotificationTemplatesClient } from "@/lib/api/notifications";
 import Link from "next/link";
 import { FiArrowRight } from "react-icons/fi";
+import CurrencyPicker from "../shared/CurrencyPicker";
 
 interface NotificationTemplate {
   id: string;
@@ -95,6 +96,9 @@ export default function ScheduledNotificationForm({
   const [showEmojiPicker, setShowEmojiPicker] = useState<
     "title" | "message" | null
   >(null);
+  const [showCurrencyPicker, setShowCurrencyPicker] = useState<
+    "title" | "message" | null
+  >(null);
   const emojiPickerRef = useRef<HTMLDivElement>(null);
   const titleInputRef = useRef<HTMLInputElement>(null);
   const messageInputRef = useRef<HTMLTextAreaElement>(null);
@@ -168,43 +172,52 @@ export default function ScheduledNotificationForm({
     }));
   };
 
-  const handleEmojiClick = (emoji: any) => {
-    if (showEmojiPicker === "title") {
+  const insertAtCursor = (field: "title" | "message", symbol: string) => {
+    if (field === "title") {
       const input = titleInputRef.current;
       if (input) {
-        const cursorPos = input.selectionStart || formData.title.length;
+        const cursorPos = input.selectionStart ?? formData.title.length;
         const newTitle =
           formData.title.slice(0, cursorPos) +
-          emoji.emoji +
+          symbol +
           formData.title.slice(cursorPos);
         setFormData({ ...formData, title: newTitle });
         setTimeout(() => {
           input.focus();
           input.setSelectionRange(
-            cursorPos + emoji.emoji.length,
-            cursorPos + emoji.emoji.length,
+            cursorPos + symbol.length,
+            cursorPos + symbol.length,
           );
         }, 0);
       }
-    } else if (showEmojiPicker === "message") {
+    } else {
       const textarea = messageInputRef.current;
       if (textarea) {
-        const cursorPos = textarea.selectionStart || formData.message.length;
+        const cursorPos = textarea.selectionStart ?? formData.message.length;
         const newMessage =
           formData.message.slice(0, cursorPos) +
-          emoji.emoji +
+          symbol +
           formData.message.slice(cursorPos);
         setFormData({ ...formData, message: newMessage });
         setTimeout(() => {
           textarea.focus();
           textarea.setSelectionRange(
-            cursorPos + emoji.emoji.length,
-            cursorPos + emoji.emoji.length,
+            cursorPos + symbol.length,
+            cursorPos + symbol.length,
           );
         }, 0);
       }
     }
+  };
+
+  const handleEmojiClick = (emoji: any, field: "title" | "message") => {
+    insertAtCursor(field, emoji.emoji);
     setShowEmojiPicker(null);
+  };
+
+  const handleCurrencySelect = (symbol: string, field: "title" | "message") => {
+    insertAtCursor(field, symbol);
+    setShowCurrencyPicker(null);
   };
 
   const handleChannelToggle = (channel: string) => {
@@ -331,6 +344,7 @@ export default function ScheduledNotificationForm({
         </>
       ) : (
         <>
+          {/* Title field */}
           <div className="relative">
             <FormField
               label="Title"
@@ -342,23 +356,48 @@ export default function ScheduledNotificationForm({
               placeholder="Enter notification title"
               required
             />
-            <button
-              type="button"
-              onClick={() =>
-                setShowEmojiPicker(showEmojiPicker === "title" ? null : "title")
-              }
-              className="absolute right-3 top-9 p-1.5 rounded-lg hover:bg-gray-100 transition-colors text-gray-500 hover:text-gray-700">
-              <Smile size={18} />
-            </button>
+            <div className="absolute right-3 top-9 flex items-center gap-1">
+              <button
+                type="button"
+                title="Insert currency symbol"
+                onClick={() =>
+                  setShowCurrencyPicker(
+                    showCurrencyPicker === "title" ? null : "title",
+                  )
+                }
+                className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors text-gray-500 hover:text-gray-700">
+                <DollarSign size={16} />
+              </button>
+              <button
+                type="button"
+                title="Insert emoji"
+                onClick={() =>
+                  setShowEmojiPicker(
+                    showEmojiPicker === "title" ? null : "title",
+                  )
+                }
+                className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors text-gray-500 hover:text-gray-700">
+                <Smile size={18} />
+              </button>
+            </div>
+            {showCurrencyPicker === "title" && (
+              <CurrencyPicker
+                onSelect={(symbol) => handleCurrencySelect(symbol, "title")}
+                onClose={() => setShowCurrencyPicker(null)}
+              />
+            )}
             {showEmojiPicker === "title" && (
               <div
                 ref={emojiPickerRef}
                 className="absolute right-0 top-full mt-2 z-50 shadow-xl">
-                <EmojiPicker onEmojiClick={handleEmojiClick} />
+                <EmojiPicker
+                  onEmojiClick={(emoji) => handleEmojiClick(emoji, "title")}
+                />
               </div>
             )}
           </div>
 
+          {/* Message field */}
           <div className="relative">
             <label className="block text-sm font-medium text-gray-700 mb-1.5">
               Message <span className="text-red-500">*</span>
@@ -373,24 +412,46 @@ export default function ScheduledNotificationForm({
                 placeholder="Enter notification message"
                 required
                 rows={4}
-                className="w-full rounded-2xl bg-[#F5F5F5] py-3 px-4 pr-12 text-base focus:outline-none focus:ring-2 focus:ring-primary resize-none"
+                className="w-full rounded-2xl bg-[#F5F5F5] py-3 px-4 pr-20 text-base focus:outline-none focus:ring-2 focus:ring-primary resize-none"
               />
-              <button
-                type="button"
-                onClick={() =>
-                  setShowEmojiPicker(
-                    showEmojiPicker === "message" ? null : "message",
-                  )
-                }
-                className="absolute right-3 top-3 p-1.5 rounded-lg hover:bg-gray-100 transition-colors text-gray-500 hover:text-gray-700">
-                <Smile size={18} />
-              </button>
+              <div className="absolute right-3 top-3 flex items-center gap-1">
+                <button
+                  type="button"
+                  title="Insert currency symbol"
+                  onClick={() =>
+                    setShowCurrencyPicker(
+                      showCurrencyPicker === "message" ? null : "message",
+                    )
+                  }
+                  className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors text-gray-500 hover:text-gray-700">
+                  <DollarSign size={16} />
+                </button>
+                <button
+                  type="button"
+                  title="Insert emoji"
+                  onClick={() =>
+                    setShowEmojiPicker(
+                      showEmojiPicker === "message" ? null : "message",
+                    )
+                  }
+                  className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors text-gray-500 hover:text-gray-700">
+                  <Smile size={18} />
+                </button>
+              </div>
             </div>
+            {showCurrencyPicker === "message" && (
+              <CurrencyPicker
+                onSelect={(symbol) => handleCurrencySelect(symbol, "message")}
+                onClose={() => setShowCurrencyPicker(null)}
+              />
+            )}
             {showEmojiPicker === "message" && (
               <div
                 ref={emojiPickerRef}
                 className="absolute right-0 top-full mt-2 z-50 shadow-xl">
-                <EmojiPicker onEmojiClick={handleEmojiClick} />
+                <EmojiPicker
+                  onEmojiClick={(emoji) => handleEmojiClick(emoji, "message")}
+                />
               </div>
             )}
           </div>
@@ -484,7 +545,6 @@ export default function ScheduledNotificationForm({
                 schedules.
               </p>
             </div>
-
             <Link
               href="/dashboard/notifications/scheduled/recurring"
               className="inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline whitespace-nowrap">

@@ -6,9 +6,10 @@ import { NotificationType } from "@/types/enums";
 import Button from "@/components/ui/Button";
 import SelectField, { SelectOption } from "../ui/SelectField";
 import EmojiPicker from "emoji-picker-react";
-import { Smile } from "lucide-react";
+import { Smile, DollarSign } from "lucide-react";
 import { handleApiError } from "@/lib/utils/errorHandler";
 import { getNotificationTemplatesClient } from "@/lib/api/notifications";
+import CurrencyPicker from "../shared/CurrencyPicker";
 
 interface NotificationTemplate {
   id: string;
@@ -23,9 +24,7 @@ interface NotificationTemplate {
 interface BroadcastNotificationFormData {
   notificationType: string;
   title?: string;
-
   message?: string;
-
   metadata?: Record<string, any>;
   deliveryChannels: string[];
   templateId?: string;
@@ -75,10 +74,15 @@ export default function BroadcastNotificationForm({
       registeredBefore: initialData?.filters?.registeredBefore || "",
     },
   });
+
   const [isLoading, setIsLoading] = useState(false);
   const [showEmojiPicker, setShowEmojiPicker] = useState<
     "title" | "message" | null
   >(null);
+  const [showCurrencyPicker, setShowCurrencyPicker] = useState<
+    "title" | "message" | null
+  >(null);
+
   const emojiPickerRef = useRef<HTMLDivElement>(null);
   const titleInputRef = useRef<HTMLInputElement>(null);
   const messageInputRef = useRef<HTMLTextAreaElement>(null);
@@ -152,46 +156,50 @@ export default function BroadcastNotificationForm({
     }));
   };
 
-  const handleEmojiClick = (emoji: any) => {
-    if (showEmojiPicker === "title") {
+  const insertAtCursor = (field: "title" | "message", symbol: string) => {
+    if (field === "title") {
       const input = titleInputRef.current;
       if (input) {
         const title = formData.title || "";
         const cursorPos = input.selectionStart ?? title.length;
         const newTitle =
-          title.slice(0, cursorPos) + emoji.emoji + title.slice(cursorPos);
-
+          title.slice(0, cursorPos) + symbol + title.slice(cursorPos);
         setFormData({ ...formData, title: newTitle });
-
         setTimeout(() => {
           input.focus();
           input.setSelectionRange(
-            cursorPos + emoji.emoji.length,
-            cursorPos + emoji.emoji.length,
+            cursorPos + symbol.length,
+            cursorPos + symbol.length,
           );
         }, 0);
       }
-    } else if (showEmojiPicker === "message") {
+    } else {
       const textarea = messageInputRef.current;
       if (textarea) {
         const message = formData.message || "";
         const cursorPos = textarea.selectionStart ?? message.length;
         const newMessage =
-          message.slice(0, cursorPos) + emoji.emoji + message.slice(cursorPos);
-
+          message.slice(0, cursorPos) + symbol + message.slice(cursorPos);
         setFormData({ ...formData, message: newMessage });
-
         setTimeout(() => {
           textarea.focus();
           textarea.setSelectionRange(
-            cursorPos + emoji.emoji.length,
-            cursorPos + emoji.emoji.length,
+            cursorPos + symbol.length,
+            cursorPos + symbol.length,
           );
         }, 0);
       }
     }
+  };
 
+  const handleEmojiClick = (emoji: any, field: "title" | "message") => {
+    insertAtCursor(field, emoji.emoji);
     setShowEmojiPicker(null);
+  };
+
+  const handleCurrencySelect = (symbol: string, field: "title" | "message") => {
+    insertAtCursor(field, symbol);
+    setShowCurrencyPicker(null);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -227,19 +235,15 @@ export default function BroadcastNotificationForm({
         if (formData.filters?.tier && formData.filters.tier.length > 0) {
           payload.filters.tier = formData.filters.tier;
         }
-
         if (formData.filters?.isActive !== undefined) {
           payload.filters.isActive = formData.filters.isActive;
         }
-
         if (formData.filters?.isVerified !== undefined) {
           payload.filters.isVerified = formData.filters.isVerified;
         }
-
         if (formData.filters?.registeredAfter) {
           payload.filters.registeredAfter = formData.filters.registeredAfter;
         }
-
         if (formData.filters?.registeredBefore) {
           payload.filters.registeredBefore = formData.filters.registeredBefore;
         }
@@ -348,6 +352,7 @@ export default function BroadcastNotificationForm({
         </>
       ) : (
         <>
+          {/* Title field */}
           <div className="relative">
             <FormField
               label="Title"
@@ -358,26 +363,51 @@ export default function BroadcastNotificationForm({
                 setFormData({ ...formData, title: e.target.value })
               }
               placeholder="Enter broadcast title"
-              className="rounded-full bg-[#F5F5F5] py-3 px-4 pr-12 text-base"
+              className="rounded-full bg-[#F5F5F5] py-3 px-4 pr-20 text-base"
               required
             />
-            <button
-              type="button"
-              onClick={() =>
-                setShowEmojiPicker(showEmojiPicker === "title" ? null : "title")
-              }
-              className="absolute right-4 top-9 p-1.5 rounded-lg hover:bg-gray-200 transition-colors text-gray-500 hover:text-gray-700">
-              <Smile size={18} />
-            </button>
+            <div className="absolute right-4 top-9 flex items-center gap-1">
+              <button
+                type="button"
+                title="Insert currency symbol"
+                onClick={() =>
+                  setShowCurrencyPicker(
+                    showCurrencyPicker === "title" ? null : "title",
+                  )
+                }
+                className="p-1.5 rounded-lg hover:bg-gray-200 transition-colors text-gray-500 hover:text-gray-700">
+                <DollarSign size={16} />
+              </button>
+              <button
+                type="button"
+                title="Insert emoji"
+                onClick={() =>
+                  setShowEmojiPicker(
+                    showEmojiPicker === "title" ? null : "title",
+                  )
+                }
+                className="p-1.5 rounded-lg hover:bg-gray-200 transition-colors text-gray-500 hover:text-gray-700">
+                <Smile size={18} />
+              </button>
+            </div>
+            {showCurrencyPicker === "title" && (
+              <CurrencyPicker
+                onSelect={(symbol) => handleCurrencySelect(symbol, "title")}
+                onClose={() => setShowCurrencyPicker(null)}
+              />
+            )}
             {showEmojiPicker === "title" && (
               <div
                 ref={emojiPickerRef}
                 className="absolute right-0 top-full mt-2 z-50 shadow-xl">
-                <EmojiPicker onEmojiClick={handleEmojiClick} />
+                <EmojiPicker
+                  onEmojiClick={(emoji) => handleEmojiClick(emoji, "title")}
+                />
               </div>
             )}
           </div>
 
+          {/* Message field */}
           <div className="relative">
             <label className="block text-sm font-medium text-gray-700 mb-1.5">
               Message <span className="text-red-500">*</span>
@@ -391,26 +421,48 @@ export default function BroadcastNotificationForm({
                   setFormData({ ...formData, message: e.target.value })
                 }
                 placeholder="Enter broadcast message"
-                className="w-full rounded-2xl bg-[#F5F5F5] py-3 px-4 pr-12 text-base focus:outline-none focus:ring-2 focus:ring-primary resize-none"
+                className="w-full rounded-2xl bg-[#F5F5F5] py-3 px-4 pr-20 text-base focus:outline-none focus:ring-2 focus:ring-primary resize-none"
                 rows={4}
                 required
               />
-              <button
-                type="button"
-                onClick={() =>
-                  setShowEmojiPicker(
-                    showEmojiPicker === "message" ? null : "message",
-                  )
-                }
-                className="absolute right-4 top-3 p-1.5 rounded-lg hover:bg-gray-200 transition-colors text-gray-500 hover:text-gray-700">
-                <Smile size={18} />
-              </button>
+              <div className="absolute right-4 top-3 flex items-center gap-1">
+                <button
+                  type="button"
+                  title="Insert currency symbol"
+                  onClick={() =>
+                    setShowCurrencyPicker(
+                      showCurrencyPicker === "message" ? null : "message",
+                    )
+                  }
+                  className="p-1.5 rounded-lg hover:bg-gray-200 transition-colors text-gray-500 hover:text-gray-700">
+                  <DollarSign size={16} />
+                </button>
+                <button
+                  type="button"
+                  title="Insert emoji"
+                  onClick={() =>
+                    setShowEmojiPicker(
+                      showEmojiPicker === "message" ? null : "message",
+                    )
+                  }
+                  className="p-1.5 rounded-lg hover:bg-gray-200 transition-colors text-gray-500 hover:text-gray-700">
+                  <Smile size={18} />
+                </button>
+              </div>
             </div>
+            {showCurrencyPicker === "message" && (
+              <CurrencyPicker
+                onSelect={(symbol) => handleCurrencySelect(symbol, "message")}
+                onClose={() => setShowCurrencyPicker(null)}
+              />
+            )}
             {showEmojiPicker === "message" && (
               <div
                 ref={emojiPickerRef}
                 className="absolute right-0 top-full mt-2 z-50 shadow-xl">
-                <EmojiPicker onEmojiClick={handleEmojiClick} />
+                <EmojiPicker
+                  onEmojiClick={(emoji) => handleEmojiClick(emoji, "message")}
+                />
               </div>
             )}
           </div>
