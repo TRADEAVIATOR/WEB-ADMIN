@@ -12,7 +12,7 @@ import { Smile, DollarSign } from "lucide-react";
 import { getNotificationTemplatesClient } from "@/lib/api/notifications";
 import Link from "next/link";
 import { FiArrowRight } from "react-icons/fi";
-import CurrencyPicker from "../shared/CurrencyPicker";
+import SymbolPicker from "../shared/SymbolPicker";
 
 interface NotificationTemplate {
   id: string;
@@ -381,7 +381,7 @@ export default function ScheduledNotificationForm({
               </button>
             </div>
             {showCurrencyPicker === "title" && (
-              <CurrencyPicker
+              <SymbolPicker
                 onSelect={(symbol) => handleCurrencySelect(symbol, "title")}
                 onClose={() => setShowCurrencyPicker(null)}
               />
@@ -440,7 +440,7 @@ export default function ScheduledNotificationForm({
               </div>
             </div>
             {showCurrencyPicker === "message" && (
-              <CurrencyPicker
+              <SymbolPicker
                 onSelect={(symbol) => handleCurrencySelect(symbol, "message")}
                 onClose={() => setShowCurrencyPicker(null)}
               />

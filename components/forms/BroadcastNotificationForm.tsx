@@ -9,7 +9,7 @@ import EmojiPicker from "emoji-picker-react";
 import { Smile, DollarSign } from "lucide-react";
 import { handleApiError } from "@/lib/utils/errorHandler";
 import { getNotificationTemplatesClient } from "@/lib/api/notifications";
-import CurrencyPicker from "../shared/CurrencyPicker";
+import SymbolPicker from "../shared/SymbolPicker";
 
 interface NotificationTemplate {
   id: string;
@@ -391,7 +391,7 @@ export default function BroadcastNotificationForm({
               </button>
             </div>
             {showCurrencyPicker === "title" && (
-              <CurrencyPicker
+              <SymbolPicker
                 onSelect={(symbol) => handleCurrencySelect(symbol, "title")}
                 onClose={() => setShowCurrencyPicker(null)}
               />
@@ -451,7 +451,7 @@ export default function BroadcastNotificationForm({
               </div>
             </div>
             {showCurrencyPicker === "message" && (
-              <CurrencyPicker
+              <SymbolPicker
                 onSelect={(symbol) => handleCurrencySelect(symbol, "message")}
                 onClose={() => setShowCurrencyPicker(null)}
               />
