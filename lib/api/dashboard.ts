@@ -13,5 +13,5 @@ export const getDashboardGrowth = async () => {
 
 export const getAdminProfile = async () => {
   const api = await getServerApi();
-  return tryServer(api.get("/admin/dashboard/profile").then((res) => res.data));
+  return tryServer(api.get("/admin/auth/profile").then((res) => res.data));
 };

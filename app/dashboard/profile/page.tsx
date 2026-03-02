@@ -18,7 +18,7 @@ export default async function AdminProfilePage() {
     );
   }
 
-  const admin = adminRes.data?.admin;
+  const admin = adminRes.data?.data;
 
   if (!admin) {
     return <ResultState type="error" message="Admin profile not found." />;

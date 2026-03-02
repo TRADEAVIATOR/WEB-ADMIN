@@ -95,6 +95,11 @@ export const sidebarLinks: SidebarLink[] = [
         href: "/dashboard/giftcards/sell/accepted",
         icon: RateIcon,
       },
+      {
+        label: "Website Rates",
+        href: "/dashboard/rate-management/website",
+        icon: RateIcon,
+      },
     ],
   },
   {

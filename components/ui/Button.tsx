@@ -37,7 +37,7 @@ export default function Button({
     <button
       disabled={isDisabled}
       className={clsx(
-        "flex items-center cursor-pointer justify-center gap-2 font-semibold transition-all duration-200 focus:outline-none disabled:cursor-not-allowed",
+        "flex items-center cursor-pointer justify-center gap-2 font-semibold transition-all duration-200 focus:outline-none disabled:cursor-not-allowed whitespace-nowrap",
         {
           "bg-primary text-white hover:bg-opacity-90 disabled:bg-opacity-60":
             variant === "primary",
@@ -61,7 +61,7 @@ export default function Button({
           "rounded-lg": rounded === "lg",
           "rounded-full": rounded === "full",
         },
-        className
+        className,
       )}
       {...props}>
       {isLoading ? (
