@@ -23,6 +23,7 @@ export interface Customer {
   id: string;
   fullname: string;
   username: string;
+  totalTransactions: string;
   phone: string;
   email: string;
   tier: string;

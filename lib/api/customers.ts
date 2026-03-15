@@ -23,9 +23,13 @@ export const getCustomersClient = async (page = 1, limit = 10) => {
   return res.data;
 };
 
-export const getCustomer = async (id: string) => {
+export const getCustomer = async (id: string, page = 1, limit = 10) => {
   const api = await getServerApi();
-  return tryServer(api.get(`/admin/customers/${id}`).then((res) => res.data));
+  return tryServer(
+    api
+      .get(`/admin/customers/${id}?page=${page}&limit=${limit}`)
+      .then((res) => res.data),
+  );
 };
 
 export const toggleCustomerStatusClient = async (id: string) => {

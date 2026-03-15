@@ -11,16 +11,22 @@ export const dynamic = "force-dynamic";
 
 export default async function UserDetailsPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams?: Promise<{ page?: string; limit?: string }>;
 }) {
   const { id } = await params;
+  const search = (await searchParams) ?? {};
 
   if (!id) {
     return <ResultState type="error" message="Invalid user ID." showRefresh />;
   }
 
-  const response = await getCustomer(id);
+  const page = search.page ? Number(search.page) : 1;
+  const limit = search.limit ? Number(search.limit) : 50;
+
+  const response = await getCustomer(id, page, limit);
 
   if (response.error) {
     const message =
